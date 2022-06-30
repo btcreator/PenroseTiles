@@ -6,23 +6,6 @@ let width = (canvas.width = innerWidth);
 let height = (canvas.height = innerHeight);
 ctx.clearRect(0, 0, width, height);
 
-class ID {
-  static #id = this.#getID();
-  constructor() {}
-
-  static #getID() {
-    let first = 1;
-    return function () {
-      return first++;
-    };
-  }
-
-  static get Id() {
-    return this.#id();
-  }
-}
-const DOTID = new ID();
-
 class PenroseTile {
   static points = ["A", "B", "C", "D"];
   coord = {};
@@ -39,10 +22,8 @@ class PenroseTile {
     d: null,
   };
 
-  static getNeigPoint(actPoint, dir = 1) {
-    return this.points[
-      (this.points.indexOf(actPoint) + (dir > 0 ? 1 : -1)) % 4
-    ];
+  static getNeigPoint(actPoint) {
+    return this.points[(this.points.indexOf(actPoint) + 1) % 4];
   }
 
   addDot(point, dot) {
@@ -159,12 +140,9 @@ class Dart extends PenroseTile {
 class Dot {
   #id;
   occupy = [];
-  edgeDots = [];
   #degTotal = 0;
-  constructor(tile, tileDot) {
-    this.#id = DOTID.Id;
-    this.occupy.push([tile, tileDot]);
-    this.#degTotal = tile.anglesDot[tileDot];
+  constructor(coord) {
+    this.#id = Dot.getID(coord);
   }
 
   get id() {
@@ -173,6 +151,10 @@ class Dot {
 
   get degTotal() {
     return this.#degTotal;
+  }
+
+  static getID(coord) {
+    return `${Math.round(coord[0])}-${Math.round(coord[1])}}`;
   }
 
   addTile(tile, tileDot, dir) {
@@ -187,42 +169,28 @@ class DotControl {
   #openDots = {};
   constructor() {}
 
-  openNewDot(tile, point) {
-    // create new dot
-    // put to open dots
-    // create edges
-    const newDot = new Dot(tile, point);
-    this.#openDots[newDot.id] = newDot;
+  fillDots(tile, tilePoint) {
+    for (const [point, coord] of Object.entries(tile.coord)) {
+      const dot = this.#getPointDot(coord);
+      const conDirection = this.#calcDirection(tile, tilePoint, dot);
+      dot.addTile(tile, point, conDirection);
+      tile.addDot(point, dot);
+    }
   }
 
-  connectTileWithDot() {
-    // add dot to tile point
-    // add tile to dot
-    // change new edges
+  #getPointDot(coord) {
+    let dot = this.#openDots[Dot.getID(coord)];
+    // when dot is undefined (i.e. there is no dot at that point), then create new
+    if (!dot) {
+      dot = new Dot(coord);
+      this.#openDots[dot.id] = dot;
+    }
+    return dot;
   }
 
-  dotCoordinator(tile, tilePoint, tileSide, conDot = 0) {
-    const conDirection = tilePoint === tileSide.toUpperCase() ? 1 : 0; // 1- connect cw to the next tile, 0- connection on ccw
-
-    conDot.addTile(tile, tilePoint, conDirection);
-
-    // add dot to point of the NOT connection side or when the dot is full (360 degree) then search for the existing dot from the edgeDots and add it to tile
-    const neigPoint = PenroseTile.getNeigPoint(tilePoint, !conDirection);
-    const newEdgeDot =
-      conDot.degTotal === 360
-        ? conDot.edgeDots[conDirection]
-        : this.openNewDot(tile, neigPoint);
-    tile.addDot(neigPoint, newEdgeDot);
-
-    // add existing dots to connection points on connection side
-    tile
-      .addDot(tilePoint, conDot)
-      .addDot(
-        PenroseTile.getNeigPoint(tilePoint, conDirection),
-        conDot.edgeDots.at(conDirection - 1)
-      );
+  #calcDirection(tile, point, dir) {
+    // continue
   }
-
   dotRuler() {}
 }
 
@@ -273,7 +241,6 @@ class PenroseTileControl {
 
   #makeTileDone(actTile) {
     try {
-      const actTileName = actTile.name;
       for (const [side, occupy] of Object.entries(actTile.occupation)) {
         if (occupy) continue;
         const nextTile = this.#nextRuledTile(actTile, side); // return an object like {name: "kite", side: "b"} or throw error
@@ -307,17 +274,22 @@ class PenroseTileControl {
   #calcAndCreate(actTile, side, nextTile) {
     const angleActTile = this.#getAngle(actTile.name, side);
     const angleNextTile = this.#getAngle(nextTile.name, nextTile.side);
-
-    // create and rotate the next Tile on right position, on x y position of the actual Tile. Occupy the used side. Next must be moved along the x y coordinates...
-    const nextTileRotation =
-      angleActTile - angleNextTile + 180 + actTile.rotation;
-    const nextPenroseTile = this.#createTile(nextTile.name, nextTileRotation);
-    nextPenroseTile.occupation[nextTile.side] = { name: actTile.name, side };
     // get points of touch.
     const touchPointActTile = side.toUpperCase();
     const touchPointNextTile = PenroseTile.getNeigPoint(
       nextTile.side.toUpperCase()
     );
+
+    // create and rotate the next Tile on right position, on x y position of the actual Tile. Occupy the used side. Next must be moved along the x y coordinates...
+    const nextTileRotation =
+      angleActTile - angleNextTile + 180 + actTile.rotation;
+    const nextPenroseTile = this.#createTile(nextTile.name, nextTileRotation);
+
+    // dot controller - add dots to all points, add tile to dots
+    this.dotController.fillDots(nextPenroseTile, touchPointNextTile);
+    // check for side occupation and fill when needed
+    nextPenroseTile.occupation[nextTile.side] = { name: actTile.name, side };
+
     // calculate offset to point A on x and y on both Tiles
     const offsetXactTile =
       actTile.coord[touchPointActTile][0] - actTile.coord.A[0];
