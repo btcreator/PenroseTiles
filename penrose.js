@@ -75,13 +75,7 @@ class Kite extends PenroseTile {
     c: 144,
     d: 252,
   };
-  static anglesDot = {
-    // inner closed angle in the dots
-    A: 72,
-    B: 72,
-    C: 144,
-    D: 72,
-  };
+
   constructor(rotation = 0) {
     super();
     this.rotation = rotation;
@@ -99,6 +93,13 @@ class Kite extends PenroseTile {
     return [Math.cos(rotInRad) * this.phi, Math.sin(rotInRad) * this.phi];
   }
 }
+Kite.prototype.anglesDot = {
+  // inner closed angle in the dots
+  A: 72,
+  B: 72,
+  C: 144,
+  D: 72,
+};
 
 class Dart extends PenroseTile {
   name = "dart";
@@ -108,13 +109,6 @@ class Dart extends PenroseTile {
     b: 144,
     c: 108,
     d: 252,
-  };
-  static anglesDot = {
-    // inner closed angle in the dots
-    A: 72,
-    B: 36,
-    C: 216,
-    D: 36,
   };
 
   constructor(rotation = 0) {
@@ -136,6 +130,13 @@ class Dart extends PenroseTile {
     return [Math.cos(rotInRad) * distance, Math.sin(rotInRad) * distance];
   }
 }
+Dart.prototype.anglesDot = {
+  // inner closed angle in the dots
+  A: 72,
+  B: 36,
+  C: 216,
+  D: 36,
+};
 
 class Dot {
   #id;
@@ -170,11 +171,15 @@ class DotControl {
   constructor() {}
 
   fillDots(tile, tilePoint) {
-    for (const [point, coord] of Object.entries(tile.coord)) {
+    const actPointIndex = PenroseTile.points.indexOf(tilePoint);
+    const direction = this.#calcDirection();
+    for (let i = 0; i < 4; i++) {
+      const actPoint = PenroseTile.points[(actPointIndex + i) % 4];
+      const coord = tile.coord[actPoint];
       const dot = this.#getPointDot(coord);
-      const conDirection = this.#calcDirection(tile, tilePoint, dot);
-      dot.addTile(tile, point, conDirection);
-      tile.addDot(point, dot);
+      const conDirection = direction(tile, actPoint, dot);
+      dot.addTile(tile, actPoint, conDirection);
+      tile.addDot(actPoint, dot);
     }
   }
 
@@ -183,14 +188,23 @@ class DotControl {
     // when dot is undefined (i.e. there is no dot at that point), then create new
     if (!dot) {
       dot = new Dot(coord);
+      console.log(dot);
       this.#openDots[dot.id] = dot;
     }
     return dot;
   }
 
-  #calcDirection(tile, point, dir) {
-    // continue
+  #calcDirection() {
+    let flag = 0; // the direction begins always with 0 (ccw or 360 degree dot). By new dot or by the dot which reaches 360 degree its no matter it is cw or ccw.
+    return function (tile, point, dot) {
+      const tileAngle = tile.anglesDot[point];
+      if (!flag) {
+        return tileAngle + dot.degTotal === 360 ? flag : flag++; // When the dot total degree is not 360 then the tile is attached ccw (0) to this dot and after that all can be attached cw (1)
+      }
+      return flag;
+    };
   }
+
   dotRuler() {}
 }
 
@@ -226,11 +240,9 @@ class PenroseTileControl {
     return newTile;
   }
 
-  #renderTile(tileToDraw, x, y) {
+  #renderTile(tileToDraw) {
     console.log(tileToDraw);
     this.#undoneTiles.push(tileToDraw);
-    // move tile to position
-    tileToDraw.moveToPos(x, y);
     //call function which creates the 2D path from tile and coordinates
     const path = this.#createPath(tileToDraw);
     //fill the created path
@@ -285,8 +297,6 @@ class PenroseTileControl {
       angleActTile - angleNextTile + 180 + actTile.rotation;
     const nextPenroseTile = this.#createTile(nextTile.name, nextTileRotation);
 
-    // dot controller - add dots to all points, add tile to dots
-    this.dotController.fillDots(nextPenroseTile, touchPointNextTile);
     // check for side occupation and fill when needed
     nextPenroseTile.occupation[nextTile.side] = { name: actTile.name, side };
 
@@ -302,14 +312,20 @@ class PenroseTileControl {
     // join offsets, then calculate the new pos on the xy coord.
     const newTilePosX = actTile.coord.A[0] + offsetXactTile - offsetXnextTile;
     const newTilePosY = actTile.coord.A[1] + offsetYactTile - offsetYnextTile;
+    nextPenroseTile.moveToPos(newTilePosX, newTilePosY);
+
+    // dot controller - add dots to all points, add tile to dots
+    this.dotController.fillDots(nextPenroseTile, touchPointNextTile);
     // render tile.
-    this.#renderTile(nextPenroseTile, newTilePosX, newTilePosY);
+    this.#renderTile(nextPenroseTile);
   }
 
   tileCoordinator(tile, x, y, rotation = 0) {
     const firstTile = this.#createTile(tile, rotation);
-    this.#renderTile(firstTile, x, y);
-    let test = 2;
+    firstTile.moveToPos(x, y);
+    this.dotController.fillDots(firstTile, "A");
+    this.#renderTile(firstTile);
+    let test = 1;
     while (test) {
       //this.#undoneTiles.length
       const actTile = this.#undoneTiles.shift();
