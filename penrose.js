@@ -15,7 +15,7 @@ class PenroseTile {
     C: null,
     D: null,
   };
-  occupation = {
+  occupy = {
     a: null,
     b: null,
     c: null,
@@ -188,7 +188,6 @@ class DotControl {
     // when dot is undefined (i.e. there is no dot at that point), then create new
     if (!dot) {
       dot = new Dot(coord);
-      console.log(dot);
       this.#openDots[dot.id] = dot;
     }
     return dot;
@@ -253,11 +252,11 @@ class PenroseTileControl {
 
   #makeTileDone(actTile) {
     try {
-      for (const [side, occupy] of Object.entries(actTile.occupation)) {
+      for (const [side, occupy] of Object.entries(actTile.occupy)) {
         if (occupy) continue;
         const nextTile = this.#nextRuledTile(actTile, side); // return an object like {name: "kite", side: "b"} or throw error
         this.#calcAndCreate(actTile, side, nextTile);
-        actTile.occupation[side] = nextTile;
+        actTile.occupy[side] = nextTile;
       }
       this.#doneTiles.push(actTile);
     } catch (err) {
@@ -283,6 +282,37 @@ class PenroseTileControl {
     return tileName === "kite" ? Kite.anglesRef[side] : Dart.anglesRef[side];
   }
 
+  #fillSideOccupy(tile) {
+    let i = 0;
+    for (const [point, dot] of Object.entries(tile.dots)) {
+      const index = dot.occupy.findIndex((element) => element[0] === tile);
+      const actSide = point.toLowerCase();
+      let neigTile, neigPoint, neigSide;
+      let flag = false;
+
+      if (index !== dot.occupy.length - 1) {
+        // if the tile is not the last in the dot occupy list, that mean there is next neighbour element...
+        [neigTile, neigPoint] = dot.occupy[index + 1];
+        flag = true;
+      } else if (dot.degTotal === 360) {
+        // When the tile is the last, but the dot is closed (there is no gap in tiles) then there are a neighbour element, which is the first element.
+
+        [neigTile, neigPoint] = dot.occupy[0];
+        flag = true;
+      } // When the tile is the last, and there is no closed dot (i.e. on the actual side is nothing/gap) then the occupy is still null and the flag stays false
+      if (flag) {
+        // when there is occupation, change it, when not, then all stays on null
+        neigSide = PenroseTile.points
+          .at(PenroseTile.points.indexOf(neigPoint) - 1)
+          .toLowerCase();
+        tile.occupy[actSide] = { name: neigTile.name, side: neigSide };
+        neigTile.occupy[neigSide] = { name: tile.name, side: actSide };
+      }
+
+      i++;
+    }
+  }
+
   #calcAndCreate(actTile, side, nextTile) {
     const angleActTile = this.#getAngle(actTile.name, side);
     const angleNextTile = this.#getAngle(nextTile.name, nextTile.side);
@@ -296,9 +326,6 @@ class PenroseTileControl {
     const nextTileRotation =
       angleActTile - angleNextTile + 180 + actTile.rotation;
     const nextPenroseTile = this.#createTile(nextTile.name, nextTileRotation);
-
-    // check for side occupation and fill when needed
-    nextPenroseTile.occupation[nextTile.side] = { name: actTile.name, side };
 
     // calculate offset to point A on x and y on both Tiles
     const offsetXactTile =
@@ -316,6 +343,9 @@ class PenroseTileControl {
 
     // dot controller - add dots to all points, add tile to dots
     this.dotController.fillDots(nextPenroseTile, touchPointNextTile);
+    // check for side occupation and fill when needed
+    this.#fillSideOccupy(nextPenroseTile);
+
     // render tile.
     this.#renderTile(nextPenroseTile);
   }
@@ -325,7 +355,7 @@ class PenroseTileControl {
     firstTile.moveToPos(x, y);
     this.dotController.fillDots(firstTile, "A");
     this.#renderTile(firstTile);
-    let test = 1;
+    let test = 2;
     while (test) {
       //this.#undoneTiles.length
       const actTile = this.#undoneTiles.shift();
