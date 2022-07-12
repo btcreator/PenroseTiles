@@ -8,6 +8,15 @@ ctx.clearRect(0, 0, width, height);
 
 class PenroseTile {
   static points = ["A", "B", "C", "D"];
+  static dotConnRules = [
+    ["dart A", "dart A", "dart A", "dart A", "dart A"],
+    ["dart C", "kite D", "kite B"],
+    ["kite A", "kite A", "kite A", "kite A", "kite A"],
+    ["dart A", "dart A", "dart A", "kite B", "kite D"],
+    ["kite C", "dart D", "kite A", "kite A", "dart B"],
+    ["dart A", "kite B", "kite D", "kite B", "kite D"],
+    ["dart B", "kite C", "kite C", "dart D"],
+  ];
   coord = {};
   dots = {
     A: null,
@@ -22,8 +31,8 @@ class PenroseTile {
     d: null,
   };
 
-  static getNeigPoint(actPoint) {
-    return this.points[(this.points.indexOf(actPoint) + 1) % 4];
+  static getNeigPointN(initPoint, n = 1) {
+    return this.points.at((this.points.indexOf(initPoint) + n) % 4);
   }
 
   addDot(point, dot) {
@@ -50,21 +59,6 @@ class PenroseTile {
   }
 }
 PenroseTile.prototype.phi = (1 + Math.sqrt(5)) / 2;
-PenroseTile.prototype.restriction = {
-  // first is opposite side, second is self side tile i.e. Kite a side can be matched with dart a or kite d.
-  kite: {
-    a: ["a", "d"],
-    b: ["b", "c"],
-    c: ["c", "b"],
-    d: ["d", "a"],
-  },
-  dart: {
-    a: ["a", "d"],
-    b: ["b"],
-    c: ["c"],
-    d: ["d", "a"],
-  },
-};
 
 class Kite extends PenroseTile {
   name = "kite";
@@ -158,11 +152,11 @@ class Dot {
     return `${Math.round(coord[0])}-${Math.round(coord[1])}}`;
   }
 
-  addTile(tile, tileDot, dir) {
+  addTile(tile, tilePoint, dir) {
     dir
-      ? this.occupy.unshift([tile, tileDot])
-      : this.occupy.push([tile, tileDot]);
-    this.#degTotal += tile.anglesDot[tileDot];
+      ? this.occupy.unshift([tile, tilePoint])
+      : this.occupy.push([tile, tilePoint]);
+    this.#degTotal += tile.anglesDot[tilePoint];
   }
 }
 
@@ -171,10 +165,9 @@ class DotControl {
   constructor() {}
 
   fillDots(tile, tilePoint) {
-    const actPointIndex = PenroseTile.points.indexOf(tilePoint);
     const direction = this.#calcDirection();
     for (let i = 0; i < 4; i++) {
-      const actPoint = PenroseTile.points[(actPointIndex + i) % 4];
+      const actPoint = PenroseTile.getNeigPointN(tilePoint, i);
       const coord = tile.coord[actPoint];
       const dot = this.#getPointDot(coord);
       const conDirection = direction(tile, actPoint, dot);
@@ -204,7 +197,66 @@ class DotControl {
     };
   }
 
-  dotRuler() {}
+  #pointToSide(possTile, dir) {
+    const split = possTile.split(" ");
+    return possTile.replace(/[A,B,C,D]/m, 
+    dir ? 
+    split[1].toLowerCase() :
+    PenroseTile.getNeigPointN(split[1], dir-1).toLowerCase());
+  }
+
+  #dotToString(dot) {
+    return dot.occupy.map(tileOccup => `${tileOccup[0].name} ${tileOccup[1]}`);
+  }
+
+  #possTileByRule(rule, i, dotTxt, dotTxtPos, j=0) {
+    if(rule[(i + 1) % rule.length] === dotTxt[j+1]) {
+      return this.#possTileByRule(rule, i+1, dotTxt, dotTxtPos, j+1);
+    }
+
+    return dotTxt[j +1] ? "" :  // if false, it mean the value is undefined and it matched till the last element. The rule match!
+    dotTxtPos ? 
+    rule.at(i-j-1) : // if the tile is on the first position, return the tileTxt first before
+    rule[(i+1)%rule.length]; //if the tile is on the last position, return the tileTxt last after
+  }
+
+  dotRuler(actTile, side) {
+    const point = side.toUpperCase();
+    const dotsTxt = [
+      this.#dotToString(actTile.dots[point]),
+      this.#dotToString(actTile.dots[PenroseTile.getNeigPointN(point)]),
+    ];
+    const possTileAll = PenroseTile.dotConnRules.reduce((collector, rule) => {
+      const possTilesRule = rule.reduce((acc, val, i, rule) => {
+        
+        // by dotsTxt[0] return last ? tile i+1 : call this;
+        // by 1 return equal(returned from prev call tile i-1) ? tile i-1 : ""; then we become the prev tile
+        let possTile;
+        if (dotsTxt[0][0] === val) {
+          possTile = this.#possTileByRule(rule, i, dotsTxt[0], 0);
+          possTile &&= this.#pointToSide(possTile, 0); 
+          possTile && acc[0].push(possTile);
+        }
+        if (dotsTxt[1][0] === val) {
+          possTile = this.#possTileByRule(rule, i, dotsTxt[1], 1);
+          possTile &&= this.#pointToSide(possTile, 1);
+          possTile && acc[1].push(possTile);
+        }
+
+        return acc;
+      }, [[],[]]);
+      
+      return collector.map((val, i) => val.concat(possTilesRule[i]));
+    }, [[],[]]);
+      
+    ;
+    const uniqPossTiles = possTileAll.map(arrToSet => Array.from(new Set(arrToSet)));
+
+    return uniqPossTiles;
+
+    // dotsTxt[0]; // last tile in dotsTxt list
+    // dotsTxt[1]; // first tile in dotsTxt list
+  }
 }
 
 class PenroseTileControl {
@@ -240,7 +292,6 @@ class PenroseTileControl {
   }
 
   #renderTile(tileToDraw) {
-    console.log(tileToDraw);
     this.#undoneTiles.push(tileToDraw);
     //call function which creates the 2D path from tile and coordinates
     const path = this.#createPath(tileToDraw);
@@ -266,16 +317,19 @@ class PenroseTileControl {
   }
 
   #nextRuledTile(actTile, side) {
-    const actTileName = actTile.name;
-    const random = this.#randomRange(
-      actTile.restriction[actTileName][side].length - 1
-    );
-    const nextTileSide = actTile.restriction[actTileName][side][random];
+    const possTilesMatrix = this.dotController.dotRuler(actTile, side); // ["kite a", "dart d"]
+    
+    const nextTile = possTilesMatrix.reduce((acc, possTiles, i) => {
+      if (!(acc.length || possTiles.length)) throw new Error(`Error in rule. Log: ${dotsTxt}`);
+      //if(acc.length === 1 && possTiles.length === 1) acc[0] != possTiles[0] && this.#removeTile();
+      return acc.length === 1 ? acc : possTiles;
+    });
 
-    return (actTileName === "kite" && random) ||
-      (actTileName === "dart" && !random)
-      ? { name: "kite", side: nextTileSide }
-      : { name: "dart", side: nextTileSide };
+    const random = this.#randomRange(1);
+    const nextTileSide = nextTile.length > 1 ? nextTile[random] : nextTile[0];
+    const split = nextTileSide.split(" ");
+    
+    return { name: split[0], side: split[1] };
   }
 
   #getAngle(tileName, side) {
@@ -318,7 +372,7 @@ class PenroseTileControl {
     const angleNextTile = this.#getAngle(nextTile.name, nextTile.side);
     // get points of touch.
     const touchPointActTile = side.toUpperCase();
-    const touchPointNextTile = PenroseTile.getNeigPoint(
+    const touchPointNextTile = PenroseTile.getNeigPointN(
       nextTile.side.toUpperCase()
     );
 
@@ -355,7 +409,7 @@ class PenroseTileControl {
     firstTile.moveToPos(x, y);
     this.dotController.fillDots(firstTile, "A");
     this.#renderTile(firstTile);
-    let test = 2;
+    let test = 5;
     while (test) {
       //this.#undoneTiles.length
       const actTile = this.#undoneTiles.shift();
@@ -366,19 +420,7 @@ class PenroseTileControl {
 }
 
 const pattern = new PenroseTileControl();
-pattern.tileCoordinator("dart", 250, 250);
-
-// set one tile on x,y with rotation (in create process we need a function call which checks dot id's and give it to the new created one. For the other dots will be generated a new id)
-// save that all created dots on dotOpen object {hs9ekdf-fds3raf3: {occupy: [[Tile, "B", 72],[Tile, "A", 36]], edgeDot: [gh9easdf-zus7rofg,we9ekdf-rts3raf3] }
-
-// fillDot(dotName/id/); this check for tiles connected to the dot..
-//..take the last tile (cw - last tile) give the data to check rules for next tile (actTile, side) side is the dot which connects -> one back for CW ("A" -> "d", "C" -> "b")
-// the next tile must be checked for correct degree
-// (when 360) then the dot is done -> push to dotClosed, remove dotOpen, clear edgeDot
-// re-set new edgeDot for neighbour dots, and the new dot (3 of 4 should be shure exist)
-// (when <360) re-set the edgeDot
-// re-set new edgeDot for neighbour dot, and the new dot (2 of 4 should be shure exist)
-// take the next dot.. fillDot(dotName)
+pattern.tileCoordinator("kite", 500, 500);
 
 /*
 Kite:
