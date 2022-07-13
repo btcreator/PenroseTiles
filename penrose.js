@@ -199,25 +199,30 @@ class DotControl {
 
   #pointToSide(possTile, dir) {
     const split = possTile.split(" ");
-    return possTile.replace(/[A,B,C,D]/m, 
-    dir ? 
-    split[1].toLowerCase() :
-    PenroseTile.getNeigPointN(split[1], dir-1).toLowerCase());
+    return possTile.replace(
+      /[A,B,C,D]/m,
+      dir
+        ? split[1].toLowerCase()
+        : PenroseTile.getNeigPointN(split[1], dir - 1).toLowerCase()
+    );
   }
 
   #dotToString(dot) {
-    return dot.occupy.map(tileOccup => `${tileOccup[0].name} ${tileOccup[1]}`);
+    return dot.occupy.map(
+      (tileOccup) => `${tileOccup[0].name} ${tileOccup[1]}`
+    );
   }
 
-  #possTileByRule(rule, i, dotTxt, dotTxtPos, j=0) {
-    if(rule[(i + 1) % rule.length] === dotTxt[j+1]) {
-      return this.#possTileByRule(rule, i+1, dotTxt, dotTxtPos, j+1);
+  #possTileByRule(rule, i, dotTxt, dotTxtPos, j = 0) {
+    if (rule[(i + 1) % rule.length] === dotTxt[j + 1]) {
+      return this.#possTileByRule(rule, i + 1, dotTxt, dotTxtPos, j + 1);
     }
 
-    return dotTxt[j +1] ? "" :  // if false, it mean the value is undefined and it matched till the last element. The rule match!
-    dotTxtPos ? 
-    rule.at(i-j-1) : // if the tile is on the first position, return the tileTxt first before
-    rule[(i+1)%rule.length]; //if the tile is on the last position, return the tileTxt last after
+    return dotTxt[j + 1]
+      ? "" // if false, it mean the value is undefined and it matched till the last element. The rule match!
+      : dotTxtPos
+      ? rule.at(i - j - 1) // if the tile is on the first position, return the tileTxt first before
+      : rule[(i + 1) % rule.length]; //if the tile is on the last position, return the tileTxt last after
   }
 
   dotRuler(actTile, side) {
@@ -226,31 +231,37 @@ class DotControl {
       this.#dotToString(actTile.dots[point]),
       this.#dotToString(actTile.dots[PenroseTile.getNeigPointN(point)]),
     ];
-    const possTileAll = PenroseTile.dotConnRules.reduce((collector, rule) => {
-      const possTilesRule = rule.reduce((acc, val, i, rule) => {
-        
-        // by dotsTxt[0] return last ? tile i+1 : call this;
-        // by 1 return equal(returned from prev call tile i-1) ? tile i-1 : ""; then we become the prev tile
-        let possTile;
-        if (dotsTxt[0][0] === val) {
-          possTile = this.#possTileByRule(rule, i, dotsTxt[0], 0);
-          possTile &&= this.#pointToSide(possTile, 0); 
-          possTile && acc[0].push(possTile);
-        }
-        if (dotsTxt[1][0] === val) {
-          possTile = this.#possTileByRule(rule, i, dotsTxt[1], 1);
-          possTile &&= this.#pointToSide(possTile, 1);
-          possTile && acc[1].push(possTile);
-        }
+    const possTileAll = PenroseTile.dotConnRules.reduce(
+      (collector, rule) => {
+        const possTilesRule = rule.reduce(
+          (acc, val, i, rule) => {
+            // by dotsTxt[0] return last ? tile i+1 : call this;
+            // by 1 return equal(returned from prev call tile i-1) ? tile i-1 : ""; then we become the prev tile
+            let possTile;
+            if (dotsTxt[0][0] === val) {
+              possTile = this.#possTileByRule(rule, i, dotsTxt[0], 0);
+              possTile &&= this.#pointToSide(possTile, 0);
+              possTile && acc[0].push(possTile);
+            }
+            if (dotsTxt[1][0] === val) {
+              possTile = this.#possTileByRule(rule, i, dotsTxt[1], 1);
+              possTile &&= this.#pointToSide(possTile, 1);
+              possTile && acc[1].push(possTile);
+            }
 
-        return acc;
-      }, [[],[]]);
-      
-      return collector.map((val, i) => val.concat(possTilesRule[i]));
-    }, [[],[]]);
-      
-    ;
-    const uniqPossTiles = possTileAll.map(arrToSet => Array.from(new Set(arrToSet)));
+            return acc;
+          },
+          [[], []]
+        );
+
+        return collector.map((val, i) => val.concat(possTilesRule[i]));
+      },
+      [[], []]
+    );
+
+    const uniqPossTiles = possTileAll.map((arrToSet) =>
+      Array.from(new Set(arrToSet))
+    );
 
     return uniqPossTiles;
 
@@ -318,9 +329,10 @@ class PenroseTileControl {
 
   #nextRuledTile(actTile, side) {
     const possTilesMatrix = this.dotController.dotRuler(actTile, side); // ["kite a", "dart d"]
-    
+
     const nextTile = possTilesMatrix.reduce((acc, possTiles, i) => {
-      if (!(acc.length || possTiles.length)) throw new Error(`Error in rule. Log: ${dotsTxt}`);
+      if (!(acc.length || possTiles.length))
+        throw new Error(`Error in rule. Log: ${dotsTxt}`);
       //if(acc.length === 1 && possTiles.length === 1) acc[0] != possTiles[0] && this.#removeTile();
       return acc.length === 1 ? acc : possTiles;
     });
@@ -328,7 +340,7 @@ class PenroseTileControl {
     const random = this.#randomRange(1);
     const nextTileSide = nextTile.length > 1 ? nextTile[random] : nextTile[0];
     const split = nextTileSide.split(" ");
-    
+
     return { name: split[0], side: split[1] };
   }
 
@@ -381,18 +393,12 @@ class PenroseTileControl {
       angleActTile - angleNextTile + 180 + actTile.rotation;
     const nextPenroseTile = this.#createTile(nextTile.name, nextTileRotation);
 
-    // calculate offset to point A on x and y on both Tiles
-    const offsetXactTile =
-      actTile.coord[touchPointActTile][0] - actTile.coord.A[0];
-    const offsetYactTile =
-      actTile.coord[touchPointActTile][1] - actTile.coord.A[1];
-    const offsetXnextTile =
-      nextPenroseTile.coord[touchPointNextTile][0] - nextPenroseTile.coord.A[0];
-    const offsetYnextTile =
-      nextPenroseTile.coord[touchPointNextTile][1] - nextPenroseTile.coord.A[1];
-    // join offsets, then calculate the new pos on the xy coord.
-    const newTilePosX = actTile.coord.A[0] + offsetXactTile - offsetXnextTile;
-    const newTilePosY = actTile.coord.A[1] + offsetYactTile - offsetYnextTile;
+    const newTilePosX =
+      actTile.coord[touchPointActTile][0] -
+      nextPenroseTile.coord[touchPointNextTile][0];
+    const newTilePosY =
+      actTile.coord[touchPointActTile][1] -
+      nextPenroseTile.coord[touchPointNextTile][1];
     nextPenroseTile.moveToPos(newTilePosX, newTilePosY);
 
     // dot controller - add dots to all points, add tile to dots
