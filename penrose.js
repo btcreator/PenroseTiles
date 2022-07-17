@@ -15,9 +15,10 @@ class Helper {
   }
 
   // generates a random color
-  randomColor() {
-    const tint = this.randomRange(230, 100);
-    return `rgb(${tint}, ${tint}, ${tint})`;
+  randomColor(tileName) {
+    return tileName === "kite" ? `#034efc` : `#2f82f7`;
+    // const tint = this.randomRange(230, 100);
+    // return `rgb(${tint}, ${tint}, ${tint})`;
   }
 }
 
@@ -66,7 +67,7 @@ class PenroseTile {
 
   // scale tile (before rendering)
   scaleTile(by) {
-    for (let [dot, coord] of Object.entries(this.coord)) {
+    for (let [_, coord] of Object.entries(this.coord)) {
       coord[0] *= by;
       coord[1] *= by;
     }
@@ -202,7 +203,8 @@ class Dot {
   }
 
   static getID(coord) {
-    return `${Math.round(coord[0])}-${Math.round(coord[1])}`;
+    const adjCoord = coord.map((xy) => Math.round(xy * 100) / 100); // adjusted because of floating point failure
+    return `${Math.round(adjCoord[0])}-${Math.round(adjCoord[1])}`;
   }
 
   // the tiles are listed in cw direction in the occupy variable. Between the last and first element is the gap.
@@ -216,7 +218,7 @@ class Dot {
   }
 
   // as next possible tiles by the gaps on both sides (cw or ccw) gives back the one, which has just 1 possibilities.
-  // when both have just one or two, in that caseits no matter which one is returned (in our case is that always the
+  // when both have just one or two, in that case its no matter which one is returned (in our case is that always the
   // possibilites on cw side).
   get nextPossTiles() {
     return this.#nextPossTiles.cw.length > this.#nextPossTiles.ccw.length
@@ -360,11 +362,22 @@ class DotManager {
   #organizeDot(dot) {
     const indexOfOpenDot = this.#openDots.indexOf(dot);
     const indexOfRestrictedDot = this.#restrictedDots.indexOf(dot);
+    //debug
+    // if (dot.totalDegree > 360) {
+    //   if (this.#openDots.includes(dot) || this.#restrictedDots.includes(dot)) {
+    //     console.log("i of open ", indexOfOpenDot);
+    //     console.log("i of restr ", indexOfRestrictedDot);
+    //     console.log(dot);
+    //     console.log(this.#openDots);
+    //     console.log(this.#restrictedDots);
+    //     throw new Error("ERROR");
+    //   }
+    // }
     indexOfRestrictedDot > -1
       ? this.#restrictedDots.splice(indexOfRestrictedDot, 1)
       : indexOfOpenDot > -1 && this.#openDots.splice(indexOfOpenDot, 1);
 
-    if (dot.totalDegree === 360) {
+    if (dot.totalDegree >= 360) {
       indexOfRestrictedDot > -1 && this.#openDots.splice(indexOfOpenDot, 1);
       dot.nextPossTiles = { ccw: [], cw: [] };
       return;
@@ -431,7 +444,7 @@ class TileManager {
   #getRotation(newTileName, newTileContactSide, targetTile, targetContactSide) {
     const angleTargetTile = this.#getAngle(targetTile.name, targetContactSide);
     const angleNewTile = this.#getAngle(newTileName, newTileContactSide);
-    return angleTargetTile - angleNewTile + 180 + targetTile.rotation;
+    return (angleTargetTile - angleNewTile + 180 + targetTile.rotation) % 360;
   }
 
   // calculate the finally x,y position of a new Tile. The point "A" is the ref point.
@@ -452,7 +465,7 @@ class TileManager {
   #createRawTile(tileName, rotation) {
     const newTile =
       tileName === "kite" ? new Kite(rotation) : new Dart(rotation);
-    newTile.scaleTile(40);
+    newTile.scaleTile(10);
     return newTile;
   }
 
@@ -514,7 +527,7 @@ class RenderView {
   renderTile(tileToDraw) {
     const path = this.#createPath(tileToDraw);
 
-    ctx.fillStyle = this.help.randomColor();
+    ctx.fillStyle = this.help.randomColor(tileToDraw.name);
     ctx.beginPath();
     ctx.fill(path);
   }
@@ -557,7 +570,7 @@ class Controller {
   }
 
   #mainLoop() {
-    let xx = 50;
+    let xx = 2000;
     while (xx) {
       //this.dotManager.openDots.length
       const nextTileBlueprint = this.dotManager.getNextTileBlueprint();
@@ -569,12 +582,11 @@ class Controller {
 }
 
 const pattern = new Controller();
-pattern.init("kite", 250, 250, 20);
+pattern.init("kite", 500, 250, 0);
 
 //todo
 
 /** debug - delete
- * directioncoordinator if statement
  */
 
 /**init can be made with constructor?
