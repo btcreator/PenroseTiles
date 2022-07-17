@@ -241,14 +241,6 @@ class DotManager {
     this.help = new Helper();
   }
 
-  get dotsDebug() {
-    return {
-      all: this.#allDots,
-      open: this.#openDots,
-      restr: this.#restrictedDots,
-    };
-  }
-
   init(firstTile) {
     this.setDots(firstTile, "A", 1);
   }
@@ -280,25 +272,25 @@ class DotManager {
   }
 
   getNextTileBlueprint() {
+    console.log(this.#restrictedDots);
+    console.log(this.#openDots);
     return this.#restrictedDots[0]
       ? this.#getRestrictedPosition()
       : this.#getOpenPosition();
   }
 
   #directionCoordinator(initShiftState) {
-    let shift = !initShiftState;
+    let shift = Boolean(initShiftState);
     return function (tile, point, dot) {
       const tileAngle = tile.pointAngles[point];
-      if (tileAngle + dot.totalDegree === 360) {
-        shift = true;
-      } else shift = dot.totalDegree ? !shift : false;
-
+      shift =
+        (tileAngle + dot.totalDegree === 360 || dot.totalDegree) === shift;
       return Number(shift);
     };
   }
 
   #getDotByCoord(coord) {
-    let dot = this.#allDots[Dot.getID(coord)];
+    let dot = this.#openDots[Dot.getID(coord)];
     if (!dot) {
       dot = new Dot(coord);
       this.#allDots[dot.id] = dot;
@@ -315,30 +307,18 @@ class DotManager {
       .join("");
   }
 
-  #tileTxtToObject(uniqPossibleTxtTiles) {
-    const tilesOnCcw = uniqPossibleTxtTiles[0].map((tileTxt) => {
-      const [name, point] = tileTxt.split(" ");
-      return { name, point };
-    });
-    const tilesOnCw = uniqPossibleTxtTiles[1].map((tileTxt) => {
-      const [name, point] = tileTxt.split(" ");
-      return { name, point };
-    });
-    return [tilesOnCcw, tilesOnCw];
-  }
-
   #dotRuleReferee(dot) {
     const dotTxt = this.#dotToString(dot);
-    const regexpForNextCWTile = new RegExp(`.{6}(?=${dotTxt})`, "g");
-    const regexpForNextCCWTile = new RegExp(`(?<=${dotTxt}).{6}`, "g");
+    const regexpForNextCCWTile = new RegExp(`.{6}(?=${dotTxt})`, "g");
+    const regexpForNextCWTile = new RegExp(`(?<=${dotTxt}).{6}`, "g");
 
     const possibleNextTiles = PenroseTile.dotConnRules.reduce(
       (collector, rule) => {
         let ruleTxt = rule.join("");
         ruleTxt += ruleTxt;
         const arr = [
-          [...ruleTxt.matchAll(regexpForNextCCWTile)].map((val) => val[0]),
-          [...ruleTxt.matchAll(regexpForNextCWTile)].map((val) => val[0]),
+          [...ruleTxt.matchAll(regexpForNextCCWTile)],
+          [...ruleTxt.matchAll(regexpForNextCWTile)],
         ];
 
         return collector.map((val, i) => val.concat(arr[i]));
@@ -346,36 +326,17 @@ class DotManager {
       [[], []]
     );
 
-    const uniqPossibleTxtTiles = possibleNextTiles.map((arrToSet) =>
+    const uniqPossibleTiles = possibleNextTiles.map((arrToSet) =>
       Array.from(new Set(arrToSet))
     );
 
-    const uniqPossibleTiles = this.#tileTxtToObject(uniqPossibleTxtTiles);
-    return {
-      ccw: uniqPossibleTiles[0],
-      cw: uniqPossibleTiles[1],
-    };
+    return { ccw: uniqPossibleTiles[0], cw: uniqPossibleTiles[1] };
   }
 
   #organizeDot(dot) {
-    const indexOfOpenDot = this.#openDots.indexOf(dot);
-    const indexOfRestrictedDot = this.#restrictedDots.indexOf(dot);
-    indexOfRestrictedDot > -1
-      ? this.#restrictedDots.splice(indexOfRestrictedDot, 1)
-      : indexOfOpenDot > -1 && this.#openDots.splice(indexOfOpenDot, 1);
+    this.#openDots.push(dot);
 
-    if (dot.totalDegree === 360) {
-      indexOfRestrictedDot > -1 && this.#openDots.splice(indexOfOpenDot, 1);
-      dot.nextPossTiles = { ccw: [], cw: [] };
-      return;
-    }
-
-    const possTilesByRule = this.#dotRuleReferee(dot);
-    (possTilesByRule.cw.length === 1 || possTilesByRule.ccw.length === 1) &&
-      this.#restrictedDots.push(dot);
-    indexOfRestrictedDot < 0 && this.#openDots.push(dot);
-
-    dot.nextPossTiles = possTilesByRule;
+    console.log(this.#openDots);
   }
 
   setDots(newTile, newTileTouchPoint, attacheDirection) {
@@ -401,9 +362,6 @@ class TileManager {
   #allTiles = []; // [TileObj, TileObj, ...]
 
   constructor() {}
-  get tilesDebug() {
-    return this.#allTiles;
-  }
 
   init(firstTileName, x, y, rotation) {
     const firstTile = this.#createRawTile(firstTileName, rotation).moveToPos(
@@ -452,7 +410,7 @@ class TileManager {
   #createRawTile(tileName, rotation) {
     const newTile =
       tileName === "kite" ? new Kite(rotation) : new Dart(rotation);
-    newTile.scaleTile(40);
+    newTile.scaleTile(70);
     return newTile;
   }
 
@@ -468,7 +426,6 @@ class TileManager {
       targetTouchPoint,
       !attacheDirection
     );
-
     const newTileContactSide = this.#convPointToSide(
       newTileTouchPoint,
       attacheDirection
@@ -557,7 +514,7 @@ class Controller {
   }
 
   #mainLoop() {
-    let xx = 50;
+    let xx = 2;
     while (xx) {
       //this.dotManager.openDots.length
       const nextTileBlueprint = this.dotManager.getNextTileBlueprint();
@@ -573,10 +530,8 @@ pattern.init("kite", 250, 250, 20);
 
 //todo
 
-/** debug - delete
- * directioncoordinator if statement
- */
-
-/**init can be made with constructor?
+/**continue dot manager init
+ *
+ * init can be made with constructor?
  * PenroseTile.points to helper?
  */
