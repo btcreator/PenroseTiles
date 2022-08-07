@@ -15,18 +15,12 @@ class Helper {
   }
 
   // generates a random color
-<<<<<<< HEAD
-  randomColor() {
-    const tint = this.randomRange(230, 100);
-    return `rgb(${tint}, ${tint}, ${tint})`;
-=======
   randomColor(tileName) {
     return tileName === "kite" ? `#ffffff` : `#000000`;
     // const tint = this.randomRange(250, 200);
     // const tint1 = this.randomRange(40, 20);
     // const tint2 = this.randomRange(40, 20);
     // return `rgb(${tint}, ${tint1}, ${tint2})`;
->>>>>>> newLogicApproach
   }
 }
 
@@ -34,13 +28,8 @@ class Helper {
  * Legend *************************************
  * Point: The point of the tile. This is just a character of the side joints "A", "B"...
  * Dot: This joins tile points together to a node. Dots are the joint points of more tiles.
-<<<<<<< HEAD
- * Direction 1 means always Clockwise
- * Direction 0 means always Counterclockwise
-=======
  * Direction 1 means Clockwise
  * Direction 0 means Counterclockwise
->>>>>>> newLogicApproach
  */
 
 class PenroseTile {
@@ -60,11 +49,7 @@ class PenroseTile {
   ];
   coord = {}; // {A: [254,854], B: [658,78],...D: [658,74]}
 
-<<<<<<< HEAD
-  // Te occupation of the points with dots.
-=======
   // The occupation of the points with dots.
->>>>>>> newLogicApproach
   dots = {
     A: null,
     B: null,
@@ -217,13 +202,6 @@ class Dot {
 
   get totalDegree() {
     return this.#totalDegree;
-<<<<<<< HEAD
-  }
-
-  riseTotalDegree(degree) {
-    this.#totalDegree += degree;
-=======
->>>>>>> newLogicApproach
   }
 
   static getID(coord) {
@@ -241,10 +219,6 @@ class Dot {
     this.#totalDegree += tile.pointAngles[tilePoint];
   }
 
-<<<<<<< HEAD
-  // as next possible tiles by the gaps on both sides (cw or ccw) gives back the one, which has just 1 possibilities.
-  // when both have just one or two, in that caseits no matter which one is returned (in our case is that always the
-=======
   removeTile(tile) {
     const index = this.occupy.findIndex(
       (occupationObj) => occupationObj.tile === tile
@@ -257,19 +231,15 @@ class Dot {
 
   // as next possible tiles by the gaps on both sides (cw or ccw) gives back the one, which has just 1 possibilities.
   // when both have just one or two, in that case its no matter which one is returned (in our case is that always the
->>>>>>> newLogicApproach
   // possibilites on cw side).
   get nextPossTiles() {
     return this.#nextPossTiles.cw.length > this.#nextPossTiles.ccw.length
       ? { tiles: this.#nextPossTiles.ccw, dir: 0 }
       : { tiles: this.#nextPossTiles.cw, dir: 1 };
-<<<<<<< HEAD
-=======
 
     // return this.#nextPossTiles.cw.length > this.#nextPossTiles.ccw.length
     //   ? { tiles: this.#nextPossTiles.ccw, dir: 0 }
     //   : { tiles: this.#nextPossTiles.cw, dir: 1 };
->>>>>>> newLogicApproach
   }
   set nextPossTiles(possTilesByRule) {
     this.#nextPossTiles.ccw = possTilesByRule.ccw;
@@ -283,22 +253,14 @@ class DotManager {
   // restricted is for the dots where just one possible tile can be attached on min one side of the gap - these dots must be processed first! (These are elemnts of open too.)
   #allDots = {}; // {584-875: DotObj, 698-41: DotObj,...}
   #openDots = []; // [Dot Object, Dot Object,...]
-<<<<<<< HEAD
-  #restrictedDots = [];
-=======
   #restrictedDots = []; // [Dot Object, Dot Object,...]
->>>>>>> newLogicApproach
 
   constructor() {
     this.help = new Helper();
   }
 
   init(firstTile) {
-<<<<<<< HEAD
-    //continue
-=======
     this.setDots(firstTile, "A", 1);
->>>>>>> newLogicApproach
   }
 
   get openDots() {
@@ -334,13 +296,6 @@ class DotManager {
   }
 
   #directionCoordinator(initShiftState) {
-<<<<<<< HEAD
-    let shift = Boolean(initShiftState);
-    return function (tile, point, dot) {
-      const tileAngle = tile.pointAngles[point];
-      shift =
-        (tileAngle + dot.totalDegree === 360 || dot.totalDegree) === shift;
-=======
     let shift = !initShiftState;
     return function (tile, point, dot) {
       const tileAngle = tile.pointAngles[point];
@@ -348,17 +303,12 @@ class DotManager {
         shift = true;
       } else shift = dot.totalDegree ? !shift : false;
 
->>>>>>> newLogicApproach
       return Number(shift);
     };
   }
 
   #getDotByCoord(coord) {
-<<<<<<< HEAD
-    let dot = this.#openDots[Dot.getID(coord)];
-=======
     let dot = this.#allDots[Dot.getID(coord)];
->>>>>>> newLogicApproach
     if (!dot) {
       dot = new Dot(coord);
       this.#allDots[dot.id] = dot;
@@ -375,20 +325,6 @@ class DotManager {
       .join("");
   }
 
-<<<<<<< HEAD
-  #dotRuleReferee(dot) {
-    const dotTxt = this.#dotToString(dot);
-    const regexpForNextCCWTile = new RegExp(`.{6}(?=${dotTxt})`, "g");
-    const regexpForNextCWTile = new RegExp(`(?<=${dotTxt}).{6}`, "g");
-
-    const possibleNextTiles = PenroseTile.dotConnRules.reduce(
-      (collector, rule) => {
-        const ruleTxt = rule.join("");
-        ruleTxt += ruleTxt;
-        const arr = [
-          [...ruleTxt.matchAll(regexpForNextCCWTile)],
-          [...ruleTxt.matchAll(regexpForNextCWTile)],
-=======
   #tileTxtToObject(uniqPossibleTxtTiles) {
     const tilesOnCcw = uniqPossibleTxtTiles[0].map((tileTxt) => {
       const [name, point] = tileTxt.split(" ");
@@ -413,7 +349,6 @@ class DotManager {
         const arr = [
           [...ruleTxt.matchAll(regexpForNextCCWTile)].map((val) => val[0]),
           [...ruleTxt.matchAll(regexpForNextCWTile)].map((val) => val[0]),
->>>>>>> newLogicApproach
         ];
 
         return collector.map((val, i) => val.concat(arr[i]));
@@ -421,17 +356,6 @@ class DotManager {
       [[], []]
     );
 
-<<<<<<< HEAD
-    const uniqPossibleTiles = possibleNextTiles.map((arrToSet) =>
-      Array.from(new Set(arrToSet))
-    );
-
-    return { ccw: uniqPossibleTiles[0], cw: uniqPossibleTiles[1] };
-  }
-
-  #organizeDot(dot) {
-    const possTilesByRule = this.#dotRuleReferee(dot);
-=======
     const uniqPossibleTxtTiles = possibleNextTiles.map((arrToSet) =>
       Array.from(new Set(arrToSet))
     );
@@ -463,7 +387,6 @@ class DotManager {
       this.#restrictedDots.push(dot);
     indexOfRestrictedDot < 0 && this.#openDots.push(dot);
 
->>>>>>> newLogicApproach
     dot.nextPossTiles = possTilesByRule;
   }
 
@@ -471,10 +394,7 @@ class DotManager {
     const directionShifter = this.#directionCoordinator(attacheDirection); // arguments(tile,point,dot)
 
     let point = newTileTouchPoint;
-<<<<<<< HEAD
-=======
     let gapWatchdog = 0;
->>>>>>> newLogicApproach
 
     while (!newTile.dots[point]) {
       const dot = this.#getDotByCoord(newTile.coord[point]);
@@ -484,10 +404,6 @@ class DotManager {
       newTile.addDot(dot, point);
 
       this.#organizeDot(dot);
-<<<<<<< HEAD
-      point = PenroseTile.getNeigPointN(point);
-    }
-=======
       dot.occupy.length > 1 && dot.totalDegree < 360 && gapWatchdog++;
       if (gapWatchdog > 2) return false;
 
@@ -513,7 +429,6 @@ class DotManager {
     }
     dotToAudit.removeTile(tile);
     this.#organizeDot(dotToAudit);
->>>>>>> newLogicApproach
   }
 }
 
@@ -549,11 +464,7 @@ class TileManager {
   #getRotation(newTileName, newTileContactSide, targetTile, targetContactSide) {
     const angleTargetTile = this.#getAngle(targetTile.name, targetContactSide);
     const angleNewTile = this.#getAngle(newTileName, newTileContactSide);
-<<<<<<< HEAD
-    return angleTargetTile - angleNewTile + 180 + targetTile.rotation;
-=======
     return (angleTargetTile - angleNewTile + 180 + targetTile.rotation) % 360;
->>>>>>> newLogicApproach
   }
 
   // calculate the finally x,y position of a new Tile. The point "A" is the ref point.
@@ -574,11 +485,7 @@ class TileManager {
   #createRawTile(tileName, rotation) {
     const newTile =
       tileName === "kite" ? new Kite(rotation) : new Dart(rotation);
-<<<<<<< HEAD
-    newTile.scaleTile(70);
-=======
     newTile.scaleTile(8);
->>>>>>> newLogicApproach
     return newTile;
   }
 
@@ -594,10 +501,7 @@ class TileManager {
       targetTouchPoint,
       !attacheDirection
     );
-<<<<<<< HEAD
-=======
 
->>>>>>> newLogicApproach
     const newTileContactSide = this.#convPointToSide(
       newTileTouchPoint,
       attacheDirection
@@ -622,14 +526,11 @@ class TileManager {
     this.#allTiles.push(newPenroseTile);
     return newPenroseTile;
   }
-<<<<<<< HEAD
-=======
 
   discardTile(tile) {
     const indexOfTileToRemove = this.#allTiles.lastIndexOf(tile);
     this.#allTiles.splice(indexOfTileToRemove, 1);
   }
->>>>>>> newLogicApproach
 }
 
 class RenderView {
@@ -651,11 +552,7 @@ class RenderView {
   renderTile(tileToDraw) {
     const path = this.#createPath(tileToDraw);
 
-<<<<<<< HEAD
-    ctx.fillStyle = this.help.randomColor();
-=======
     ctx.fillStyle = this.help.randomColor(tileToDraw.name);
->>>>>>> newLogicApproach
     ctx.beginPath();
     ctx.fill(path);
   }
@@ -666,16 +563,6 @@ class Controller {
     this.dotManager = new DotManager();
     this.tileManager = new TileManager();
     this.view = new RenderView();
-<<<<<<< HEAD
-  }
-
-  init(tileName, x, y, rotation) {
-    const firstTile = this.tileManager.init(tileName, x, y, rotation);
-    this.dotManager.init(firstTile);
-    this.#mainLoop();
-  }
-
-=======
   }
 
   init(tileName, x, y, rotation) {
@@ -696,7 +583,6 @@ class Controller {
     return null;
   }
 
->>>>>>> newLogicApproach
   // This function gets an object, a blueprint of new Tile. Based on that, creates a new Tile, loaded with all necessary data like coordinates, Point occupation with dots.
   // (i.e. return a "redy to render" tile)
   #createElement({
@@ -714,15 +600,6 @@ class Controller {
       attacheDirection
     );
 
-<<<<<<< HEAD
-    this.dotManager.setDots(newTile, newTileTouchPoint, attacheDirection);
-
-    return newTile;
-  }
-
-  #mainLoop() {
-    let xx = 2;
-=======
     const setDotsSucceed = this.dotManager.setDots(
       newTile,
       newTileTouchPoint,
@@ -734,38 +611,19 @@ class Controller {
 
   #mainLoop() {
     let xx = 20000;
->>>>>>> newLogicApproach
     while (xx) {
       //this.dotManager.openDots.length
       const nextTileBlueprint = this.dotManager.getNextTileBlueprint();
       const nextTile = this.#createElement(nextTileBlueprint);
-<<<<<<< HEAD
-      this.view.renderTile(nextTile);
-=======
       nextTile && this.view.renderTile(nextTile);
->>>>>>> newLogicApproach
       xx--;
     }
   }
 }
 
 const pattern = new Controller();
-<<<<<<< HEAD
-pattern.init("kite", 500, 500, 20);
-
-//todo
-
-/**continue dot manager init
- * sort dots in dotOrganizer to open or restricted
- * rise totalDegree
- * remove if 360
- * rearrange from open to restricted or other way if needed
- *
- * init can be made with constructor?
-=======
 pattern.init("dart", 500, 350, 45);
 
 /**init can be made with constructor?
->>>>>>> newLogicApproach
  * PenroseTile.points to helper?
  */
