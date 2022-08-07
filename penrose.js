@@ -16,9 +16,11 @@ class Helper {
 
   // generates a random color
   randomColor(tileName) {
-    return tileName === "kite" ? `#034efc` : `#2f82f7`;
-    // const tint = this.randomRange(230, 100);
-    // return `rgb(${tint}, ${tint}, ${tint})`;
+    return tileName === "kite" ? `#ffffff` : `#000000`;
+    // const tint = this.randomRange(250, 200);
+    // const tint1 = this.randomRange(40, 20);
+    // const tint2 = this.randomRange(40, 20);
+    // return `rgb(${tint}, ${tint1}, ${tint2})`;
   }
 }
 
@@ -26,8 +28,8 @@ class Helper {
  * Legend *************************************
  * Point: The point of the tile. This is just a character of the side joints "A", "B"...
  * Dot: This joins tile points together to a node. Dots are the joint points of more tiles.
- * Direction 1 means always Clockwise
- * Direction 0 means always Counterclockwise
+ * Direction 1 means Clockwise
+ * Direction 0 means Counterclockwise
  */
 
 class PenroseTile {
@@ -217,6 +219,16 @@ class Dot {
     this.#totalDegree += tile.pointAngles[tilePoint];
   }
 
+  removeTile(tile) {
+    const index = this.occupy.findIndex(
+      (occupationObj) => occupationObj.tile === tile
+    );
+    const point = this.occupy[index].point;
+
+    this.#totalDegree -= tile.pointAngles[point];
+    this.occupy.splice(index, 1);
+  }
+
   // as next possible tiles by the gaps on both sides (cw or ccw) gives back the one, which has just 1 possibilities.
   // when both have just one or two, in that case its no matter which one is returned (in our case is that always the
   // possibilites on cw side).
@@ -224,6 +236,10 @@ class Dot {
     return this.#nextPossTiles.cw.length > this.#nextPossTiles.ccw.length
       ? { tiles: this.#nextPossTiles.ccw, dir: 0 }
       : { tiles: this.#nextPossTiles.cw, dir: 1 };
+
+    // return this.#nextPossTiles.cw.length > this.#nextPossTiles.ccw.length
+    //   ? { tiles: this.#nextPossTiles.ccw, dir: 0 }
+    //   : { tiles: this.#nextPossTiles.cw, dir: 1 };
   }
   set nextPossTiles(possTilesByRule) {
     this.#nextPossTiles.ccw = possTilesByRule.ccw;
@@ -237,18 +253,10 @@ class DotManager {
   // restricted is for the dots where just one possible tile can be attached on min one side of the gap - these dots must be processed first! (These are elemnts of open too.)
   #allDots = {}; // {584-875: DotObj, 698-41: DotObj,...}
   #openDots = []; // [Dot Object, Dot Object,...]
-  #restrictedDots = [];
+  #restrictedDots = []; // [Dot Object, Dot Object,...]
 
   constructor() {
     this.help = new Helper();
-  }
-
-  get dotsDebug() {
-    return {
-      all: this.#allDots,
-      open: this.#openDots,
-      restr: this.#restrictedDots,
-    };
   }
 
   init(firstTile) {
@@ -359,25 +367,16 @@ class DotManager {
     };
   }
 
+  // could be made faster? first check dot.occupy.length === 1   ==>  indexes are -1
   #organizeDot(dot) {
     const indexOfOpenDot = this.#openDots.indexOf(dot);
     const indexOfRestrictedDot = this.#restrictedDots.indexOf(dot);
-    //debug
-    // if (dot.totalDegree > 360) {
-    //   if (this.#openDots.includes(dot) || this.#restrictedDots.includes(dot)) {
-    //     console.log("i of open ", indexOfOpenDot);
-    //     console.log("i of restr ", indexOfRestrictedDot);
-    //     console.log(dot);
-    //     console.log(this.#openDots);
-    //     console.log(this.#restrictedDots);
-    //     throw new Error("ERROR");
-    //   }
-    // }
+
     indexOfRestrictedDot > -1
       ? this.#restrictedDots.splice(indexOfRestrictedDot, 1)
       : indexOfOpenDot > -1 && this.#openDots.splice(indexOfOpenDot, 1);
 
-    if (dot.totalDegree >= 360) {
+    if (dot.totalDegree === 360) {
       indexOfRestrictedDot > -1 && this.#openDots.splice(indexOfOpenDot, 1);
       dot.nextPossTiles = { ccw: [], cw: [] };
       return;
@@ -395,6 +394,7 @@ class DotManager {
     const directionShifter = this.#directionCoordinator(attacheDirection); // arguments(tile,point,dot)
 
     let point = newTileTouchPoint;
+    let gapWatchdog = 0;
 
     while (!newTile.dots[point]) {
       const dot = this.#getDotByCoord(newTile.coord[point]);
@@ -404,8 +404,31 @@ class DotManager {
       newTile.addDot(dot, point);
 
       this.#organizeDot(dot);
+      dot.occupy.length > 1 && dot.totalDegree < 360 && gapWatchdog++;
+      if (gapWatchdog > 2) return false;
+
       point = PenroseTile.getNeigPointN(point);
     }
+    return true;
+  }
+
+  #removeDot(dot) {
+    const indexOfOpenDot = this.#openDots.indexOf(dot);
+    const indexOfRestrictedDot = this.#restrictedDots.indexOf(dot);
+
+    delete this.#allDots[dot.id];
+    indexOfRestrictedDot > -1 &&
+      this.#restrictedDots.splice(indexOfRestrictedDot, 1);
+    indexOfOpenDot > -1 && this.#openDots.splice(indexOfOpenDot, 1);
+  }
+
+  redefineDot(dotToAudit, tile) {
+    if (dotToAudit.occupy.length === 1) {
+      this.#removeDot(dotToAudit);
+      return;
+    }
+    dotToAudit.removeTile(tile);
+    this.#organizeDot(dotToAudit);
   }
 }
 
@@ -414,9 +437,6 @@ class TileManager {
   #allTiles = []; // [TileObj, TileObj, ...]
 
   constructor() {}
-  get tilesDebug() {
-    return this.#allTiles;
-  }
 
   init(firstTileName, x, y, rotation) {
     const firstTile = this.#createRawTile(firstTileName, rotation).moveToPos(
@@ -465,7 +485,7 @@ class TileManager {
   #createRawTile(tileName, rotation) {
     const newTile =
       tileName === "kite" ? new Kite(rotation) : new Dart(rotation);
-    newTile.scaleTile(10);
+    newTile.scaleTile(8);
     return newTile;
   }
 
@@ -505,6 +525,11 @@ class TileManager {
 
     this.#allTiles.push(newPenroseTile);
     return newPenroseTile;
+  }
+
+  discardTile(tile) {
+    const indexOfTileToRemove = this.#allTiles.lastIndexOf(tile);
+    this.#allTiles.splice(indexOfTileToRemove, 1);
   }
 }
 
@@ -547,6 +572,17 @@ class Controller {
     this.#mainLoop();
   }
 
+  // Happens from 20000 tiles ca. 10 times
+  #removeElement(tile) {
+    this.tileManager.discardTile(tile);
+
+    for (let dotToAudit of Object.values(tile.dots)) {
+      if (!dotToAudit) continue;
+      this.dotManager.redefineDot(dotToAudit, tile);
+    }
+    return null;
+  }
+
   // This function gets an object, a blueprint of new Tile. Based on that, creates a new Tile, loaded with all necessary data like coordinates, Point occupation with dots.
   // (i.e. return a "redy to render" tile)
   #createElement({
@@ -564,30 +600,29 @@ class Controller {
       attacheDirection
     );
 
-    this.dotManager.setDots(newTile, newTileTouchPoint, attacheDirection);
+    const setDotsSucceed = this.dotManager.setDots(
+      newTile,
+      newTileTouchPoint,
+      attacheDirection
+    );
 
-    return newTile;
+    return setDotsSucceed ? newTile : this.#removeElement(newTile);
   }
 
   #mainLoop() {
-    let xx = 2000;
+    let xx = 20000;
     while (xx) {
       //this.dotManager.openDots.length
       const nextTileBlueprint = this.dotManager.getNextTileBlueprint();
       const nextTile = this.#createElement(nextTileBlueprint);
-      this.view.renderTile(nextTile);
+      nextTile && this.view.renderTile(nextTile);
       xx--;
     }
   }
 }
 
 const pattern = new Controller();
-pattern.init("kite", 500, 250, 0);
-
-//todo
-
-/** debug - delete
- */
+pattern.init("dart", 500, 350, 45);
 
 /**init can be made with constructor?
  * PenroseTile.points to helper?
