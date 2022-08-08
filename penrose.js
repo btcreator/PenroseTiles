@@ -655,5 +655,5 @@ const pattern = new Controller();
 pattern.init("dart", 110, 110, 45);
 
 /**init can be made with constructor?
- * PenroseTile.points to helper?
+ * PenroseTile.points to helper??
  */
