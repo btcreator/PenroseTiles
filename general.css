@@ -1,0 +1,9 @@
+body {
+  margin: 0;
+}
+
+.floating-menu {
+  position: fixed;
+  top: 0;
+  right: 150px;
+}

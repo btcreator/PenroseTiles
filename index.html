@@ -1,31 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="general.css" />
     <script src="penrose.js" defer></script>
-    <title>Penrose</title>
-
-    <style>
-      body {
-        margin: 0;
-      }
-      div {
-        box-sizing: border-box;
-        position: absolute;
-        top: 100px;
-        left: 100px;
-        width: 500px;
-        height: 300px;
-        border: 2px solid black;
-      }
-    </style>
+    <title>Penrose Pattern Generator</title>
   </head>
   <body>
-    <div></div>
-    <canvas class="myCanvas">
-      <p>Your browser doesnt support canvas tags.</p>
-    </canvas>
+    <div class="floating-menu">
+      <button class="download">Get SVG</button>
+    </div>
+    <div class="penrose-pattern-container"></div>
   </body>
 </html>

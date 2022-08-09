@@ -1,11 +1,5 @@
 "use strict";
 
-const canvas = document.querySelector(".myCanvas");
-const ctx = canvas.getContext("2d");
-let width = (canvas.width = innerWidth);
-let height = (canvas.height = innerHeight);
-ctx.clearRect(0, 0, width, height);
-
 class Helper {
   constructor() {}
 
@@ -16,11 +10,11 @@ class Helper {
 
   // generates a random color
   randomColor(tileName) {
-    return tileName === "kite" ? `#054d18` : `#2e8244`;
-    // const tint = this.randomRange(250, 200);
+    return tileName === "kite" ? `#ffffff` : `#000000`;
+    // const tint = this.randomRange(200, 180);
     // const tint1 = this.randomRange(40, 20);
     // const tint2 = this.randomRange(40, 20);
-    // return `rgb(${tint}, ${tint1}, ${tint2})`;
+    // return `rgb(${tint}, ${tint}, ${tint})`;
   }
 }
 
@@ -261,8 +255,9 @@ class DotManager {
   #openDots = []; // [Dot Object, Dot Object,...]
   #restrictedDots = []; // [Dot Object, Dot Object,...]
 
-  constructor() {
+  constructor(visibleAreaWidth, visibleAreaHeight) {
     this.help = new Helper();
+    this.border = [visibleAreaWidth, visibleAreaHeight];
   }
 
   init(firstTile) {
@@ -274,20 +269,16 @@ class DotManager {
   }
 
   #getTileDataByDot(dot, n) {
-    try {
-      const { tiles: newTileData, dir: attacheDirection } = dot.nextPossTiles;
-      const targetTileData = dot.occupy.at(attacheDirection - 1);
+    const { tiles: newTileData, dir: attacheDirection } = dot.nextPossTiles;
+    const targetTileData = dot.occupy.at(attacheDirection - 1);
 
-      return {
-        newTileName: newTileData[n].name,
-        newTileTouchPoint: newTileData[n].point,
-        targetTile: targetTileData.tile,
-        targetTouchPoint: targetTileData.point,
-        attacheDirection,
-      };
-    } catch (err) {
-      console.log(dot);
-    }
+    return {
+      newTileName: newTileData[n].name,
+      newTileTouchPoint: newTileData[n].point,
+      targetTile: targetTileData.tile,
+      targetTouchPoint: targetTileData.point,
+      attacheDirection,
+    };
   }
 
   #getRestrictedPosition() {
@@ -378,9 +369,7 @@ class DotManager {
   }
 
   #borderControl(dot) {
-    // const border = [window.innerWidth, window.innerHeight];
-    const border = [600, 400];
-    return dot.coord.every((xy, i) => xy > 100 && xy < border[i]);
+    return dot.coord.every((xy, i) => xy > 0 && xy < this.border[i]);
   }
 
   // could be made faster? first check dot.occupy.length === 1   ==>  indexes are -1
@@ -514,7 +503,7 @@ class TileManager {
   #createRawTile(tileName, rotation) {
     const newTile =
       tileName === "kite" ? new Kite(rotation) : new Dart(rotation);
-    newTile.scaleTile(15);
+    newTile.scaleTile(10);
     return newTile;
   }
 
@@ -562,42 +551,61 @@ class TileManager {
   }
 }
 
+class InteractionView {
+  constructor() {}
+
+  downloadSVG(SVGelement) {
+    const svg = '<?xml version="1.0" encoding="utf-8"?>' + SVGelement;
+    const blob = new Blob([svg]);
+    const element = document.createElement("a");
+    element.download = "myPenrose.svg";
+    element.mimeType = "image/svg+xml";
+    element.href = window.URL.createObjectURL(blob);
+    element.click();
+    element.remove();
+  }
+}
+
 class RenderView {
-  constructor() {
+  #SVGelement;
+
+  constructor(visibleAreaWidth, visibleAreaHeight) {
     this.help = new Helper();
+    this.#SVGelement = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+    viewBox="0 0 ${visibleAreaWidth} ${visibleAreaHeight}">`;
   }
 
-  #createPath(tile) {
-    const path = new Path2D();
-    for (const [dot, coord] of Object.entries(tile.coord))
-      dot === "A"
-        ? path.moveTo(coord[0], coord[1])
-        : path.lineTo(coord[0], coord[1]);
-
-    path.closePath();
-    return path;
+  #generateSVGpolygon(tile) {
+    return `<polygon points="${Object.values(tile.coord).reduce(
+      (acc, val) => acc + " " + val
+    )}" style="fill:${this.help.randomColor(tile.name)};" />`;
   }
 
-  renderTile(tileToDraw) {
-    const path = this.#createPath(tileToDraw);
+  addToSVG(tile) {
+    this.#SVGelement += this.#generateSVGpolygon(tile);
+  }
 
-    ctx.fillStyle = this.help.randomColor(tileToDraw.name);
-    ctx.beginPath();
-    ctx.fill(path);
+  renderSVG() {
+    const svgContainer = document.querySelector(".penrose-pattern-container");
+    this.#SVGelement += "</svg>";
+    svgContainer.insertAdjacentHTML("afterbegin", this.#SVGelement);
+    return this.#SVGelement;
   }
 }
 
 class Controller {
-  constructor() {
-    this.dotManager = new DotManager();
+  constructor(visibleAreaWidth, visibleAreaHeight) {
+    this.dotManager = new DotManager(visibleAreaWidth, visibleAreaHeight);
     this.tileManager = new TileManager();
-    this.view = new RenderView();
+    this.view = new RenderView(visibleAreaWidth, visibleAreaHeight);
+    this.interact = new InteractionView();
   }
 
   init(tileName, x, y, rotation) {
     const firstTile = this.tileManager.init(tileName, x, y, rotation);
     this.dotManager.init(firstTile);
-    this.view.renderTile(firstTile);
+    this.view.addToSVG(firstTile);
+    //this.view.renderTile(firstTile);
     this.#mainLoop();
   }
 
@@ -644,16 +652,21 @@ class Controller {
     while (this.dotManager.openDots.length) {
       const nextTileBlueprint = this.dotManager.getNextTileBlueprint();
       const nextTile = this.#createElement(nextTileBlueprint);
-      nextTile && this.view.renderTile(nextTile);
+      if (nextTile) {
+        this.view.addToSVG(nextTile);
+        //this.view.renderTile(nextTile);
+      }
       xx++;
     }
+    this.interact.downloadSVG(this.view.renderSVG());
     console.log(xx);
   }
 }
 
-const pattern = new Controller();
+const pattern = new Controller(window.innerWidth, window.innerHeight);
 pattern.init("dart", 110, 110, 45);
 
 /**init can be made with constructor?
  * PenroseTile.points to helper??
+ * generate a bit bigger pattern (issue on the corners, when two points outside of the border cuts the corner)
  */
