@@ -554,15 +554,26 @@ class TileManager {
 class InteractionView {
   constructor() {}
 
-  downloadSVG(SVGelement) {
+  interactionHandler(patternGenerator) {
+    document
+      .querySelector(".settings")
+      .addEventListener("submit", function (e) {
+        e.preventDefault();
+        patternGenerator("dart", 110, 110, 45);
+      });
+  }
+
+  setDownloadLink(SVGelement) {
     const svg = '<?xml version="1.0" encoding="utf-8"?>' + SVGelement;
     const blob = new Blob([svg]);
     const element = document.createElement("a");
+    const container = document.querySelector(".download-link");
+    element.innerText = "Get SVG";
     element.download = "myPenrose.svg";
     element.mimeType = "image/svg+xml";
     element.href = window.URL.createObjectURL(blob);
-    element.click();
-    element.remove();
+    container.innerText = "";
+    container.insertAdjacentElement("afterbegin", element);
   }
 }
 
@@ -599,13 +610,18 @@ class Controller {
     this.tileManager = new TileManager();
     this.view = new RenderView(visibleAreaWidth, visibleAreaHeight);
     this.interact = new InteractionView();
+    this.init();
   }
 
-  init(tileName, x, y, rotation) {
+  init() {
+    this.interact.interactionHandler(this.#patternGenerator.bind(this));
+  }
+
+  #patternGenerator(tileName, x, y, rotation) {
     const firstTile = this.tileManager.init(tileName, x, y, rotation);
+
     this.dotManager.init(firstTile);
     this.view.addToSVG(firstTile);
-    //this.view.renderTile(firstTile);
     this.#mainLoop();
   }
 
@@ -658,13 +674,12 @@ class Controller {
       }
       xx++;
     }
-    this.interact.downloadSVG(this.view.renderSVG());
+    this.interact.setDownloadLink(this.view.renderSVG());
     console.log(xx);
   }
 }
 
 const pattern = new Controller(window.innerWidth, window.innerHeight);
-pattern.init("dart", 110, 110, 45);
 
 /**init can be made with constructor?
  * PenroseTile.points to helper??

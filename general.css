@@ -1,3 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;400;700&display=swap');
+
+* {
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+}
+
 body {
   margin: 0;
 }
@@ -5,5 +13,28 @@ body {
 .floating-menu {
   position: fixed;
   top: 0;
-  right: 150px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  text-align: center;
+  min-width: fit-content;
+  width: 70%;
+  background-color: rgba(192, 192, 192, 0.419);
+  box-shadow: 0 0 5px rgba(140, 140, 140, 0.269);
+  border: 1px solid rgba(214, 214, 214, 0.423);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 10px;
+}
+
+.download-link a {
+  display: inline-block;
+  width: fit-content;
+  margin-top: 5px;
+  padding: 5px;
+  border: 2px solid rgb(35, 93, 129);
+  border-radius: 3px;
+  background-color: rgb(237, 237, 237);
+  text-decoration: none;
+  color: rgb(103, 104, 94);
 }
