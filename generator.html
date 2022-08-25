@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="generator.css" />
+        <script src="penrose.js" defer></script>
+        <title>Random Penrose Pattern Generator</title>
+    </head>
+    <body>
+        <div class="floating-menu">
+            <div class="main-menu">
+                <div class="settings-buttons">
+                    <input class="button" type="button" value="Dimension" data-type="dimension" />
+
+                    <input class="button" type="button" value="Colors" data-type="color" />
+
+                    <input class="button" type="button" value="Density" data-type="density" />
+
+                    <input class="button" type="button" value="Rotation" data-type="rotation" />
+
+                    <button class="generate-pattern button" type="submit" form="settings">
+                        Generate
+                    </button>
+                </div>
+                <div class="download-link">
+                    <p>Download link would be available after generating a pattern.</p>
+                </div>
+                <div class="hamburger">&equiv;</div>
+            </div>
+            <form class="hidden sub-menu" id="settings">
+                <div class="hidden dimension sub-item">
+                    <div class="inputs">
+                        <label class="hidden" for="width" form="settings">Width</label>
+                        <input id="width" type="number" name="width" form="settings" /><br />
+                        <label class="hidden" for="height" form="settings">Height</label>
+                        <input id="height" type="number" name="height" form="settings" />
+
+                        <p class="notes">Default: <br />Window size (viewport)</p>
+                    </div>
+
+                    <img src="img/dimension.png" alt="Showing dimension width and height" />
+                </div>
+
+                <div class="hidden color sub-item">
+                    <div class="inputs">
+                        <label for="color_kite" form="settings">Kite color</label>
+                        <input
+                            id="color_kite"
+                            type="color"
+                            name="color_one"
+                            form="settings"
+                            value="#9a722F"
+                        /><br />
+                        <label for="color_dart" form="settings">Dart color</label>
+                        <input
+                            id="color_dart"
+                            type="color"
+                            name="color_two"
+                            form="settings"
+                            value="#00b9ad"
+                        />
+                    </div>
+
+                    <img src="img/kiteDartColor.png" alt="Color of Kite and Dart" />
+                </div>
+
+                <div class="hidden density sub-item">
+                    <div class="inputs">
+                        <label class="hidden" for="density" form="settings">Density</label>
+                        <input
+                            id="density"
+                            type="range"
+                            name="density"
+                            min="5"
+                            max="150"
+                            value="20"
+                            form="settings"
+                        />
+                        <div class="range-display">20</div>
+                        <p class="notes">
+                            Please note that the larger and denser the image, the longer it takes to
+                            generate.
+                        </p>
+                    </div>
+
+                    <img src="img/density.png" alt="Showing change in density" />
+                </div>
+
+                <div class="hidden rotation sub-item">
+                    <div class="inputs">
+                        <label for="rotation" form="settings">Rotation</label>
+                        <input
+                            id="rotation"
+                            type="range"
+                            name="rotation"
+                            min="0"
+                            max="359"
+                            value="25"
+                            form="settings"
+                        />
+                        <div class="range-display">25 deg</div>
+                    </div>
+
+                    <img src="img/rotation.png" alt="Color of Kite and Dart" />
+                </div>
+            </form>
+        </div>
+        <div class="penrose-pattern-container">
+            <div class="start">
+                <p>&laquo;</p>
+                <p>Start here!</p>
+            </div>
+        </div>
+    </body>
+</html>

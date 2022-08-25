@@ -3,121 +3,67 @@
     <head>
         <meta charset="utf-8" />
         <link rel="stylesheet" href="general.css" />
-        <script src="penrose.js" defer></script>
-        <title>Penrose Pattern Generator</title>
+        <title>Random Penrose Pattern Generator</title>
     </head>
     <body>
-        <div class="floating-menu">
-            <div class="main-menu">
-                <div class="settings-buttons">
-                    <input class="button" type="button" value="Dimension" data-type="dimension" />
-
-                    <input class="button" type="button" value="Colors" data-type="color" />
-
-                    <input class="button" type="button" value="Density" data-type="density" />
-
-                    <input class="button" type="button" value="Rotation" data-type="rotation" />
-
-                    <button class="generate-pattern button" type="submit" form="settings">
-                        Generate
-                    </button>
-                </div>
-                <div class="download-link">
-                    <p>Download link would be available after generating a pattern.</p>
-                </div>
-                <div class="hamburger">&equiv;</div>
+        <header>
+            <div class="logo">
+                <h1>Random Penrose Pattern Generator</h1>
             </div>
-            <form class="hidden sub-menu" id="settings">
-                <div class="hidden dimension sub-item">
-                    <div class="inputs">
-                        <label class="hidden" for="width" form="settings">Width</label>
-                        <input
-                            id="width"
-                            type="number"
-                            name="width"
-                            form="settings"
-                            placeholder="Width"
-                        /><br />
-                        <label class="hidden" for="height" form="settings">Height</label>
-                        <input
-                            id="height"
-                            type="number"
-                            name="height"
-                            form="settings"
-                            placeholder="height"
-                        />
+        </header>
+        <main>
+            <section>
+                <h2>What is that?</h2>
+                <p>
+                    Penrose tiling is a never repeating infinity pattern which becomed his name
+                    after Roger Penrose (mathematician and physicist) in the 1970s. For that
+                    aperiodic pattern you need just 2 different certain shapes, and follow some
+                    placement rules. For more information about what exactly a Penrose pattern is,
+                    please visit Wikipedia.
+                </p>
+                <p>
+                    I think the most known tiles are romboids, but for that project I used an other
+                    variants, the Kite and Dart shapes. This generator generates an accurate random
+                    pattern from these. You have the possibility to adjust some properties of the
+                    tiling before generate, so feel free to play aroud.
+                </p>
+                <a class="generator button" href="generator.html">>> Pattern generator <<</a>
+                <h2>Why I do that?</h2>
+                <p>
+                    I wanted for an other Project a dinamically changing Penrose pattern background,
+                    but I nowhere could found a code or a random generator for that (in best case an
+                    API). I do learn Programming and I belive, the best way to develop skills is
+                    just coding line by line and use what you have learned, so I decided make it on
+                    my own. The real goal for that project is to make an API too for the pattern
+                    generator, so that everyone can easy implement it in his work when will a
+                    dinamically changing design.
+                </p>
 
-                        <p>Default: <br />Window size (viewport)</p>
-                    </div>
+                <h2>It's made for us!</h2>
+                <p>
+                    You can use it for generating an impressive backgrounds, printouts and for your
+                    other design works. Feel free to use, copy, paste or modify the generated image
+                    and the whole code in your projects.
+                </p>
 
-                    <img src="img/dimension.png" alt="Showing dimension width and height" />
-                </div>
-
-                <div class="hidden color sub-item">
-                    <div class="inputs">
-                        <label for="color_kite" form="settings">Kite color</label>
-                        <input
-                            id="color_kite"
-                            type="color"
-                            name="color_one"
-                            form="settings"
-                            value="#9a722F"
-                        /><br />
-                        <label for="color_dart" form="settings">Dart color</label>
-                        <input
-                            id="color_dart"
-                            type="color"
-                            name="color_two"
-                            form="settings"
-                            value="#00b9ad"
-                        />
-                    </div>
-
-                    <img src="img/kiteDartColor.png" alt="Color of Kite and Dart" />
-                </div>
-
-                <div class="hidden density sub-item">
-                    <div class="inputs">
-                        <label class="hidden" for="density" form="settings">Density</label>
-                        <input
-                            id="density"
-                            type="range"
-                            name="density"
-                            min="5"
-                            max="150"
-                            value="20"
-                            form="settings"
-                        />
-                        <div class="range-display">20</div>
-                    </div>
-
-                    <img src="img/density.png" alt="Showing change in density" />
-                </div>
-
-                <div class="hidden rotation sub-item">
-                    <div class="inputs">
-                        <label for="rotation" form="settings">Rotation</label>
-                        <input
-                            id="rotation"
-                            type="range"
-                            name="rotation"
-                            min="0"
-                            max="359"
-                            value="25"
-                            form="settings"
-                        />
-                        <div class="range-display">25 deg</div>
-                    </div>
-
-                    <img src="img/rotation.png" alt="Color of Kite and Dart" />
-                </div>
-            </form>
-        </div>
-        <div class="penrose-pattern-container">
-            <div class="start">
-                <p>&laquo;</p>
-                <p>Start here!</p>
-            </div>
-        </div>
+                <h2>As next?</h2>
+                <p>
+                    I would put some new features with time to the Project, like gradient coloring
+                    (see this background), random coloring, live settings view thumbnail. <br />
+                    As next I will learn node JS, that I could build an API for that
+                    Project...(coming up next ;) ). <br />
+                    When you have an issue, idea or find some Bugs, I would be glad to hear from
+                    you.
+                </p>
+                <a class="mail button" href="mailto:btcreator@gmx.de">Mail-me!</a>
+            </section>
+        </main>
+        <footer>
+            <div>Find out more on GitHub.</div>
+            <a href="https:\\www.github.com\btcreator"
+                ><img src="img/github-logo.png" alt="github logo" width="30px" height="30px"
+            /></a>
+            <div><i> Documentation and source code.</i></div>
+        </footer>
     </body>
 </html>
