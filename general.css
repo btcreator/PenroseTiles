@@ -25,6 +25,7 @@ h1 {
     font-weight: 400;
     letter-spacing: 0.2em;
     text-shadow: 0 0 4px #a1b195;
+    user-select: none;
 }
 
 h2 {

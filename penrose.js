@@ -639,7 +639,6 @@ class InteractionView {
                 rotation: this.#formInputRotation.valueAsNumber,
             };
 
-            console.log(penroseSettings);
             requestAnimationFrame(() => {
                 this.#clearSubMenu();
                 requestAnimationFrame(() => patternGenerator(penroseSettings));

@@ -64,10 +64,31 @@ body {
     background: linear-gradient(11deg, rgba(227, 212, 203, 0.581) 0%, rgba(255, 255, 255, 0) 100%);
 }
 
+.link-console {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+}
+
+.home-link {
+    grid-column: 1 / 2;
+    justify-self: start;
+    align-self: end;
+    margin-left: 10px;
+}
+
+.home-link img {
+    opacity: 0.5;
+}
+
+.home-link:hover img {
+    opacity: 1;
+}
+
 .download-link {
+    grid-column: 2 / 3;
     height: 45px;
-    display: flex;
-    justify-content: center;
+    display: grid;
+    justify-items: center;
     align-items: center;
 }
 
