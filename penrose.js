@@ -693,11 +693,11 @@ class RenderView {
 
     clearView() {
         this.svgContainer.innerText = '';
-        this.#SVGelement = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-    viewBox="0 0 ${this.width} ${this.height}">`;
+        this.#SVGelement = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0"
+    width="${this.width}" height="${this.height}">`;
     }
 }
-
+// viewBox="0 0 ${this.width} ${this.height}
 class Controller {
     constructor() {
         this.dotManager = new DotManager();
