@@ -154,7 +154,7 @@ class Kite extends PenroseTile {
     // calculate the initial coordinates of BCD points. The ref. point is A in [0,0].
     #clacBCD(multipl, rotation) {
         const rotInRad = this.toRad(multipl * 36 + rotation);
-        return [Math.cos(rotInRad) * this.phi, Math.sin(rotInRad) * this.phi];
+        return [Math.cos(rotInRad), Math.sin(rotInRad)];
     }
 }
 
@@ -196,7 +196,7 @@ class Dart extends PenroseTile {
     // calculate the initial coordinates of BCD points. The ref. point is A in [0,0].
     #calcBCD(multipl, rotation) {
         const rotInRad = this.toRad(multipl * 36 + rotation);
-        const distance = multipl % 2 || this.phi;
+        const distance = (multipl + 1) % 2 || (1 / this.phi);
         return [Math.cos(rotInRad) * distance, Math.sin(rotInRad) * distance];
     }
 }
@@ -291,13 +291,15 @@ class DotManager {
     #openDots = []; // [Dot Object, Dot Object,...]
     #restrictedDots = []; // [Dot Object, Dot Object,...]
     #border;
+    #borderOverlay;
 
     constructor() {
         this.help = new Helper();
     }
 
-    init(firstTile, visibleArea) {
+    init(firstTile, visibleArea, scale) {
         this.#border = visibleArea;
+        this.#borderOverlay = scale * Math.sin((36 * Math.PI) / 180) * 2;
         this.setDots(firstTile, 'A', 1);
     }
 
@@ -323,8 +325,9 @@ class DotManager {
     }
 
     #getOpenPosition() {
-        const random = this.help.randomRange(1);
-        return this.#getTileDataByDot(this.#openDots[0], random);
+        const randomPossTileIndex = this.help.randomRange(1);
+        const randomOpenTileIndex = this.help.randomRange(this.#openDots.length - 1);
+        return this.#getTileDataByDot(this.#openDots[randomOpenTileIndex], randomPossTileIndex);
     }
 
     getNextTileBlueprint() {
@@ -401,7 +404,23 @@ class DotManager {
     }
 
     #borderControl(dot) {
-        return dot.coord.every((xy, i) => xy > 0 && xy < this.#border[i]);
+        // if the dot is outside the overlayed border, return false (the whole tile should be not rendered)
+        const dotInRenderZone = dot.coord.every((xy, i) => xy > (0 - this.#borderOverlay) && xy < (this.#border[i] + this.#borderOverlay));
+        if (!dotInRenderZone) return 0;
+
+        // the dot is inside the borders of viewport, return true (the whole tile must be rendered)
+        const dotInViewport = dot.coord.every((xy, i) => xy > 0 && xy < this.#border[i]);
+        if (dotInViewport) return 1;
+
+        // the other dots are in the overlay between viewport border and the not rendering zone
+        // calculate the absolute x y value/distances from a corner (no matter which corner, the coordinates are absolute)
+        let [absX, absY] = dot.coord;
+        absX = this.#border[0] / 2 - Math.abs(this.#border[0] / 2 - Math.abs(absX));
+        absY = this.#border[1] / 2 - Math.abs(this.#border[1] / 2 - Math.abs(absY));
+
+        // pitagoras comes handy by calculating the dot distance from the origo of the corner
+        const distanceFromTheCorner = Math.sqrt(absX ** 2 + absY ** 2);
+        return distanceFromTheCorner < this.#borderOverlay ? -1 : -2;
     }
 
     // could be made faster? first check dot.occupy.length === 1   ==>  indexes are -1
@@ -411,13 +430,14 @@ class DotManager {
         const indexOfOpenDot = this.#openDots.indexOf(dot);
         const indexOfRestrictedDot = this.#restrictedDots.indexOf(dot);
 
+        // if was restricted dot..
         indexOfRestrictedDot > -1
             ? this.#restrictedDots.splice(indexOfRestrictedDot, 1)
             : indexOfOpenDot > -1 && this.#openDots.splice(indexOfOpenDot, 1);
 
         if (dot.totalDegree === 360) {
             indexOfRestrictedDot > -1 &&
-                borderPermission &&
+                borderPermission % 2 &&
                 this.#openDots.splice(indexOfOpenDot, 1);
             dot.nextPossTiles = { ccw: [], cw: [] };
             return borderPermission;
@@ -426,7 +446,7 @@ class DotManager {
         const possTilesByRule = this.#dotRuleReferee(dot);
         (possTilesByRule.cw.length === 1 || possTilesByRule.ccw.length === 1) &&
             this.#restrictedDots.push(dot);
-        indexOfRestrictedDot < 0 && borderPermission && this.#openDots.push(dot);
+        indexOfRestrictedDot < 0 && borderPermission % 2 && this.#openDots.push(dot);
 
         dot.nextPossTiles = possTilesByRule;
         return borderPermission;
@@ -441,6 +461,7 @@ class DotManager {
 
         let point = newTileTouchPoint;
         let gapWatchdog = 0;
+        let renderable = -1;
 
         while (!newTile.dots[point]) {
             const dot = this.#getDotByCoord(newTile.coord[point]);
@@ -449,13 +470,25 @@ class DotManager {
             dot.addTile(newTile, point, direction);
             newTile.addDot(dot, point);
 
-            tileRenderSetup.renderable = this.#organizeDot(dot) ? true : tileRenderSetup.renderable;
+            const permission = this.#organizeDot(dot);
+            if (renderable < 0) 
+                renderable = !(renderable % 2) && !(permission > -1) ? renderable : permission;
+          /*  if (renderable > -1) {
+                renderable = renderable;
+            } else if (renderable === -2) {
+                renderable = permission > -1 ? permission : renderable;
+            } else {
+                renderable = permission;
+            }*/
+            
 
             dot.occupy.length > 1 && dot.totalDegree < 360 && gapWatchdog++;
             if (gapWatchdog > 2) return tileRenderSetup;
 
             point = PenroseTile.getNeigPointN(point);
         }
+
+        tileRenderSetup.renderable = Boolean(renderable);
         tileRenderSetup.succeed = true;
         return tileRenderSetup;
     }
@@ -488,7 +521,7 @@ class DotManager {
 class TileManager {
     // allTiles is the container for all created Tiles
     #allTiles = []; // [TileObj, TileObj, ...]
-    #scale = 20;
+    #scale;
 
     constructor() {}
 
@@ -635,7 +668,7 @@ class InteractionView {
                 height: this.#formInputHeight.valueAsNumber || window.innerHeight,
                 kiteColor: this.#formInputColorKite.value,
                 dartColor: this.#formInputColorDart.value,
-                density: this.#formInputDensity.valueAsNumber,
+                density: Number(this.#formInputDensity.max) + Number(this.#formInputDensity.min) - this.#formInputDensity.valueAsNumber,
                 rotation: this.#formInputRotation.valueAsNumber,
             };
 
@@ -694,16 +727,18 @@ class RenderView {
     clearView() {
         this.svgContainer.innerText = '';
         this.#SVGelement = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0"
-    width="${this.width}" height="${this.height}">`;
+        width="${this.width}" height="${this.height}">`;
     }
 }
 // viewBox="0 0 ${this.width} ${this.height}
+// width="${this.width}" height="${this.height}
 class Controller {
     constructor() {
         this.dotManager = new DotManager();
         this.tileManager = new TileManager();
         this.view = new RenderView();
         this.interact = new InteractionView();
+        this.help = new Helper();
         this.init();
     }
 
@@ -713,8 +748,6 @@ class Controller {
 
     #patternGenerator(penroseSettings) {
         //generate random x,y first placing
-        const tileName = Math.round(Math.random()) ? 'kite' : 'dart';
-
         const visibleArea = [penroseSettings.width, penroseSettings.height];
         const rotation = penroseSettings.rotation;
         const scale = penroseSettings.density;
@@ -723,10 +756,17 @@ class Controller {
             dartColor: penroseSettings.dartColor,
         };
 
-        const firstTile = this.tileManager.init(tileName, 100, 100, rotation, scale);
+        const firstTileName = Math.round(Math.random()) ? 'kite' : 'dart';
+        const initX = this.help.randomRange(visibleArea[0]);
+        const initY = this.help.randomRange(visibleArea[1]);  
+
+        console.log(firstTileName);
+        console.log(initX , initY);
+
+        const firstTile = this.tileManager.init(firstTileName, initX, initY, rotation, scale);
 
         this.view.init(visibleArea, colorPalette);
-        this.dotManager.init(firstTile, visibleArea);
+        this.dotManager.init(firstTile, visibleArea, scale);
         this.view.addToSVG(firstTile);
         this.#mainLoop();
     }
@@ -762,7 +802,7 @@ class Controller {
 
         !setDotsResult.succeed && this.#removeElement(newTile);
 
-        return setDotsResult.renderable && setDotsResult.succeed && newTile;
+        return setDotsResult.succeed && setDotsResult.renderable && newTile;
     }
 
     #mainLoop() {
