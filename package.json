@@ -1,0 +1,31 @@
+{
+    "name": "penrose-tile-generator",
+    "version": "1.0.0",
+    "description": "Generates an accurate, full random penrose tileing",
+    "scripts": {
+        "start": "parcel generator.html",
+        "build": "parcel build index.html"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/btcreator/PenroseTiles.git"
+    },
+    "keywords": [
+        "penrose",
+        "tile",
+        "generator",
+        "random"
+    ],
+    "author": "Peter Duricek",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/btcreator/PenroseTiles/issues"
+    },
+    "homepage": "https://github.com/btcreator/PenroseTiles#readme",
+    "devDependencies": {
+        "parcel": "^2.7.0"
+    },
+    "dependencies": {
+        "core-js": "^3.25.2"
+    }
+}

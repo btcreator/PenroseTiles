@@ -78,6 +78,7 @@ class PenroseTile {
         ['dart B', 'kite C', 'kite C', 'dart D'],
     ];
     coord = {}; // {A: [254,854], B: [658,78],...D: [658,74]}
+    ammann = {};
 
     // The occupation of the points with dots.
     dots = {
@@ -99,11 +100,15 @@ class PenroseTile {
         this.dots[point] = dot;
     }
 
-    // scale tile (before rendering)
+    // scale tile lines (before rendering)
     scaleTile(by) {
-        for (let [_, coord] of Object.entries(this.coord)) {
+        for (const [_, coord] of Object.entries(this.coord)) {
             coord[0] *= by;
             coord[1] *= by;
+        }
+        for (const [_, ammann] of Object.entries(this.ammann)) {
+            ammann[0] *= by;
+            ammann[1] *= by;
         }
         return this;
     }
@@ -113,6 +118,10 @@ class PenroseTile {
         for (const [_, coord] of Object.entries(this.coord)) {
             coord[0] += x;
             coord[1] += y;
+        }
+        for (const [_, ammann] of Object.entries(this.ammann)) {
+            ammann[0] += x;
+            ammann[1] += y;
         }
         return this;
     }
@@ -140,23 +149,43 @@ class Kite extends PenroseTile {
     constructor(rotation = 0) {
         super();
         this.rotation = rotation;
-        this.#rotateKite(this.rotation);
+        this.#rotateKite();
     }
 
     // calculate the initial coordinates after rotation.
-    #rotateKite(rotation) {
+    #rotateKite() {
+        this.#setShapeCoords();
+        this.#setAmmanCoords();
+    }
+    #setAmmanCoords() {
+        this.ammann.A1 = this.#calcAmmAn(this.ammDeg, this.ammLong);
+        this.ammann.A2 = this.#calcAmmAn(72, this.ammShort);
+        this.ammann.A3 = this.#calcAmmAn(0, this.ammShort);
+        this.ammann.A4 = this.#calcAmmAn(72 - this.ammDeg, this.ammLong);
+    }
+
+    #calcAmmAn(deg, radius) {
+        const rotInRad = this.toRad(deg + this.rotation);
+        return [Math.cos(rotInRad) * radius, Math.sin(rotInRad) * radius];
+    }
+
+    #setShapeCoords() {
         this.coord.A = [0, 0];
-        this.coord.B = this.#clacBCD(0, rotation);
-        this.coord.C = this.#clacBCD(1, rotation);
-        this.coord.D = this.#clacBCD(2, rotation);
+        this.coord.B = this.#clacBCD(0);
+        this.coord.C = this.#clacBCD(1);
+        this.coord.D = this.#clacBCD(2);
     }
 
     // calculate the initial coordinates of BCD points. The ref. point is A in [0,0].
-    #clacBCD(multipl, rotation) {
-        const rotInRad = this.toRad(multipl * 36 + rotation);
+    #clacBCD(multipl) {
+        const rotInRad = this.toRad(multipl * 36 + this.rotation);
         return [Math.cos(rotInRad), Math.sin(rotInRad)];
     }
 }
+
+Kite.prototype.ammDeg = 27.22764488;
+Kite.prototype.ammShort = 0.19098300562;
+Kite.prototype.ammLong = 0.96352549156;
 
 // inner closed angle in the points (i.e. B: the angle closed by the 'a' and 'b' sides)
 Kite.prototype.pointAngles = {
@@ -182,24 +211,45 @@ class Dart extends PenroseTile {
     constructor(rotation = 0) {
         super();
         this.rotation = rotation;
-        this.#rotateDart(this.rotation);
+        this.#rotateDart();
+    }
+
+    #rotateDart() {
+        this.#setShapeCoords();
+        this.#setAmmanCoords();
+    }
+
+    #setAmmanCoords() {
+        this.ammann.A1 = this.#calcAmmAn(this.ammDeg, this.ammLong);
+        this.ammann.A2 = this.#calcAmmAn(0, this.ammShort);
+        this.ammann.A3 = this.#calcAmmAn(72, this.ammShort);
+        this.ammann.A4 = this.#calcAmmAn(72 - this.ammDeg, this.ammLong);
+    }
+
+    #calcAmmAn(deg, radius) {
+        const rotInRad = this.toRad(deg + this.rotation);
+        return [Math.cos(rotInRad) * radius, Math.sin(rotInRad) * radius];
     }
 
     // calculate the initial coordinates after rotation.
-    #rotateDart(rotation) {
+    #setShapeCoords() {
         this.coord.A = [0, 0];
-        this.coord.B = this.#calcBCD(0, rotation);
-        this.coord.C = this.#calcBCD(1, rotation);
-        this.coord.D = this.#calcBCD(2, rotation);
+        this.coord.B = this.#calcBCD(0);
+        this.coord.C = this.#calcBCD(1);
+        this.coord.D = this.#calcBCD(2);
     }
 
     // calculate the initial coordinates of BCD points. The ref. point is A in [0,0].
-    #calcBCD(multipl, rotation) {
-        const rotInRad = this.toRad(multipl * 36 + rotation);
-        const distance = (multipl + 1) % 2 || (1 / this.phi);
+    #calcBCD(multipl) {
+        const rotInRad = this.toRad(multipl * 36 + this.rotation);
+        const distance = (multipl + 1) % 2 || 1 / this.phi;
         return [Math.cos(rotInRad) * distance, Math.sin(rotInRad) * distance];
     }
 }
+
+Dart.prototype.ammDeg = 5.92561393;
+Dart.prototype.ammShort = 0.80901699438;
+Dart.prototype.ammLong = 0.87980044657;
 
 // inner closed angle in the points (i.e. B: the angle closed by the 'a' and 'b' sides)
 Dart.prototype.pointAngles = {
@@ -288,9 +338,12 @@ class DotManager {
     // open is for the dots which are not done (no 360 degree occupation) and have one or more possible tiles to attach (on both sides of the gap)
     // restricted is for the dots where just one possible tile can be attached on min one side of the gap - these dots must be processed first! (These are elemnts of open too.)
     #allDots = {}; // {584-875: DotObj, 698-41: DotObj,...}
+    #inviewOpenDots = []; // [Dot Object, Dot Object,...]
     #openDots = []; // [Dot Object, Dot Object,...]
     #restrictedDots = []; // [Dot Object, Dot Object,...]
+
     #border;
+    #scale;
     #borderOverlay;
 
     constructor() {
@@ -299,17 +352,42 @@ class DotManager {
 
     init(firstTile, visibleArea, scale) {
         this.#border = visibleArea;
+        this.#scale = scale;
         this.#borderOverlay = scale * Math.sin((36 * Math.PI) / 180) * 2;
         this.setDots(firstTile, 'A', 1);
+    }
+
+    get inviewOpenDots() {
+        return this.#inviewOpenDots;
     }
 
     get openDots() {
         return this.#openDots;
     }
 
-    #getTileDataByDot(dot, n) {
+    get restrictedDots() {
+        return this.#restrictedDots;
+    }
+
+    #getTileDataByDot(dot, n, coffin = { shortSide: false, worm: undefined }) {
         const { tiles: newTileData, dir: attacheDirection } = dot.nextPossTiles;
         const targetTileData = dot.occupy.at(attacheDirection - 1);
+
+        if (coffin.shortSide) {
+            if (coffin.worm) {
+                if (/A|B/.test(targetTileData.point) && targetTileData.tile.name === 'kite') {
+                    n = newTileData[n].name === targetTileData.tile.name ? (n + 1) % 2 : n;
+                } else {
+                    n = newTileData[n].name != targetTileData.tile.name ? (n + 1) % 2 : n;
+                }
+            } else {
+                if (/A|B/.test(targetTileData.point) && targetTileData.tile.name === 'kite') {
+                    n = newTileData[n].name != targetTileData.tile.name ? (n + 1) % 2 : n;
+                } else {
+                    n = newTileData[n].name === targetTileData.tile.name ? (n + 1) % 2 : n;
+                }
+            }
+        }
 
         return {
             newTileName: newTileData[n].name,
@@ -320,14 +398,159 @@ class DotManager {
         };
     }
 
-    #getRestrictedPosition() {
-        return this.#getTileDataByDot(this.#restrictedDots[0], 0);
+    #calcSquare(dotA, dotB) {
+        return Math.round(
+            Math.round(
+                ((dotB.coord[0] - dotA.coord[0]) ** 2 + (dotB.coord[1] - dotA.coord[1]) ** 2) * 100
+            ) / 100
+        );
+    }
+
+    #checkDotPresenceOnShortSides(dotToCheck, dotA, dotB) {
+        // dotB is always the corner on which can be generated a random tile, because we attach tile by CW direction and this is attached on the long side from here (the dotB is in CW direction from dotA)
+        if (dotToCheck === dotB) return false;
+
+        // sun 0.31, max sun 0.438, star 0.5, max star 0.71   * scale
+        const offset = dotA.occupy[0].point === 'C' ? 0.37 * this.#scale : 0.6 * this.#scale;
+
+        return dotToCheck.coord.every((xyP, i) => {
+            let xyA, xyB;
+
+            if (dotB.coord[i] > dotA.coord[i]) {
+                xyB = dotB.coord[i] + offset;
+                xyA = dotA.coord[i] - offset;
+            } else {
+                xyB = dotB.coord[i] - offset;
+                xyA = dotA.coord[i] + offset;
+            }
+
+            return (xyP - xyA) * (xyP - xyB) < 0;
+        });
+    }
+
+    #verticeRuleReferee(openDot) {
+        // search for corners
+        const coffinSetup = { shortSide: false, worm: undefined };
+        const corners = this.#openDots.filter(dot => {
+            return (
+                dot.totalDegree === 72 ||
+                dot.occupy.every((occupationObj, i) => {
+                    return (
+                        occupationObj.tile.name === 'kite' &&
+                        (i
+                            ? occupationObj.point === 'D'
+                            : occupationObj.point === 'C' || occupationObj.point === 'B')
+                    );
+                })
+            );
+        });
+
+        // arrange corners in circular order: first sort in ascending order by X. The first and last corner is the middle cut line.
+        // Reduce the corners which are under that line. These must be reverse and pushed to end of other corners. Now the corners are arranged in a circular order.
+        corners.sort((cA, cB) => cA.coord[0] - cB.coord[0]);
+        corners
+            .reduce(
+                (function () {
+                    const x1 = corners[0].coord[0];
+                    const y1 = corners[0].coord[1];
+                    const x2 = corners.at(-1).coord[0];
+                    const y2 = corners.at(-1).coord[1];
+
+                    return function (acc, corner, i) {
+                        const position =
+                            (corner.coord[0] - x1) * (y2 - y1) - (corner.coord[1] - y1) * (x2 - x1);
+
+                        position > 0 && acc.unshift(i);
+                        return acc;
+                    };
+                })(),
+                []
+            )
+            .forEach(index => corners.push(...corners.splice(index, 1)));
+
+        // filter and handle the shapes with 4 corners
+        const acuteAnglesIndex = corners.reduce((acc, corner, i) => {
+            corner.totalDegree === 72 && acc.push(i);
+            return acc;
+        }, []);
+
+        if (acuteAnglesIndex.length === 2) {
+            !acuteAnglesIndex[0] && acuteAnglesIndex[1] === 3 && acuteAnglesIndex.reverse(); //when the first and last elements are the acute corners, revers, because that would be arranged in opposite direction.
+
+            const sideA = this.#calcSquare(
+                corners.at(acuteAnglesIndex[0] - 1),
+                corners[acuteAnglesIndex[0]]
+            );
+            const sideB = this.#calcSquare(
+                corners.at(acuteAnglesIndex[0] - 2),
+                corners.at(acuteAnglesIndex[0] - 1)
+            );
+
+            // if the length of the two sides of the romboid shape are the same, then its a rhombus,
+            // when the sideB is greater (which by coffin shape is the short side), then its a trapezoid, when the sideA, then its an isosceles trapezoid (cup shape)
+            if (sideB >= sideA) return coffinSetup;
+
+            // "normal" cup shapes have smaller ratio than the longer ones, which are the shapes that we should care about
+            const ratio = sideA / sideB;
+
+            coffinSetup.shortSide =
+                ratio > 12 &&
+                this.#checkDotPresenceOnShortSides(
+                    openDot,
+                    corners.at(acuteAnglesIndex[0] - 1),
+                    corners.at(acuteAnglesIndex[0] - 2)
+                );
+            // the tile setup on corners is sun = 0 or star = 1, which decide the worm attaching
+            coffinSetup.worm = corners.at(acuteAnglesIndex[0] - 1).occupy[0].point != 'C';
+
+            return coffinSetup;
+        }
+
+        // handling of the 5 corner shapes
+        const cornersMap = corners.reduce((acc, val, i) => {
+            const actSquare = this.#calcSquare(corners.at(i - 1), val);
+            const dots = acc.get(actSquare);
+            dots
+                ? dots.push([corners.at(i - 1), val])
+                : acc.set(actSquare, [[corners.at(i - 1), val]]);
+            return acc;
+        }, new Map());
+        // pentagon
+        if (cornersMap.size === 1) return coffinSetup;
+
+        // coffin / roof  or (else) hybrid roof
+        let smallestSideDots;
+        if (cornersMap.size === 3) {
+            // take smallest one (one, or two equal side lengths)
+            smallestSideDots = cornersMap.get(Math.min(...cornersMap.keys()));
+        } else {
+            // take smallest two, because two different side lengths are to take care of
+            const smallestSquare = Math.min(...cornersMap.keys());
+            smallestSideDots = cornersMap.get(smallestSquare);
+            cornersMap.delete(smallestSquare);
+            smallestSideDots.push(...cornersMap.get(Math.min(...cornersMap.keys())));
+        }
+
+        coffinSetup.shortSide = smallestSideDots.some(dots =>
+            this.#checkDotPresenceOnShortSides(openDot, ...dots)
+        );
+        coffinSetup.worm = smallestSideDots[0][0].occupy[0].point != 'C';
+
+        return coffinSetup;
     }
 
     #getOpenPosition() {
+        const randomOpenDot = this.#inviewOpenDots.at(
+            this.help.randomRange(this.#inviewOpenDots.length - 1)
+        );
+        const verticeRule = this.#verticeRuleReferee(randomOpenDot);
         const randomPossTileIndex = this.help.randomRange(1);
-        const randomOpenTileIndex = this.help.randomRange(this.#openDots.length - 1);
-        return this.#getTileDataByDot(this.#openDots[randomOpenTileIndex], randomPossTileIndex);
+
+        return this.#getTileDataByDot(randomOpenDot, randomPossTileIndex, verticeRule);
+    }
+
+    #getRestrictedPosition() {
+        return this.#getTileDataByDot(this.#restrictedDots[0], 0);
     }
 
     getNextTileBlueprint() {
@@ -351,6 +574,7 @@ class DotManager {
         if (!dot) {
             dot = new Dot(coord);
             this.#allDots[dot.id] = dot;
+            this.#openDots.push(dot);
         }
         return dot;
     }
@@ -373,7 +597,7 @@ class DotManager {
         return [tilesOnCcw, tilesOnCw];
     }
 
-    #dotRuleReferee(dot) {
+    #lineupRuleReferee(dot) {
         const dotTxt = this.#dotToString(dot);
         const regexpForNextCWTile = new RegExp(`.{6}(?=${dotTxt})`, 'g');
         const regexpForNextCCWTile = new RegExp(`(?<=${dotTxt}).{6}`, 'g');
@@ -404,8 +628,10 @@ class DotManager {
     }
 
     #borderControl(dot) {
-        // if the dot is outside the overlayed border, return false (the whole tile should be not rendered)
-        const dotInRenderZone = dot.coord.every((xy, i) => xy > (0 - this.#borderOverlay) && xy < (this.#border[i] + this.#borderOverlay));
+        // if the dot is outside the overlayed border (not rendering zone), return false (the whole tile should be not rendered)
+        const dotInRenderZone = dot.coord.every(
+            (xy, i) => xy > 0 - this.#borderOverlay && xy < this.#border[i] + this.#borderOverlay
+        );
         if (!dotInRenderZone) return 0;
 
         // the dot is inside the borders of viewport, return true (the whole tile must be rendered)
@@ -423,33 +649,30 @@ class DotManager {
         return distanceFromTheCorner < this.#borderOverlay ? -1 : -2;
     }
 
-    // could be made faster? first check dot.occupy.length === 1   ==>  indexes are -1
     #organizeDot(dot) {
-        const borderPermission = this.#borderControl(dot);
-
-        const indexOfOpenDot = this.#openDots.indexOf(dot);
-        const indexOfRestrictedDot = this.#restrictedDots.indexOf(dot);
-
-        // if was restricted dot..
-        indexOfRestrictedDot > -1
-            ? this.#restrictedDots.splice(indexOfRestrictedDot, 1)
-            : indexOfOpenDot > -1 && this.#openDots.splice(indexOfOpenDot, 1);
-
-        if (dot.totalDegree === 360) {
-            indexOfRestrictedDot > -1 &&
-                borderPermission % 2 &&
-                this.#openDots.splice(indexOfOpenDot, 1);
-            dot.nextPossTiles = { ccw: [], cw: [] };
-            return borderPermission;
+        if (dot.borderPermission === undefined) {
+            dot.borderPermission = this.#borderControl(dot);
+            dot.borderPermission % 2 && this.#inviewOpenDots.push(dot);
         }
 
-        const possTilesByRule = this.#dotRuleReferee(dot);
+        const indexOfRestrictedDot = this.#restrictedDots.indexOf(dot);
+        indexOfRestrictedDot > -1 && this.#restrictedDots.splice(indexOfRestrictedDot, 1);
+
+        if (dot.totalDegree === 360) {
+            this.#openDots.splice(this.#openDots.indexOf(dot), 1);
+            dot.borderPermission % 2 &&
+                this.#inviewOpenDots.splice(this.#inviewOpenDots.indexOf(dot), 1);
+
+            dot.nextPossTiles = { ccw: [], cw: [] };
+            return;
+        }
+
+        const possTilesByRule = this.#lineupRuleReferee(dot);
         (possTilesByRule.cw.length === 1 || possTilesByRule.ccw.length === 1) &&
             this.#restrictedDots.push(dot);
-        indexOfRestrictedDot < 0 && borderPermission % 2 && this.#openDots.push(dot);
 
         dot.nextPossTiles = possTilesByRule;
-        return borderPermission;
+        return;
     }
 
     setDots(newTile, newTileTouchPoint, attacheDirection) {
@@ -469,19 +692,20 @@ class DotManager {
 
             dot.addTile(newTile, point, direction);
             newTile.addDot(dot, point);
+            this.#organizeDot(dot);
 
-            const permission = this.#organizeDot(dot);
-            if (renderable < 0) 
-                renderable = !(renderable % 2) && !(permission > -1) ? renderable : permission;
-          /*  if (renderable > -1) {
-                renderable = renderable;
-            } else if (renderable === -2) {
-                renderable = permission > -1 ? permission : renderable;
-            } else {
-                renderable = permission;
-            }*/
-            
-
+            if (renderable < 0)
+                renderable =
+                    !(renderable % 2) && !(dot.borderPermission > -1)
+                        ? renderable
+                        : dot.borderPermission;
+            /*  if (renderable > -1) {
+                    renderable = renderable;
+                } else if (renderable === -2) {
+                    renderable = permission > -1 ? permission : renderable;
+                } else {
+                    renderable = permission;
+                }*/
             dot.occupy.length > 1 && dot.totalDegree < 360 && gapWatchdog++;
             if (gapWatchdog > 2) return tileRenderSetup;
 
@@ -494,12 +718,13 @@ class DotManager {
     }
 
     #removeDot(dot) {
-        const indexOfOpenDot = this.#openDots.indexOf(dot);
         const indexOfRestrictedDot = this.#restrictedDots.indexOf(dot);
 
         delete this.#allDots[dot.id];
+        this.#openDots.splice(this.#openDots.indexOf(dot), 1);
+        dot.borderPermission % 2 &&
+            this.#inviewOpenDots.splice(this.#inviewOpenDots.indexOf(dot), 1);
         indexOfRestrictedDot > -1 && this.#restrictedDots.splice(indexOfRestrictedDot, 1);
-        indexOfOpenDot > -1 && this.#openDots.splice(indexOfOpenDot, 1);
     }
 
     redefineDot(dotToAudit, tile) {
@@ -507,11 +732,19 @@ class DotManager {
             this.#removeDot(dotToAudit);
             return;
         }
+        if (dotToAudit.totalDegree === 360) {
+            this.#openDots.push(dotToAudit);
+            dotToAudit.borderPermission % 2 && this.#inviewOpenDots.push(dotToAudit);
+        }
         dotToAudit.removeTile(tile);
         this.#organizeDot(dotToAudit);
     }
 
     clear() {
+        for (let dotId in Object.keys(this.#allDots)) {
+            // todo why dont work
+            delete this.#allDots[dotId];
+        }
         this.#allDots = {};
         this.#openDots = [];
         this.#restrictedDots = [];
@@ -668,7 +901,10 @@ class InteractionView {
                 height: this.#formInputHeight.valueAsNumber || window.innerHeight,
                 kiteColor: this.#formInputColorKite.value,
                 dartColor: this.#formInputColorDart.value,
-                density: Number(this.#formInputDensity.max) + Number(this.#formInputDensity.min) - this.#formInputDensity.valueAsNumber,
+                density:
+                    Number(this.#formInputDensity.max) +
+                    Number(this.#formInputDensity.min) -
+                    this.#formInputDensity.valueAsNumber,
                 rotation: this.#formInputRotation.valueAsNumber,
             };
 
@@ -711,7 +947,9 @@ class RenderView {
     #generateSVGpolygon(tile) {
         return `<polygon points="${Object.values(tile.coord).reduce(
             (acc, val) => acc + ' ' + val
-        )}" style="fill:${this.colors.getColor(tile)};" />`;
+        )}" style="fill:${this.colors.getColor(tile)};" />
+    <path fill="none" stroke="#bfbfbf"
+    d="M${Object.values(tile.ammann).reduce((acc, val) => acc + ' L' + val)}" />`;
     }
 
     addToSVG(tile) {
@@ -727,11 +965,10 @@ class RenderView {
     clearView() {
         this.svgContainer.innerText = '';
         this.#SVGelement = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0"
-        width="${this.width}" height="${this.height}">`;
+    width="${this.width}" height="${this.height}">`;
     }
 }
-// viewBox="0 0 ${this.width} ${this.height}
-// width="${this.width}" height="${this.height}
+
 class Controller {
     constructor() {
         this.dotManager = new DotManager();
@@ -747,7 +984,6 @@ class Controller {
     }
 
     #patternGenerator(penroseSettings) {
-        //generate random x,y first placing
         const visibleArea = [penroseSettings.width, penroseSettings.height];
         const rotation = penroseSettings.rotation;
         const scale = penroseSettings.density;
@@ -757,11 +993,9 @@ class Controller {
         };
 
         const firstTileName = Math.round(Math.random()) ? 'kite' : 'dart';
-        const initX = this.help.randomRange(visibleArea[0]);
-        const initY = this.help.randomRange(visibleArea[1]);  
-
-        console.log(firstTileName);
-        console.log(initX , initY);
+        const initX = this.help.randomRange(visibleArea[0] - 2) + 1;
+        const initY = this.help.randomRange(visibleArea[1] - 2) + 1;
+        this.#clearManagers();
 
         const firstTile = this.tileManager.init(firstTileName, initX, initY, rotation, scale);
 
@@ -771,10 +1005,9 @@ class Controller {
         this.#mainLoop();
     }
 
-    // Happens from 20000 tiles ca. 10 times
+    // Remove if gap. Gaps happens from 20000 tiles ca. 10 times
     #removeElement(tile) {
         this.tileManager.discardTile(tile);
-
         for (let dotToAudit of Object.values(tile.dots)) {
             if (!dotToAudit) continue;
             this.dotManager.redefineDot(dotToAudit, tile);
@@ -807,16 +1040,21 @@ class Controller {
 
     #mainLoop() {
         let generatedTiles = 0;
-        while (this.dotManager.openDots.length) {
+        let visibleTiles = 0;
+        while (this.dotManager.inviewOpenDots.length) {
             const nextTileBlueprint = this.dotManager.getNextTileBlueprint();
             const nextTileInsideBorders = this.#createElement(nextTileBlueprint);
-            if (nextTileInsideBorders) this.view.addToSVG(nextTileInsideBorders);
+
+            if (nextTileInsideBorders) {
+                this.view.addToSVG(nextTileInsideBorders);
+                visibleTiles++;
+            }
 
             generatedTiles++;
         }
         this.interact.setDownloadLink(this.view.renderSVG());
         this.#clearManagers();
-        console.log(generatedTiles);
+        console.log(visibleTiles);
     }
 
     #clearManagers() {
