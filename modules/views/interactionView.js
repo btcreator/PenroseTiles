@@ -15,7 +15,6 @@ const formInputRotation = document.querySelector('#rotation');
 // add listeners for all interaction elements, gather the input information after submit and call the received function
 export const interactionHandler = function (patternGenerator) {
     addHandlersToMenuItems();
-
     // Add listener for the generate / submit button
     subMenu.addEventListener('submit', ev => {
         ev.preventDefault();
@@ -30,6 +29,7 @@ export const interactionHandler = function (patternGenerator) {
                 Number(formInputDensity.min) -
                 formInputDensity.valueAsNumber,
             rotation: formInputRotation.valueAsNumber,
+            decoration: document.querySelector('.decoration input:checked').value,
         };
 
         // requestAnimationFrame for not lagging of close of the submenu window

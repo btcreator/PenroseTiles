@@ -5,9 +5,11 @@ import Dart from '../tiles/dart.js';
 // allTiles is the container for all created Tiles
 let allTiles = []; // [TileObj, TileObj, ...]
 let scaleBase;
+let tileDecor;
 
-export const init = function (firstTileName, x, y, rotation, scale) {
+export const init = function (firstTileName, x, y, rotation, scale, decoration) {
     scaleBase = scale;
+    tileDecor = decoration;
     const firstTile = createRawTile(firstTileName, rotation).moveToPos(x, y);
     allTiles.push(firstTile);
     return firstTile;
@@ -40,7 +42,8 @@ const calcXYcoords = function (newTileCoord, newTileTouchPoint, targetTileCoord,
 };
 
 const createRawTile = function (tileName, rotation) {
-    const newTile = tileName === 'kite' ? new Kite(rotation) : new Dart(rotation);
+    const newTile =
+        tileName === 'kite' ? new Kite(rotation, tileDecor) : new Dart(rotation, tileDecor);
     newTile.scaleTile(scaleBase);
     return newTile;
 };

@@ -14,7 +14,7 @@ export default class PenroseTile {
         ['dart B', 'kite C', 'kite C', 'dart D'],
     ];
     coord = {}; // {A: [254,854], B: [658,78],...D: [658,74]}
-    ammann = {};
+    decor = {};
 
     // The occupation of the points with dots.
     dots = {
@@ -24,7 +24,10 @@ export default class PenroseTile {
         D: null,
     };
 
-    constructor() {}
+    constructor(decoration) {
+        this.decor.type = decoration === 'none' ? null : decoration;
+        this.decor.coord = {};
+    }
 
     // get neighbour point (-n: previous n-th, n: next n-th)
     static getNeigPointN(initPoint, n = 1) {
@@ -38,13 +41,15 @@ export default class PenroseTile {
 
     // scale tile (before rendering)
     scaleTile(by) {
-        for (let [_, coord] of Object.entries(this.coord)) {
+        for (const [_, coord] of Object.entries(this.coord)) {
             coord[0] *= by;
             coord[1] *= by;
         }
-        for (let [_, ammann] of Object.entries(this.ammann)) {
-            ammann[0] *= by;
-            ammann[1] *= by;
+        if (!this.decor.type) return this;
+
+        for (const [_, decoord] of Object.entries(this.decor.coord)) {
+            decoord[0] *= by;
+            decoord[1] *= by;
         }
         return this;
     }
@@ -55,9 +60,11 @@ export default class PenroseTile {
             coord[0] += x;
             coord[1] += y;
         }
-        for (const [_, ammann] of Object.entries(this.ammann)) {
-            ammann[0] += x;
-            ammann[1] += y;
+        if (!this.decor.type) return this;
+
+        for (const [_, decoord] of Object.entries(this.decor.coord)) {
+            decoord[0] += x;
+            decoord[1] += y;
         }
         return this;
     }

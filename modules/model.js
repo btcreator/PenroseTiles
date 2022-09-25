@@ -12,8 +12,9 @@ export const init = function (penroseSettings) {
     const initY = randomRange(visibleArea[1] - 2) + 1;
     const rotation = penroseSettings.rotation;
     const scale = penroseSettings.density;
+    const decoration = penroseSettings.decoration;
 
-    const firstTile = tileManager.init(firstTileName, initX, initY, rotation, scale);
+    const firstTile = tileManager.init(firstTileName, initX, initY, rotation, scale, decoration);
     dotManager.init(firstTile, visibleArea, scale);
     visibleTiles.push(firstTile);
 

@@ -159,6 +159,14 @@ body {
     margin-top: 15px;
 }
 
+.sub-menu input[type='radio'] {
+    width: auto;
+}
+
+.sub-menu .radio {
+    display: inline-block;
+}
+
 .sub-menu img {
     grid-column: 2 / 3;
     margin: 10px;

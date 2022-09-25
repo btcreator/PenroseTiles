@@ -19,6 +19,8 @@
 
                     <input class="button" type="button" value="Rotation" data-type="rotation" />
 
+                    <input class="button" type="button" value="Decoration" data-type="decoration" />
+
                     <button class="generate-pattern button" type="submit" form="settings">
                         Generate
                     </button>
@@ -109,7 +111,42 @@
                         <div class="range-display">25 deg</div>
                     </div>
 
-                    <img src="img/rotation.png" alt="Color of Kite and Dart" />
+                    <img src="img/rotation.png" alt="Rotation change demo" />
+                </div>
+
+                <div class="hidden decoration sub-item">
+                    <div class="inputs">
+                        <p>Decoration type</p>
+                        <input
+                            id="amman"
+                            type="radio"
+                            name="decoration"
+                            value="amman"
+                            form="settings"
+                        />
+                        <label class="radio" for="amman" form="settings">Amman-lines</label>
+                        <br />
+                        <input
+                            id="arcs"
+                            type="radio"
+                            name="decoration"
+                            value="arcs"
+                            form="settings"
+                        />
+                        <label class="radio" for="arcs" form="settings">Arcs</label>
+                        <br />
+                        <input
+                            id="none"
+                            type="radio"
+                            name="decoration"
+                            value="none"
+                            form="settings"
+                            checked
+                        />
+                        <label class="radio" for="none" form="settings">None</label>
+                    </div>
+
+                    <img src="img/deco.png" alt="Decoration possibilities" />
                 </div>
             </form>
         </div>

@@ -28,9 +28,6 @@ const patternGenerator = function (penroseSettings) {
 
 init();
 
-/**init can be made with constructor?
- * PenroseTile.points to helper??
- * generate a bit bigger pattern (issue on the corners, when two points outside of the border cuts the corner)
- * cancel button when it takes too long
+/** cancel button when it takes too long
  * show the estimated time to generate tiles
  */

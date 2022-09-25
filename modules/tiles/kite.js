@@ -13,8 +13,8 @@ export default class Kite extends PenroseTile {
 
     // rotation 0 mean, the 'a' side closes 0 deg with the x axis. This is the initial position of the tile.
     // rotation goes ccw
-    constructor(rotation = 0) {
-        super();
+    constructor(rotation, decoration) {
+        super(decoration);
         this.rotation = rotation;
         this.#rotateKite();
     }
@@ -22,13 +22,14 @@ export default class Kite extends PenroseTile {
     // calculate the initial coordinates after rotation.
     #rotateKite() {
         this.#setShapeCoords();
-        this.#setAmmanCoords();
+        if (!this.decor.type) return;
+        this.decor.type === 'amman' ? this.#setAmmanCoords() : this.#setAmmanCoords(); // todo
     }
     #setAmmanCoords() {
-        this.ammann.A1 = this.#calcAmmAn(this.ammDeg, this.ammLong);
-        this.ammann.A2 = this.#calcAmmAn(72, this.ammShort);
-        this.ammann.A3 = this.#calcAmmAn(0, this.ammShort);
-        this.ammann.A4 = this.#calcAmmAn(72 - this.ammDeg, this.ammLong);
+        this.decor.coord.A1 = this.#calcAmmAn(this.ammDeg, this.ammLong);
+        this.decor.coord.A2 = this.#calcAmmAn(72, this.ammShort);
+        this.decor.coord.A3 = this.#calcAmmAn(0, this.ammShort);
+        this.decor.coord.A4 = this.#calcAmmAn(72 - this.ammDeg, this.ammLong);
     }
 
     #calcAmmAn(deg, radius) {
