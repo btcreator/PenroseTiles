@@ -1,13 +1,24 @@
 import { randomRange } from './helpers.js';
 
+/** This module helps create the needed colors
+ * generate random colors - todo
+ * gradient coloring - todo
+ * rotated gradient coloring - todo
+ * ...and some others and combination of these...
+ */
+
 let colors;
 
 export const setPalette = function (colorPalette) {
     colors = colorPalette;
 };
 
-export const getColor = function (tile) {
+export const getTileColor = function (tile) {
     return tile.name === 'kite' ? colors.kiteColor : colors.dartColor;
+};
+
+export const getDecorColor = function (nr) {
+    return colors.decorColor[nr];
 };
 
 // generates a random color  - TODO

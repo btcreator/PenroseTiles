@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <link rel="icon" href="img/logo.png" type="image/png icon" />
-        <link rel="stylesheet" href="generator.css" />
+        <link rel="stylesheet" type="text/css" href="generator.css" />
         <script type="module" src="./modules/controller.js"></script>
         <title>Random Penrose Pattern Generator</title>
     </head>
@@ -52,26 +52,71 @@
                 </div>
 
                 <div class="hidden color sub-item">
-                    <div class="inputs">
+                    <div class="inputs tiles-color">
+                        <p>Tile colors</p>
                         <label for="color_kite" form="settings">Kite color</label>
                         <input
                             id="color_kite"
                             type="color"
-                            name="color_one"
+                            name="color_kite"
                             form="settings"
-                            value="#151D89"
+                            value="#2584e9"
                         /><br />
                         <label for="color_dart" form="settings">Dart color</label>
                         <input
                             id="color_dart"
                             type="color"
-                            name="color_two"
+                            name="color_dart"
                             form="settings"
-                            value="#EBA000"
+                            value="#b28b1f"
                         />
                     </div>
 
+                    <div class="inputs decoration-color">
+                        <p>Decoration colors</p>
+                        <p class="decoration-type-color none notes">
+                            No decoraton selected. Please select decoration first from the menu.
+                        </p>
+                        <div class="decoration-type-color amman hidden">
+                            <label for="color_amman" form="settings">Amman line color</label>
+                            <input
+                                id="color_amman"
+                                type="color"
+                                name="color_amman"
+                                form="settings"
+                                value="#0505ff"
+                            />
+                        </div>
+                        <div class="decoration-type-color arcs hidden">
+                            <label for="color_arc_large" form="settings"
+                                >Arc large-radius color</label
+                            >
+                            <input
+                                id="color_arc_large"
+                                type="color"
+                                name="color_arc_large"
+                                form="settings"
+                                value="#c40000"
+                            />
+                            <label for="color_arc_small" form="settings"
+                                >Arc small-radius color</label
+                            >
+                            <input
+                                id="color_arc_small"
+                                type="color"
+                                name="color_arc_small"
+                                form="settings"
+                                value="#00b100"
+                            />
+                        </div>
+                    </div>
+
                     <img src="img/kiteDartColor.png" alt="Color of Kite and Dart" />
+                    <img
+                        class="decoration-img"
+                        src="img/decoration-none.png"
+                        alt="Decoration coloring"
+                    />
                 </div>
 
                 <div class="hidden density sub-item">
@@ -83,10 +128,10 @@
                             name="density"
                             min="10"
                             max="100"
-                            value="75"
+                            value="50"
                             form="settings"
                         />
-                        <div class="range-display">75</div>
+                        <div class="range-display">50</div>
                         <p class="notes">
                             Please note that the larger and denser the image, the longer it takes to
                             generate.

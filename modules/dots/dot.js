@@ -1,10 +1,9 @@
 export default class Dot {
     // *** id is needed for track the dot when we create a new tile. ( the id is created from the coordinates,
-    // i.e. when we create a new tile we can then check the exixtence of the dots at the new coordinates).
+    // and when we create a new tile we can then check the exixtence of the dots at the new coordinates).
     // *** occupy track the joined tiles to the dot (tile and the point)
-    // *** totalDegree is for track, the dot is full or not. When it reaches 360, then the dot is done, no more tile can be added
-    // *** nextPossTiles is for save the possible tiles that can be attached to the dot. (We would search for "just one attachable"
-    // dots first of all.)
+    // *** totalDegree is for track, that the dot occupation is full or not. When it reaches 360, then the dot is done, no more tile can be added
+    // *** nextPossTiles is for save the possible tiles that can be attached to the dot.
     #id;
     #coord; // [154.4555, 456.87452]
     occupy = []; // [{tile: TileObj, point: "A"},{tile: TileObj, point: "B"},...]
@@ -13,6 +12,7 @@ export default class Dot {
         ccw: [], // [{name: "kite", point: "A"}, {name: "dart", point: "B"}]
         cw: [],
     };
+    borderPermission;
 
     constructor(coord) {
         this.#id = Dot.getID(coord);
@@ -32,13 +32,13 @@ export default class Dot {
     }
 
     static getID(coord) {
-        const adjCoord = coord.map(xy => Math.round(xy * 100) / 100); // adjusted because of floating point failure
+        const adjCoord = coord.map(xy => Math.round(xy * 100) / 100); // Adjusted because of floating point failure (e.g.: xx.49999...; xx.5)
         return `${Math.round(adjCoord[0])}-${Math.round(adjCoord[1])}`;
     }
 
-    // the tiles are listed in cw direction in the occupy variable. Between the last and first element is the gap.
-    // When a new tile is added, the dir gives where the tile is attached. It would be the new last or first element.
-    // dir 1 is attached cw, 0 ccw from the gaps point of view.
+    // The tiles are listed in cw direction in the occupy variable.
+    // When a new tile is added, the dir (direction) gives where the tile is attached. It would be the new last or first element.
+    // dir 1 = tile is attached cw (on the front of the Array). 0 = attached ccw (on the end of the Array).
     addTile(tile, tilePoint, dir) {
         dir
             ? this.occupy.unshift({ tile, point: tilePoint })
@@ -54,20 +54,16 @@ export default class Dot {
         this.occupy.splice(index, 1);
     }
 
-    // as next possible tiles by the gaps on both sides (cw or ccw) gives back the one, which has just 1 possibilities.
+    // As next possible tiles on both sides (cw or ccw) gives back the one, which has just 1 possibility.
     // when both have just one or two, in that case its no matter which one is returned (in our case is that always the
-    // possibilites on cw side).
+    // possibily on cw side).
     get nextPossTiles() {
         return this.#nextPossTiles.cw.length > this.#nextPossTiles.ccw.length
             ? { tiles: this.#nextPossTiles.ccw, dir: 0 }
             : { tiles: this.#nextPossTiles.cw, dir: 1 };
-
-        // return this.#nextPossTiles.cw.length > this.#nextPossTiles.ccw.length
-        //   ? { tiles: this.#nextPossTiles.ccw, dir: 0 }
-        //   : { tiles: this.#nextPossTiles.cw, dir: 1 };
     }
+
     set nextPossTiles(possTilesByRule) {
-        this.#nextPossTiles.ccw = possTilesByRule.ccw;
-        this.#nextPossTiles.cw = possTilesByRule.cw;
+        this.#nextPossTiles = possTilesByRule;
     }
 }

@@ -12,6 +12,11 @@ const formInputColorDart = document.querySelector('#color_dart');
 const formInputDensity = document.querySelector('#density');
 const formInputRotation = document.querySelector('#rotation');
 
+const formInputDecorationWrap = document.querySelector('.decoration');
+const formInputColorDecorationWrap = document.querySelector('.decoration-color');
+const formInputColorsDecoration = document.querySelectorAll('.decoration-type-color');
+const decorationColorImage = document.querySelector('.decoration-img');
+
 // add listeners for all interaction elements, gather the input information after submit and call the received function
 export const interactionHandler = function (patternGenerator) {
     addHandlersToMenuItems();
@@ -19,6 +24,16 @@ export const interactionHandler = function (patternGenerator) {
     subMenu.addEventListener('submit', ev => {
         ev.preventDefault();
 
+        const decor = document.querySelector('.decoration input:checked').value;
+        const decorColor = [null, null];
+
+        if (decor === 'amman') {
+            decorColor[0] = formInputColorDecorationWrap.querySelector('#color_amman').value;
+        }
+        if (decor === 'arcs') {
+            decorColor[0] = formInputColorDecorationWrap.querySelector('#color_arc_large').value;
+            decorColor[1] = formInputColorDecorationWrap.querySelector('#color_arc_small').value;
+        }
         const penroseSettings = {
             width: formInputWidth.valueAsNumber || window.innerWidth,
             height: formInputHeight.valueAsNumber || window.innerHeight,
@@ -29,7 +44,8 @@ export const interactionHandler = function (patternGenerator) {
                 Number(formInputDensity.min) -
                 formInputDensity.valueAsNumber,
             rotation: formInputRotation.valueAsNumber,
-            decoration: document.querySelector('.decoration input:checked').value,
+            decoration: decor,
+            decorationColor: decorColor,
         };
 
         // requestAnimationFrame for not lagging of close of the submenu window
@@ -72,6 +88,12 @@ const addHandlersToMenuItems = function () {
     formInputRotation.addEventListener('input', function () {
         this.parentElement.querySelector('.range-display').innerText = `${this.value} deg`;
     });
+    formInputDecorationWrap.addEventListener('click', function (e) {
+        if (!e.target.checked) return;
+        formInputColorsDecoration.forEach(item => item.classList.add('hidden'));
+        formInputColorDecorationWrap.querySelector(`.${e.target.value}`).classList.remove('hidden');
+        decorationColorImage.src = `decoration-${e.target.value}.png`;
+    });
 };
 
 // show / hide submenu window on corresponding button click
@@ -94,3 +116,6 @@ const hideSubMenu = function () {
     submenuChildren.forEach(item => item.classList.add('hidden'));
     subMenu.classList.add('hidden');
 };
+
+// todo? hide all elements with hidden class, then set one visible with visible class -
+// it is easier to remove from the class list, as set on every element a hidden class

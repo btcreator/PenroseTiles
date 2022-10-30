@@ -3,7 +3,7 @@ import Kite from '../tiles/kite.js';
 import Dart from '../tiles/dart.js';
 
 // allTiles is the container for all created Tiles
-let allTiles = []; // [TileObj, TileObj, ...]
+const allTiles = []; // [TileObj, TileObj, ...]
 let scaleBase;
 let tileDecor;
 

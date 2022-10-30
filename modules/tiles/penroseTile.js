@@ -1,9 +1,12 @@
+/** The superclass for the Dart and Kite tiles
+*/
+
 export default class PenroseTile {
+    static phi = (1 + Math.sqrt(5)) / 2;
     static points = ['A', 'B', 'C', 'D'];
 
-    // the rule: 7 different tile kombination is possible around one dot. Each possibility is listed here with possible tile
-    // and point joining to the dot in the right order, in clockwise direction. After the last element comes the first one.
-    // It means, this tiles goes in round.
+    // the rule (vertex rule): 7 different tile kombination is possible around one dot. Each possibility is listed here with possible tile
+    // point joining to the dot in the right order. The order is in clockwise direction and circular i.e. after the last element comes the first one.
     static dotConnRules = [
         ['dart A', 'dart A', 'dart A', 'dart A', 'dart A'],
         ['dart C', 'kite D', 'kite B'],
@@ -14,10 +17,10 @@ export default class PenroseTile {
         ['dart B', 'kite C', 'kite C', 'dart D'],
     ];
     coord = {}; // {A: [254,854], B: [658,78],...D: [658,74]}
-    decor = {};
+    decor = {}; // {type: "amman", coord: {A1:[15.458, 122.89], A2:.... A4:[18.9, 119]}}
 
     // The occupation of the points with dots.
-    dots = {
+    dots = { // {A: DotObj, B: DotObj,...D: DotObj}
         A: null,
         B: null,
         C: null,
@@ -34,7 +37,7 @@ export default class PenroseTile {
         return this.points.at((this.points.indexOf(initPoint) + n) % 4);
     }
 
-    // add the dot to the corresponding point
+    // add the Dot object to the corresponding point
     addDot(dot, point) {
         this.dots[point] = dot;
     }
@@ -74,4 +77,19 @@ export default class PenroseTile {
         return (deg * Math.PI) / 180;
     }
 }
-PenroseTile.prototype.phi = (1 + Math.sqrt(5)) / 2;
+
+/*
+
+class PenroseTile {
+    constructor()
+    // some methods
+}
+
+// other function
+function other(decor) {
+    PenroseTile.prototype.decorType = decor;
+    return;
+}
+
+other();
+*/

@@ -6,9 +6,9 @@ import Dot from '../dots/dot.js';
 // open is for the dots which are not done (no 360 degree occupation) and have one or more possible tiles to attach (on both sides of the gap)
 // restricted is for the dots where just one possible tile can be attached on min one side of the gap - these dots must be processed first! (These are elemnts of open too.)
 let allDots = {}; // {584-875: DotObj, 698-41: DotObj,...}
-let inviewOpenDots = []; // [Dot Object, Dot Object,...]
-let openDots = []; // [Dot Object, Dot Object,...]
-let restrictedDots = []; // [Dot Object, Dot Object,...]
+const inviewOpenDots = []; // [Dot Object, Dot Object,...]
+const openDots = []; // [Dot Object, Dot Object,...]
+const restrictedDots = []; // [Dot Object, Dot Object,...]
 let border;
 let scaleBase;
 let borderOverlay;
@@ -24,7 +24,7 @@ export const getInviewOpenDots = function () {
     return inviewOpenDots;
 };
 
-const getTileDataByDot = function (dot, n, coffin = { shortSide: false, worm: undefined }) {
+const getTileDataByDot = function (dot, n, coffin = { shortSide: false, worm: false }) {
     const { tiles: newTileData, dir: attacheDirection } = dot.nextPossTiles;
     const targetTileData = dot.occupy.at(attacheDirection - 1);
 
@@ -53,6 +53,8 @@ const getTileDataByDot = function (dot, n, coffin = { shortSide: false, worm: un
     };
 };
 
+// Its actually represents/calculate the "length" between dotA and dotB (I just let the square root off from the pitagoras formula for win a little performace. For the measurement reason its unnecessary)
+// 2xround for floating point fail correction
 const calcSquare = function (dotA, dotB) {
     return Math.round(
         Math.round(
@@ -274,13 +276,13 @@ const vertexRuleReferee = function (dot) {
 };
 
 const borderControl = function (dot) {
-    // if the dot is outside the overlayed border, return false (the whole tile should be not rendered)
+    // if the dot is outside the overlayed border, return 0/"false" (the whole tile should be not rendered)
     const dotInRenderZone = dot.coord.every(
         (xy, i) => xy > 0 - borderOverlay && xy < border[i] + borderOverlay
     );
     if (!dotInRenderZone) return 0;
 
-    // the dot is inside the borders of viewport, return true (the whole tile must be rendered)
+    // the dot is inside the borders of viewport, return 1/"true" (the whole tile must be rendered)
     const dotInViewport = dot.coord.every((xy, i) => xy > 0 && xy < border[i]);
     if (dotInViewport) return 1;
 
@@ -297,7 +299,7 @@ const borderControl = function (dot) {
 
 // could be made faster? first check dot.occupy.length === 1   ==>  indexes are -1
 const organizeDot = function (dot) {
-    if (dot.borderPermission === undefined) {
+    if (dot.borderPermission === void 0) {
         dot.borderPermission = borderControl(dot);
         dot.borderPermission % 2 && inviewOpenDots.push(dot);
     }
@@ -390,4 +392,5 @@ export const clear = function () {
     allDots = {}; // debug
     openDots.splice(0);
     restrictedDots.splice(0);
+    inviewOpenDots.splice(0);
 };

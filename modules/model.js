@@ -2,9 +2,10 @@ import * as dotManager from './managers/dotManager.js';
 import * as tileManager from './managers/tilemanager.js';
 import { randomRange } from './helpers.js';
 
-const visibleTiles = [];
+const visibleTiles = []; // [TileObj, TileObj...]
 let generatedTiles = 0;
 
+// set the first tile and invoke the mainLoop
 export const init = function (penroseSettings) {
     const visibleArea = [penroseSettings.width, penroseSettings.height];
     const firstTileName = Math.round(Math.random()) ? 'kite' : 'dart';
@@ -25,7 +26,7 @@ export const getVisibleTiles = function () {
     return visibleTiles;
 };
 
-// Happens from 20000 tiles ca. 10 times
+// When the issue with a gap happens (read documenttion), remove the recent tile. Happens 1 time per ca. 2000 generated tiles.
 const removeElement = function (tile) {
     tileManager.discardTile(tile);
 
@@ -35,7 +36,7 @@ const removeElement = function (tile) {
     }
 };
 
-// This function gets an object, a blueprint of new Tile. Based on that, creates a new Tile, loaded with all necessary data like coordinates, Point occupation with dots.
+// This function gets an object, a blueprint of new tile. Based on that, creates a new Tile, loaded with all necessary data like coordinates, occupation...
 // (i.e. return a "redy to render" tile)
 const createElement = function ({
     newTileName,
@@ -55,9 +56,10 @@ const createElement = function ({
 
     !setDotsResult.succeed && removeElement(newTile);
 
-    return setDotsResult.succeed && setDotsResult.renderable && newTile;
+    return setDotsResult.succeed && setDotsResult.renderable ? newTile : null;
 };
 
+// generate the tiles one after another till the viewport is full (till no more inViewOpenDots are left)
 const mainLoop = function () {
     while (dotManager.getInviewOpenDots().length) {
         const nextTileBlueprint = dotManager.getNextTileBlueprint();
@@ -67,6 +69,7 @@ const mainLoop = function () {
     }
 };
 
+// clear the states for the next generated pattern.
 export const cleanUp = function () {
     tileManager.clear();
     dotManager.clear();

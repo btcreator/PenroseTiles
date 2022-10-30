@@ -171,16 +171,27 @@ body {
     grid-column: 2 / 3;
     margin: 10px;
 }
+.sub-item img:first-of-type {
+    grid-row: 1 / 2;
+}
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
+    appearance: none;
     margin: 0;
 }
 
-input#color_kite,
-input#color_dart {
+.color input {
     padding: 0;
+}
+
+.color .inputs {
+    margin-bottom: 20px;
+}
+
+.color img {
+    margin-top: 38px;
 }
 
 .notes {
