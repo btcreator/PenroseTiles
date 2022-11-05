@@ -1,17 +1,19 @@
+/** The controller in init 
+ * - call the interactionHandler which grabs the settings inputs set from user and invoke the pattern generator which...
+ * - genarate the tiles (model)
+ * - render the tiles on the screen (view)
+ * - set download link (interact)
+ * - then clean the states
+ */
 import 'core-js/stable';
 import * as model from './model.js';
 import * as view from './views/renderView.js';
 import * as interact from './views/interactionView.js';
 
-// interact in init grabs the settings inputs set from user and invoke the pattern generator with those.
 const init = function () {
     interact.interactionHandler(patternGenerator);
 };
 
-// model generates the tiles,
-// view render the tiles on the screen
-// interact set the download link
-// clear the states
 const patternGenerator = function (penroseSettings) {
     model.init(penroseSettings);
     view.init(penroseSettings, model.getVisibleTiles());
@@ -21,6 +23,8 @@ const patternGenerator = function (penroseSettings) {
 
 init();
 
-/** TODO - cancel button when it takes too long to generate
- * show the estimated time to generate tiles
+/** TODO 
+ * - cancel button when it takes too long to generate
+ * - show the estimated time to generate tiles
+ * - allTiles in tile manager needed? I don't think so...remove from the documentation too when appears
  */

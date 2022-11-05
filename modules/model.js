@@ -1,3 +1,12 @@
+/** The model module manages the tile generation / data flow between tileManager and dotManager
+ * - creates a ready to render tile or
+ * - remove when nencessary
+ * - generate tiles in loop until all tiles for the pattern are not created
+ * 
+ * - in tileManager is a tile created, rotated, scaled, and set his position on coordinate system
+ * - in dotManager are the placement rules managed and other important data added to the Tiles and Dots
+ */
+
 import * as dotManager from './managers/dotManager.js';
 import * as tileManager from './managers/tilemanager.js';
 import { randomRange } from './helpers.js';
@@ -9,8 +18,8 @@ let generatedTiles = 0;
 export const init = function (penroseSettings) {
     const visibleArea = [penroseSettings.width, penroseSettings.height];
     const firstTileName = Math.round(Math.random()) ? 'kite' : 'dart';
-    const initX = randomRange(visibleArea[0] - 2) + 1;
-    const initY = randomRange(visibleArea[1] - 2) + 1;
+    const initX = randomRange(visibleArea[0]);
+    const initY = randomRange(visibleArea[1]);
     const rotation = penroseSettings.rotation;
     const scale = penroseSettings.density;
     const decoration = penroseSettings.decoration;
@@ -59,7 +68,7 @@ const createElement = function ({
     return setDotsResult.succeed && setDotsResult.renderable ? newTile : null;
 };
 
-// generate the tiles one after another till the viewport is full (till no more inViewOpenDots are left)
+// generate the tiles one after another till the viewport is full (untill no more inViewOpenDots are left)
 const mainLoop = function () {
     while (dotManager.getInviewOpenDots().length) {
         const nextTileBlueprint = dotManager.getNextTileBlueprint();

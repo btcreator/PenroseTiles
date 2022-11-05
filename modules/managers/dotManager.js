@@ -9,7 +9,7 @@ let allDots = {}; // {584-875: DotObj, 698-41: DotObj,...}
 const inviewOpenDots = []; // [Dot Object, Dot Object,...]
 const openDots = []; // [Dot Object, Dot Object,...]
 const restrictedDots = []; // [Dot Object, Dot Object,...]
-let border;
+let border; // [width, height]
 let scaleBase;
 let borderOverlay;
 
@@ -252,7 +252,7 @@ const vertexRuleReferee = function (dot) {
     const regexpForNextCWTile = new RegExp(`.{6}(?=${dotTxt})`, 'g');
     const regexpForNextCCWTile = new RegExp(`(?<=${dotTxt}).{6}`, 'g');
 
-    const possibleNextTiles = PenroseTile.dotConnRules.reduce(
+    const possibleNextTiles = PenroseTile.vertexRules.reduce(
         (collector, rule) => {
             let ruleTxt = rule.join('');
             ruleTxt += ruleTxt;
@@ -283,10 +283,10 @@ const borderControl = function (dot) {
     if (!dotInRenderZone) return 0;
 
     // the dot is inside the borders of viewport, return 1/"true" (the whole tile must be rendered)
-    const dotInViewport = dot.coord.every((xy, i) => xy > 0 && xy < border[i]);
+    const dotInViewport = dot.coord.every((xy, i) => xy >= 0 && xy <= border[i]);
     if (dotInViewport) return 1;
 
-    // the other dots are in the overlay between viewport border and the not rendering zone
+    // the other dots are in the overlay, between viewport border and the not rendering zone.
     // calculate the absolute x y value/distances from a corner (no matter which corner, the coordinates are absolute)
     let [absX, absY] = dot.coord;
     absX = border[0] / 2 - Math.abs(border[0] / 2 - Math.abs(absX));

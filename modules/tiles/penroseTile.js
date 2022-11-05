@@ -5,9 +5,9 @@ export default class PenroseTile {
     static phi = (1 + Math.sqrt(5)) / 2;
     static points = ['A', 'B', 'C', 'D'];
 
-    // the rule (vertex rule): 7 different tile kombination is possible around one dot. Each possibility is listed here with possible tile
+    // the vertex rule: 7 different tile kombination is possible around one dot. Each possibility is listed here with possible tile
     // point joining to the dot in the right order. The order is in clockwise direction and circular i.e. after the last element comes the first one.
-    static dotConnRules = [
+    static vertexRules = [
         ['dart A', 'dart A', 'dart A', 'dart A', 'dart A'],
         ['dart C', 'kite D', 'kite B'],
         ['kite A', 'kite A', 'kite A', 'kite A', 'kite A'],
@@ -27,7 +27,8 @@ export default class PenroseTile {
         D: null,
     };
 
-    constructor(decoration) {
+    constructor(rotation, decoration) {
+        this.rotation = rotation;
         this.decor.type = decoration === 'none' ? null : decoration;
         this.decor.coord = {};
     }
