@@ -1,4 +1,4 @@
-<image width="100px" src="https://raw.githubusercontent.com/btcreator/PenroseTiles/47fa80c6aa9ae15186d76f90f12c0bfe886f5d27/img/logo.png?token=GHSAT0AAAAAAB2YCGKTIFMES5OP2R733B2CY3NNPRA" align="left"></image>
+<image width="100px" src="https://github.com/btcreator/PenroseTiles/blob/master/img/logo.png?raw=true" align="left"></image>
 Random Penrose Pattern Generator
 =========================================
 
