@@ -12,7 +12,9 @@ In this project I don't use the inflation / deflation method, but instead just p
 > When you are interesting how it works and dive deeper, then please read the `documentation`
 
 I hope, you will find it useful to your works.
+This is my all first "big" project after learning JavaScript programming language, so I would appriciate each comment / opinion.
 
+Thank You
 Best Regards
 Peter
 
