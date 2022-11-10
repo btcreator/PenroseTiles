@@ -35,10 +35,8 @@ export const getVisibleTiles = function () {
     return visibleTiles;
 };
 
-// When the issue with a gap happens (read documenttion), remove the recent tile. Happens 1 time per ca. 2000 generated tiles.
+// When the issue with a gap happens (read documenttion), remove the recent tile (from its each dot). Happens 1 time per ca. 2000 generated tiles.
 const removeElement = function (tile) {
-    tileManager.discardTile(tile);
-
     for (let dotToAudit of Object.values(tile.dots)) {
         if (!dotToAudit) continue;
         dotManager.redefineDot(dotToAudit, tile);
@@ -80,7 +78,6 @@ const mainLoop = function () {
 
 // clear the states for the next generated pattern.
 export const cleanUp = function () {
-    tileManager.clear();
     dotManager.clear();
     visibleTiles.splice(0);
 };

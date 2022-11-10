@@ -8,22 +8,18 @@ import PenroseTile from '../tiles/penroseTile.js';
 import Kite from '../tiles/kite.js';
 import Dart from '../tiles/dart.js';
 
-// allTiles is the container for all created Tiles
-const allTiles = []; // [TileObj, TileObj, ...]
 let scaleBase;
 let tileDecor;
 
 export const init = function (firstTileName, x, y, rotation, scale, decoration) {
     scaleBase = scale;
     tileDecor = decoration;
-    const firstTile = createRawTile(firstTileName, rotation).moveToPos(x, y);
-    allTiles.push(firstTile);
-    return firstTile;
+    return createRawTile(firstTileName, rotation).moveToPos(x, y);
 };
 
 // each point connects two sides together (point A -> sides d & a). This returns the corresponding side, based on the attaching direction
 const convPointToSide = function (touchPoint, dir) {
-    return dir ? touchPoint.toLowerCase() : PenroseTile.getNeigPointN(touchPoint, -1).toLowerCase();
+    return dir ? PenroseTile.getNeigPointN(touchPoint, -1).toLowerCase() : touchPoint.toLowerCase();
 };
 
 // get the initial angle of the required side
@@ -31,8 +27,8 @@ const getAngle = function (tileName, side) {
     return tileName === 'kite' ? Kite.refAngles[side] : Dart.refAngles[side];
 };
 
-// get how much we should rotate on tile to get the target tile contact side and the new tile contact side together / in contact when the tile is placed on his right place
-// how it is calculated: bring the two tile sides to the same angle level (angleTargetTile - angleNewTile => the new Tile side is now parallel with the target side - just on initial state).
+// returns how much we should rotate on the new tile to get the target tile contact side and the new tile contact side together / in contact when the tile is placed on his right place
+// how it is calculated: bring the two tile sides to the same angle level (angleTargetTile - angleNewTile => the new Tile side would now parallel with the target side - just on initial state!).
 // Turn around the tile (+180). Now the tiles dont cover each other. At the end just rotate to the actual target position (+targetTile.rotation)
 const getRotation = function (newTileName, newTileContactSide, targetTile, targetContactSide) {
     const angleTargetTile = getAngle(targetTile.name, targetContactSide);
@@ -65,9 +61,9 @@ export const setTile = function (
     targetTouchPoint,
     attacheDirection
 ) {
-    const targetContactSide = convPointToSide(targetTouchPoint, !attacheDirection);
+    const targetContactSide = convPointToSide(targetTouchPoint, attacheDirection);
 
-    const newTileContactSide = convPointToSide(newTileTouchPoint, attacheDirection);
+    const newTileContactSide = convPointToSide(newTileTouchPoint, !attacheDirection);
 
     const newTileRotation = getRotation(
         newTileName,
@@ -83,17 +79,5 @@ export const setTile = function (
         targetTile.coord,
         targetTouchPoint
     );
-    newPenroseTile.moveToPos(...newTilePos);
-
-    allTiles.push(newPenroseTile);
-    return newPenroseTile;
-};
-
-export const discardTile = function (tile) {
-    const indexOfTileToRemove = allTiles.lastIndexOf(tile);
-    allTiles.splice(indexOfTileToRemove, 1);
-};
-
-export const clear = function () {
-    allTiles.splice(0);
+    return newPenroseTile.moveToPos(...newTilePos);
 };
