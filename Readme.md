@@ -6,7 +6,7 @@ This generator generates a PPT (Perfect Pattern Tileing) from a randomly placed 
 
 ### Why is this different than other penrose pattern generators
 
-By this project I don't use the inflation / deflation method, but instead just place tiles one by one next to each other.
+In this project I don't use the inflation / deflation method, but instead just place tiles one by one next to each other.
 
 > The live online version can be found [here][0].<br>
 > When you are interesting how it works and dive deeper, then please read the `documentation`
