@@ -14,8 +14,8 @@ In this project I don't use the inflation / deflation method, but instead just p
 I hope, you will find it useful to your works. <br>
 This is my all first "big" project after learning JavaScript programming language, so I would appriciate each comment / opinion.
 
-Thank You
-Best Regards
+Thank You <br>
+Best Regards <br>
 Peter
 
 -----
