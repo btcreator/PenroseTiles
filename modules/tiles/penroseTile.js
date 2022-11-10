@@ -78,19 +78,3 @@ export default class PenroseTile {
         return (deg * Math.PI) / 180;
     }
 }
-
-/*
-
-class PenroseTile {
-    constructor()
-    // some methods
-}
-
-// other function
-function other(decor) {
-    PenroseTile.prototype.decorType = decor;
-    return;
-}
-
-other();
-*/

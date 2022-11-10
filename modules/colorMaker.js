@@ -21,7 +21,7 @@ export const getDecorColor = function (decor) {
     return colors.decorColor[decor];
 };
 
-// generates a random color  - TODO
+// generates a random color
 const randomColor = function (rgbRange) {
     const tint1 = randomRange(rgbRange.red.max, rgbRange.red.min);
     const tint2 = randomRange(rgbRange.green.max, rgbRange.green.min);
@@ -30,6 +30,7 @@ const randomColor = function (rgbRange) {
 };
 
 /*
+Under construction....
     //rotated gradient coloring
     const maxGradWidth = width - 100;
     const maxGradHeight = height - 100;

@@ -24,7 +24,10 @@ const patternGenerator = function (penroseSettings) {
 init();
 
 /** TODO 
+ * - todos in dotManager
  * - cancel button when it takes too long to generate
  * - show the estimated time to generate tiles
+ * - live example for settings
+ * - different coloring (todos in colorMaker)
  * - allTiles in tile manager needed? I don't think so...remove from the documentation too when appears
  */

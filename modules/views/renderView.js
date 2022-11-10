@@ -21,7 +21,6 @@ export const init = function (penroseSettings, visibleTiles) {
         dartColor: penroseSettings.dartColor,
         decorColor: penroseSettings.decorationColor,
     });
-    console.log(colors.getDecorColor('arcs').large);
     clearView();
     renderSVG(visibleTiles);
 };

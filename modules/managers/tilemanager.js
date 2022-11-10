@@ -49,10 +49,12 @@ const createRawTile = function (tileName, rotation) {
 
 // calculate the finally x,y position of a new Tile. The point "A" is the ref point.
 const calcXYcoords = function (newTileCoord, newTileTouchPoint, targetTileCoord, targetTouchPoint) {
-    // shorter, but hurts for readability?: return newTileCoord[newTileTouchPoint].map((touchPointCoord, i) => targetTileCoord[targetTouchPoint][i] - touchPointCoord);
+    return newTileCoord[newTileTouchPoint].map((touchPointCoord, i) => targetTileCoord[targetTouchPoint][i] - touchPointCoord);
+    // the same as:
+    /*
     const newTilePosX = targetTileCoord[targetTouchPoint][0] - newTileCoord[newTileTouchPoint][0];
     const newTilePosY = targetTileCoord[targetTouchPoint][1] - newTileCoord[newTileTouchPoint][1];
-    return [newTilePosX, newTilePosY];
+    return [newTilePosX, newTilePosY]; */
 };
 
 //  create the next deployable tile, which is rotated and moved to required position.

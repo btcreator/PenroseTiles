@@ -58,7 +58,7 @@ export default class Dot {
     }
 
     // As next possible tiles on both sides (cw or ccw) gives back the one, which has just 1 possibility.
-    // when both have just one or two, in that case its no matter which one is returned (in our case is that always the
+    // when both have just one or two, in that case it's no matter which one is returned (in our case is that always the
     // possibily on cw side).
     get nextPossTiles() {
         return this.#nextPossTiles.cw.length > this.#nextPossTiles.ccw.length
