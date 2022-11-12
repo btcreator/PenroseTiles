@@ -38,18 +38,21 @@ export const getInviewOpenDots = function () {
     return inviewOpenDots;
 };
 
-// get the tile that is allowed to attache to the dot (the random number of n -0 or 1- is for choose the tile that can be attached to the dot- by restricted dots, the n is always 0. By open, it's random). 
+// get the tile that is allowed to attache to the dot (the random number of n -0 or 1- is for choose the tile that can be attached to the dot- by restricted dots, the n is always 0. By open, it's random).
 const getTileDataByDot = function (dot, n, coffin = { shortSide: false, worm: false }) {
     const { tiles: newTileData, dir: attacheDirection } = dot.nextPossTiles;
     const targetTileData = dot.occupy.at(attacheDirection - 1);
 
     if (coffin.shortSide) {
-        // when the dot lies on the short side (can't happen by calling with a restricted dot), then the worm placement decides that kite or dart is allowed to place to that dot. 
+        // when the dot lies on the short side (can't happen by calling with a restricted dot), then the worm placement decides that kite or dart is allowed to place to that dot.
         // when the worm is true, then the corner formation is star (false = corner formation is sun). Then we look that the dot is one of the hotspots and based on that informations
-        // we reset the variable n when necessary. Then the allowed tile data would be returned 
-        n = coffin.worm ^ 
-        (/A|B/.test(targetTileData.point) && targetTileData.tile.name === 'kite') ^ 
-        (newTileData[n].name === targetTileData.tile.name) ? (n + 1) % 2 : n;
+        // we reset the variable n when necessary. Then the allowed tile data would be returned
+        n =
+            coffin.worm ^
+            (/A|B/.test(targetTileData.point) && targetTileData.tile.name === 'kite') ^
+            (newTileData[n].name === targetTileData.tile.name)
+                ? (n + 1) % 2
+                : n;
         // the next code is the same as the last line, but better readable
         /* if (coffin.worm) {
             if (/A|B/.test(targetTileData.point) && targetTileData.tile.name === 'kite') {
@@ -225,7 +228,7 @@ const verticesRuleReferee = function (openDot) {
     return coffinSetup;
 };
 
-// when we reach a dead surface, the next tile is placed randomly to an open dot (inviewOpenDot). Random select a dot, check for the vertices rule (short side of coffin shape), 
+// when we reach a dead surface, the next tile is placed randomly to an open dot (inviewOpenDot). Random select a dot, check for the vertices rule (short side of coffin shape),
 // random select one of the possible tiles that can be attached (kite or dart / 0 or 1). Then based on the dot and the rule, we get a tile data (a "blueprint" of a tile).
 const getOpenPosition = function () {
     const randomOpenDot = inviewOpenDots.at(randomRange(inviewOpenDots.length - 1));
@@ -382,7 +385,7 @@ const organizeDot = function (dot) {
     return;
 };
 
-// we loop through each point of the new tile and set a dot to that point (add the dot to the tile dots property - an existing dot or a new one), 
+// we loop through each point of the new tile and set a dot to that point (add the dot to the tile dots property - an existing dot or a new one),
 // add the tile to each dot and organize the dots with the new data (reorganize it in the dots holders, gets the new nextPossibleTiles values)
 // decide that the tile should be rendered or not and watch for a gap (gap watchdog)
 // return that the tile can be placed succesfully or not (when not, must be removed - gap happened) and that it reaches in the viewfiled of not (renderable)
@@ -409,8 +412,18 @@ export const setDots = function (newTile, newTileTouchPoint, attacheDirection) {
         // When true or false (1/0) is anytime set, then the destiny of the tile is set (can't be changed anymore). Just by the weak true or weak false must we look closer.
         // renderable starts with -1, when is switched to -2, then it stays so and just a 0 or 1 can it switch over (shortly, it can be switched from -1 to -2, ftom -2 to 0/1 but not the other way) (see documentation)
         if (renderable < 0)
-            renderable = !(renderable % 2 || dot.borderPermission > -1) ? renderable : dot.borderPermission;
-        // todo - place the original one as comment
+            renderable = !(renderable % 2 || dot.borderPermission > -1)
+                ? renderable
+                : dot.borderPermission;
+        // the if statement above is the same as the next one (just for the better readability)
+        /*  
+            if (renderable > -1) {
+                renderable = renderable;
+            } else if (renderable === -2) {
+                renderable = dot.borderPermission > -1 ? dot.borderPermission : renderable;
+            } else {
+                renderable = dot.borderPermission;
+            }*/
 
         // when a tile is placed to the pattern, and there is a continuous edge (no gap) then the tile have always 2 points attached to a dot which have occupation more than 1 (not a newly created dot),
         // and not a fully occupied dot. There are always just 2 of them! When a gap happens, then there would be a third one and then the watchdog signals.
