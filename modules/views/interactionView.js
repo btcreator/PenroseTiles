@@ -4,6 +4,10 @@
  * - create a downloadable svg image and
  * - set the download link */
 
+import none from 'url:../../img/decoration-none.png';
+import amman from 'url:../../img/decoration-amman.png';
+import arcs from 'url:../../img/decoration-arcs.png';
+
 // Interaction elements (buttons, menus)
 const floatingMenu = document.querySelector('.floating-menu');
 const menuButton = document.querySelector('.hamburger');
@@ -98,7 +102,7 @@ const addHandlersToMenuItems = function () {
         if (!e.target.checked) return;
         hide(formInputColorsDecoration);
         wrapColorDecorInputs.querySelector(`.${e.target.value}`).classList.remove('hidden');
-        decorationColorImage.src = `decoration-${e.target.value}.png`;
+        decorationColorImage.src = [e.target.value];
     });
 };
 
