@@ -3,7 +3,7 @@
  * - set the handlers for the menu items (event listeners)
  * - create a downloadable svg image and
  * - set the download link */
-// https://github.com/elwin013/parcel-plugin-static-files-copy
+
 // Interaction elements (buttons, menus)
 const floatingMenu = document.querySelector('.floating-menu');
 const menuButton = document.querySelector('.hamburger');
@@ -126,12 +126,12 @@ const hideSubMenu = function () {
 const hide = function (toHide) {
     toHide.forEach(item => item.classList.add('hidden'));
 };
-const hideAndShow = (function() {
+const hideAndShow = (function () {
     let item;
-    return function(element) {
-        if(item === element) return;
+    return function (element) {
+        if (item === element) return;
         item && item.classList.toggle('some');
         element.classList.toggle('some');
         item = element;
-    }
+    };
 })();

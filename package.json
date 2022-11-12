@@ -4,7 +4,7 @@
     "description": "Generates an accurate, full random penrose tileing",
     "scripts": {
         "start": "parcel generator.html",
-        "build": "parcel build index.html"
+        "build": "parcel build index.html --dist-dir ./dist"
     },
     "repository": {
         "type": "git",
