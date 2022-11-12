@@ -4,10 +4,6 @@
  * - create a downloadable svg image and
  * - set the download link */
 
-import none from 'url:../../img/decoration-none.png';
-import amman from 'url:../../img/decoration-amman.png';
-import arcs from 'url:../../img/decoration-arcs.png';
-
 // Interaction elements (buttons, menus)
 const floatingMenu = document.querySelector('.floating-menu');
 const menuButton = document.querySelector('.hamburger');
@@ -26,6 +22,12 @@ const formInputColorsDecoration = document.querySelectorAll('.decoration-type-co
 const wrapDecorationInputs = document.querySelector('.decoration');
 const wrapColorDecorInputs = document.querySelector('.decoration-color');
 const decorationColorImage = document.querySelector('.decoration-img');
+// Pictures for dínamically changing decoration colors (because of parcel - I can't found a better way how to insert these with parcel)
+const decorPics = {
+    none: require('../../img/decoration-none.png'),
+    arcs: require('../../img/decoration-arcs.png'),
+    amman: require('../../img/decoration-amman.png'),
+};
 
 // add listeners for all interaction elements, gather the input information after submit and call the received function
 export const interactionHandler = function (patternGenerator) {
@@ -102,7 +104,7 @@ const addHandlersToMenuItems = function () {
         if (!e.target.checked) return;
         hide(formInputColorsDecoration);
         wrapColorDecorInputs.querySelector(`.${e.target.value}`).classList.remove('hidden');
-        decorationColorImage.src = [e.target.value];
+        decorationColorImage.src = decorPics[e.target.value];
     });
 };
 
