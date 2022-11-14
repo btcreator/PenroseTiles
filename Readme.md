@@ -9,7 +9,7 @@ This generator generates a PPT (Perfect Pattern Tileing) from a randomly placed 
 In this project I don't use the inflation / deflation method, but instead just place tiles one by one next to each other.
 
 > The live online version can be found [here][0].<br>
-> When you are interesting how it works and dive deeper, then please read the `documentation`
+> When you are interesting how it works and dive deeper, then please read the `documentation` pdf
 
 I hope, you will find it useful to your works. <br>
 This is my all first "big" project after learning JavaScript programming language, so I would appriciate each comment / opinion.
