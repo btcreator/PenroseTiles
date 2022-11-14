@@ -203,18 +203,3 @@ input::-webkit-inner-spin-button {
 .hidden {
     display: none;
 }
-
-/******************************************** Start here*/
-.start {
-    text-align: center;
-    margin-top: 50px;
-}
-
-.start p {
-    font-size: x-large;
-}
-
-.start p:first-child {
-    display: inline-block;
-    transform: rotate(90deg);
-}
