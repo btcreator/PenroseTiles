@@ -228,7 +228,6 @@ input::-webkit-inner-spin-button {
         height: 40px;
     }
     .link-console {
-        grid-template-columns: 1fr auto;
         column-gap: 20px;
     }
     .sub-item img {
