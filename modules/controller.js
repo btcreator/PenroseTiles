@@ -1,4 +1,4 @@
-/** The controller in init 
+/** The controller in init
  * - call the interactionHandler which grabs the settings inputs set from user and invoke the pattern generator which...
  * - genarate the tiles (model)
  * - render the tiles on the screen (view)
@@ -16,6 +16,7 @@ const init = function () {
 
 const patternGenerator = function (penroseSettings) {
     model.init(penroseSettings);
+    interact.toggleLoader();
     view.init(penroseSettings, model.getVisibleTiles());
     interact.setDownloadLink(view.getMarkup());
     model.cleanUp();
@@ -23,7 +24,7 @@ const patternGenerator = function (penroseSettings) {
 
 init();
 
-/** TODO 
+/** TODO
  * - todos in dotManager
  * - cancel button when it takes too long to generate
  * - show the estimated time to generate tiles

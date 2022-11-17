@@ -28,6 +28,8 @@ const decorPics = {
     arcs: require('../../img/decoration-arcs.png'),
     amman: require('../../img/decoration-amman.png'),
 };
+// Loader icon
+const loader = document.querySelector('.loader');
 
 // add listeners for all interaction elements, gather the input information after submit and call the received function
 export const interactionHandler = function (patternGenerator) {
@@ -58,8 +60,9 @@ export const interactionHandler = function (patternGenerator) {
             },
         };
 
-        // requestAnimationFrame for not lagging of close the submenu window
+        // requestAnimationFrame for not lagging of close the submenu window and showing the loader icon
         requestAnimationFrame(() => {
+            toggleLoader();
             hideSubMenu();
             requestAnimationFrame(() => patternGenerator(penroseSettings));
         });
@@ -132,6 +135,12 @@ const hideSubMenu = function () {
 const hide = function (toHide) {
     toHide.forEach(item => item.classList.add('hidden'));
 };
+
+// toggle loader icon
+export const toggleLoader = function () {
+    loader.classList.toggle('hidden');
+};
+
 const hideAndShow = (function () {
     let item;
     return function (element) {
