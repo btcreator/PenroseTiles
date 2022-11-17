@@ -223,18 +223,19 @@ input::-webkit-inner-spin-button {
 
 .loader-img {
     display: inline-block;
-    width: 7%;
+    width: 5%;
+    min-width: 50px;
     height: auto;
     align-self: center;
-    border-radius: 50%;
     animation: loading 1.2s infinite linear;
 }
 
 .loader p {
     align-self: center;
-    font-size: 1.4em;
-    text-shadow: 0 0 5px white;
+    font-size: 1.3em;
     font-weight: bold;
+    text-shadow: 0 0 5px white;
+    margin: 0;
 }
 
 @keyframes loading {
