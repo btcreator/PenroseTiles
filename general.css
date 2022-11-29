@@ -26,6 +26,9 @@ h1 {
     letter-spacing: 0.2em;
     text-shadow: 0 0 4px #a1b195;
     user-select: none;
+    position: absolute;
+    top: 60px;
+    left: 50px;
 }
 
 h2 {
@@ -111,7 +114,6 @@ footer {
     border-radius: 50%;
     position: relative;
     top: -50px;
-
 }
 
 .about-me p {

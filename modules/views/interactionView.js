@@ -1,8 +1,11 @@
 /** This module is for:
  * - gathering the input settings data (then pass it to the generator)
  * - set the handlers for the menu items (event listeners)
+ * - paste the Live View image
+ * - pass the changed input data to update the live View
  * - create a downloadable svg image and
- * - set the download link */
+ * - set the download link
+ */
 
 // Interaction elements (buttons, menus)
 const floatingMenu = document.querySelector('.floating-menu');
@@ -17,56 +20,54 @@ const formInputColorKite = document.querySelector('#color_kite');
 const formInputColorDart = document.querySelector('#color_dart');
 const formInputDensity = document.querySelector('#density');
 const formInputRotation = document.querySelector('#rotation');
-const formInputColorsDecoration = document.querySelectorAll('.decoration-type-color');
-// Use for controlling of decoration coloring
-const wrapDecorationInputs = document.querySelector('.decoration');
-const wrapColorDecorInputs = document.querySelector('.decoration-color');
-const decorationColorImage = document.querySelector('.decoration-img');
-// Pictures for dínamically changing decoration colors (because of parcel - I can't found a better way how to insert these with parcel)
-const decorPics = {
-    none: require('../../img/decoration-none.png'),
-    arcs: require('../../img/decoration-arcs.png'),
-    amman: require('../../img/decoration-amman.png'),
-};
-// Loader icon
+const formInputsDecorationColor = document.querySelectorAll('.decoration-color input');
+const formInputDecoration = document.querySelector('.decoration');
+// Loader
 const loader = document.querySelector('.loader');
+const message = document.querySelector('.loader-message');
 
-// add listeners for all interaction elements, gather the input information after submit and call the received function
-export const interactionHandler = function (patternGenerator) {
-    addHandlersToMenuItems();
+// Add listeners for all interaction elements, gather the input information after submit and call the generator function
+export const interactionHandler = function (patternGenerator, liveImgContainer, updateLiveView) {
+    addHandlersToMenuItems(liveImgContainer);
+    addOnInputChangeHandlers(updateLiveView);
 
-    // Add listener for the generate / submit button
+    // add listener for the generate / submit button
     subMenu.addEventListener('submit', ev => {
         ev.preventDefault();
 
-        // gathering inputs
-        const penroseSettings = {
-            width: formInputWidth.valueAsNumber || window.innerWidth,
-            height: formInputHeight.valueAsNumber || window.innerHeight,
-            kiteColor: formInputColorKite.value,
-            dartColor: formInputColorDart.value,
-            density:
-                Number(formInputDensity.max) +
-                Number(formInputDensity.min) -
-                formInputDensity.valueAsNumber,
-            rotation: formInputRotation.valueAsNumber,
-            decoration: document.querySelector('.decoration input:checked').value,
-            decorationColor: {
-                amman: wrapColorDecorInputs.querySelector('#color_amman').value,
-                arcs: {
-                    large: wrapColorDecorInputs.querySelector('#color_arc_large').value,
-                    small: wrapColorDecorInputs.querySelector('#color_arc_small').value,
-                },
-            },
-        };
+        // set gathered inputs together as settings
+        const density = formInputDensity.valueAsNumber;
+        const penroseSettings = getInitSettings(density);
 
-        // requestAnimationFrame for not lagging of close the submenu window and showing the loader icon
+        // requestAnimationFrame for not lagging of the submenu closing window animation and showing the loader icon
         requestAnimationFrame(() => {
-            toggleLoader();
-            hideSubMenu();
+            toggleLoader('Generating...');
+            submenuToggle();
             requestAnimationFrame(() => patternGenerator(penroseSettings));
         });
     });
+};
+
+// Gathering and return inputs
+export const getInitSettings = function (density) {
+    return {
+        width: formInputWidth.valueAsNumber || window.innerWidth,
+        height: formInputHeight.valueAsNumber || window.innerHeight,
+        tileColor: {
+            kite: formInputColorKite.value,
+            dart: formInputColorDart.value,
+        },
+        density: Number(formInputDensity.max) + Number(formInputDensity.min) - density,
+        rotation: formInputRotation.valueAsNumber,
+        decoration: document.querySelector('.decoration input:checked').value,
+        decorationColor: {
+            amman: document.querySelector('#color_amman').value,
+            arcs: {
+                large: document.querySelector('#color_arc_large').value,
+                small: document.querySelector('#color_arc_small').value,
+            },
+        },
+    };
 };
 
 // Create a downloadable file from the svg markup rendered on the viewport and set the link
@@ -83,70 +84,70 @@ export const setDownloadLink = function (svgMarkup) {
     container.insertAdjacentElement('afterbegin', element);
 };
 
-// Add listeners for all menu / submenu elements and other menu items (except submit)
-const addHandlersToMenuItems = function () {
+// Add listener for the main menu
+const addHandlersToMenuItems = function (liveImgContainer) {
     menuButton.addEventListener('click', () => {
         menuButton.innerText = menuButton.innerText === '≡' ? '×' : '≡';
         floatingMenu.classList.toggle('slide');
-        hideSubMenu();
+        submenuToggle();
     });
 
     settingsButtons.addEventListener('click', ev => {
-        subMenuWindowHandler(ev.target.dataset.type);
-    });
-
-    formInputDensity.addEventListener('input', function () {
-        this.parentElement.querySelector('.range-display').innerText = this.value;
-    });
-
-    formInputRotation.addEventListener('input', function () {
-        this.parentElement.querySelector('.range-display').innerText = `${this.value} deg`;
-    });
-
-    wrapDecorationInputs.addEventListener('click', function (e) {
-        if (!e.target.checked) return;
-        hide(formInputColorsDecoration);
-        wrapColorDecorInputs.querySelector(`.${e.target.value}`).classList.remove('hidden');
-        decorationColorImage.src = decorPics[e.target.value];
+        subMenuWindowHandler(ev.target.dataset.type, liveImgContainer);
     });
 };
 
-// show / hide submenu window on corresponding button click
-const subMenuWindowHandler = function (subMenuName) {
+// Add onchange listeners to inputs. When triggered, update the live view.
+const addOnInputChangeHandlers = function (updateLiveView) {
+    // density range change
+    formInputDensity.addEventListener('input', function () {
+        this.parentElement.querySelector('.range-display').innerText = this.value;
+        updateLiveView('density', 110 - this.value);
+    });
+    // rotation range change
+    formInputRotation.addEventListener('input', function () {
+        this.parentElement.querySelector('.range-display').innerText = `${this.value} deg`;
+        updateLiveView('rotation', this.value + 'deg');
+    });
+    // tiles and decoration colors change
+    formInputColorKite.addEventListener('input', ev => updateLiveView('kite', ev.target.value));
+    formInputColorDart.addEventListener('input', ev => updateLiveView('dart', ev.target.value));
+    formInputsDecorationColor.forEach(inputEl =>
+        inputEl.addEventListener('input', ev =>
+            updateLiveView(ev.target.dataset.name, ev.target.value)
+        )
+    );
+    // decoration radio buttons change
+    formInputDecoration.addEventListener(
+        'click',
+        ev => !ev.target.checked || updateLiveView('decoration', ev.target.value)
+    );
+};
+
+// Show / hide submenu window on corresponding button click and replace the live image
+const subMenuWindowHandler = function (subMenuName, liveImgContainer) {
     if (!subMenuName) return;
 
     const subMenuItem = document.querySelector(`.${subMenuName}`);
-    subMenu.classList.remove('hidden');
-
-    if (subMenuItem.classList.contains('hidden')) {
-        hide(submenuChildren);
-        subMenuItem.classList.toggle('hidden');
-    } else {
-        hideSubMenu();
-    }
+    subMenuItem.querySelector('.image-holder').appendChild(liveImgContainer);
+    submenuToggle(subMenuItem);
 };
 
-// hide submenu window
-const hideSubMenu = function () {
-    hide(submenuChildren);
-    subMenu.classList.add('hidden');
+// Toggle submenu window and submenu items
+const submenuToggle = function (toToggle = null) {
+    const hideParent = submenuChildren.reduce(
+        (acc, item) =>
+            item.classList.toggle(
+                'hidden',
+                !(item === toToggle && toToggle.classList.contains('hidden'))
+            ) && acc,
+        true
+    );
+    subMenu.classList.toggle('hidden', hideParent);
 };
 
-const hide = function (toHide) {
-    toHide.forEach(item => item.classList.add('hidden'));
-};
-
-// toggle loader icon
-export const toggleLoader = function () {
+// Toggle loader and change text
+export const toggleLoader = function (msg = message.innerText) {
+    message.innerText = msg;
     loader.classList.toggle('hidden');
 };
-
-const hideAndShow = (function () {
-    let item;
-    return function (element) {
-        if (item === element) return;
-        item && item.classList.toggle('some');
-        element.classList.toggle('some');
-        item = element;
-    };
-})();

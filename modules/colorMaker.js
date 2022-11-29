@@ -7,14 +7,14 @@
 
 import { randomRange } from './helpers.js';
 
-let colors; // {kiteColor: '#56DF8C', dartColor: '#FF12A3', decorColor: {amman: '#...', arcs: {large: '#...', small: '#...'}}
+let colors; // {tileColor: {kite: '#56DF8C', dart: '#FF12A3'}, decorColor: {amman: '#...', arcs: {large: '#...', small: '#...'}}
 
 export const setPalette = function (colorPalette) {
     colors = colorPalette;
 };
 
-export const getTileColor = function (tile) {
-    return tile.name === 'kite' ? colors.kiteColor : colors.dartColor;
+export const getTileColor = function (tileName) {
+    return colors.tileColor[tileName];
 };
 
 export const getDecorColor = function (decor) {

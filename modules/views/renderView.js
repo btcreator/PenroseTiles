@@ -17,8 +17,7 @@ export const init = function (penroseSettings, visibleTiles) {
     height = penroseSettings.height;
     scale = penroseSettings.density;
     colors.setPalette({
-        kiteColor: penroseSettings.kiteColor,
-        dartColor: penroseSettings.dartColor,
+        tileColor: penroseSettings.tileColor,
         decorColor: penroseSettings.decorationColor,
     });
     clearView();
@@ -33,7 +32,7 @@ export const getMarkup = function () {
 const generateSVGpolygon = function (tile) {
     return `<polygon points="${Object.values(tile.coord).reduce(
         (acc, val) => acc + ' ' + val
-    )}" style="fill:${colors.getTileColor(tile)};" />`;
+    )}" style="fill:${colors.getTileColor(tile.name)};" />`;
 };
 // decorations are added to the separate group element to the end of the svg - actually just because of the darts amman line
 // it reach to the "outside" of the tile at one point and because of this, it must be on top of the tiles i.e. at the end.

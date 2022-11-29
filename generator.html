@@ -38,8 +38,10 @@
                 </div>
                 <div class="hamburger">×</div>
             </div>
-            <form class="hidden sub-menu" id="settings">
-                <div class="hidden dimension sub-item">
+
+            <form class="sub-menu hidden" id="settings">
+
+                <div class="dimension sub-item hidden">
                     <div class="inputs">
                         <label class="hidden" for="width" form="settings">Width</label>
                         <input id="width" type="number" name="width" form="settings" /><br />
@@ -49,11 +51,12 @@
                         <p class="notes">Default: <br />Window size (viewport)</p>
                     </div>
 
-                    <img src="img/dimension.png" alt="Showing dimension width and height" />
+                    <div class="image-holder"></div>
+                    <!--img src="img/dimension.png" alt="Showing dimension width and height" /-->
                 </div>
 
-                <div class="hidden color sub-item">
-                    <div class="inputs tiles-color">
+                <div class="color sub-item hidden">
+                    <div class="inputs">
                         <p>Tile colors</p>
                         <label for="color_kite" form="settings">Kite color</label>
                         <input
@@ -73,12 +76,12 @@
                         />
                     </div>
 
-                    <div class="inputs decoration-color">
+                    <div class="inputs">
                         <p>Decoration colors</p>
-                        <p class="decoration-type-color none notes">
+                        <p class="notes">
                             No decoraton selected. Please select decoration first from the menu.
                         </p>
-                        <div class="decoration-type-color amman hidden">
+                        <div class="hidden">
                             <label for="color_amman" form="settings">Amman line color</label>
                             <input
                                 id="color_amman"
@@ -86,9 +89,10 @@
                                 name="color_amman"
                                 form="settings"
                                 value="#0505ff"
+                                data-name="amman"
                             />
                         </div>
-                        <div class="decoration-type-color arcs hidden">
+                        <div class="hidden">
                             <label for="color_arc_large" form="settings"
                                 >Arc large-radius color</label
                             >
@@ -98,6 +102,7 @@
                                 name="color_arc_large"
                                 form="settings"
                                 value="#c40000"
+                                data-name="large"
                             />
                             <label for="color_arc_small" form="settings"
                                 >Arc small-radius color</label
@@ -108,19 +113,21 @@
                                 name="color_arc_small"
                                 form="settings"
                                 value="#00b100"
+                                data-name="small"
                             />
                         </div>
                     </div>
 
-                    <img src="img/kiteDartColor.png" alt="Color of Kite and Dart" />
-                    <img
+                    <div class="image-holder"></div>
+                    <!--img src="img/kiteDartColor.png" alt="Color of Kite and Dart" /-->
+                    <!--img
                         class="decoration-img"
                         src="img/decoration-none.png"
                         alt="Decoration coloring"
-                    />
+                    /-->
                 </div>
 
-                <div class="hidden density sub-item">
+                <div class="density sub-item hidden">
                     <div class="inputs">
                         <label class="hidden" for="density" form="settings">Density</label>
                         <input
@@ -139,10 +146,11 @@
                         </p>
                     </div>
 
-                    <img src="img/density.png" alt="Showing change in density" />
+                    <div class="image-holder"></div>
+                    <!--img src="img/density.png" alt="Showing change in density" /-->
                 </div>
 
-                <div class="hidden rotation sub-item">
+                <div class="rotation sub-item hidden">
                     <div class="inputs">
                         <label for="rotation" form="settings">Rotation</label>
                         <input
@@ -157,49 +165,51 @@
                         <div class="range-display">25 deg</div>
                     </div>
 
-                    <img src="img/rotation.png" alt="Rotation change demo" />
+                    <div class="image-holder"></div>
+                    <!--img src="img/rotation.png" alt="Rotation change demo" /-->
                 </div>
 
-                <div class="hidden decoration sub-item">
+                <div class="decoration sub-item hidden">
                     <div class="inputs">
                         <p>Decoration type</p>
                         <input
-                            id="amman"
+                            id="decor_amman"
                             type="radio"
                             name="decoration"
                             value="amman"
                             form="settings"
                         />
-                        <label class="radio" for="amman" form="settings">Amman-lines</label>
+                        <label class="radio" for="decor_amman" form="settings">Amman-lines</label>
                         <br />
                         <input
-                            id="arcs"
+                            id="decor_arcs"
                             type="radio"
                             name="decoration"
                             value="arcs"
                             form="settings"
                         />
-                        <label class="radio" for="arcs" form="settings">Arcs</label>
+                        <label class="radio" for="decor_arcs" form="settings">Arcs</label>
                         <br />
                         <input
-                            id="none"
+                            id="decor_none"
                             type="radio"
                             name="decoration"
                             value="none"
                             form="settings"
                             checked
                         />
-                        <label class="radio" for="none" form="settings">None</label>
+                        <label class="radio" for="decor_none" form="settings">None</label>
                     </div>
 
-                    <img src="img/deco.png" alt="Decoration possibilities" />
+                    <div class="image-holder"></div>
+                    <!--img src="img/deco.png" alt="Decoration possibilities" /-->
                 </div>
             </form>
         </div>
         <div class="penrose-pattern-container"></div>
         <div class="loader hidden">
             <img class="loader-img" src="img/loader.png" alt="Generating..." /><br />
-            <p>Generating...</p>
+            <p class="loader-message">Generating...</p>
         </div>
     </body>
 </html>

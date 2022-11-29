@@ -14,8 +14,8 @@ import { randomRange } from './helpers.js';
 const visibleTiles = []; // [TileObj, TileObj...]
 let generatedTiles = 0;
 
-// set the first tile and invoke the mainLoop
-export const init = function (penroseSettings) {
+// set the first tile and invoke the mainLoop, then return the collection of renderable tiles
+export const generatePatternTiles = function (penroseSettings) {
     const visibleArea = [penroseSettings.width, penroseSettings.height];
     const firstTileName = Math.round(Math.random()) ? 'kite' : 'dart';
     const initX = randomRange(visibleArea[0]);
@@ -29,9 +29,6 @@ export const init = function (penroseSettings) {
     visibleTiles.push(firstTile);
 
     mainLoop();
-};
-
-export const getVisibleTiles = function () {
     return visibleTiles;
 };
 

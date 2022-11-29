@@ -175,6 +175,11 @@ body {
     display: inline-block;
 }
 
+.image-holder {
+    grid-column: 2 / 3;
+    margin: 10px;
+}
+/*
 .sub-menu img {
     grid-column: 2 / 3;
     margin: 10px;
@@ -183,7 +188,7 @@ body {
 .sub-item img:first-of-type {
     grid-row: 1 / 2;
 }
-
+*/
 .inputs {
     margin-bottom: 20px;
 }
@@ -198,10 +203,10 @@ input::-webkit-inner-spin-button {
 .color input {
     padding: 0;
 }
-
+/*
 .color img {
     margin-top: 38px;
-}
+}*/
 
 .notes {
     width: 200px;
@@ -274,7 +279,10 @@ input::-webkit-inner-spin-button {
 }
 
 @media (max-width: 530px) {
-    .sub-item img {
+    .image-holder {
         display: none;
     }
+    /*.sub-item img {
+        display: none;
+    }*/
 }

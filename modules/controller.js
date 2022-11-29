@@ -1,34 +1,27 @@
 /** The controller in init
- * - call the interactionHandler which grabs the settings inputs set from user and invoke the pattern generator which...
- * - genarate the tiles (model)
- * - render the tiles on the screen (view)
- * - set download link (interact)
- * - then clean the states
+ * - calls the initUserMenu which initialize the main menu 
+ * - click on generate button is the penrosePatternGenerator called...and the magic begins ;)
  */
 import 'core-js/stable';
 import * as model from './model.js';
-import * as view from './views/renderView.js';
-import * as interact from './views/interactionView.js';
+import * as view from './view.js';
 
 const init = function () {
-    interact.interactionHandler(patternGenerator);
+    view.initUserMenu(penrosePatternGenerator);
 };
 
-const patternGenerator = function (penroseSettings) {
-    model.init(penroseSettings);
-    interact.toggleLoader();
-    view.init(penroseSettings, model.getVisibleTiles());
-    interact.setDownloadLink(view.getMarkup());
+const penrosePatternGenerator = function (penroseSettings) {
+    const visibleTiles = model.generatePatternTiles(penroseSettings);
+    view.renderPenrosePattern(penroseSettings, visibleTiles);
     model.cleanUp();
 };
 
 init();
 
 /** TODO
- * - todos in dotManager
- * - cancel button when it takes too long to generate
  * - show the estimated time to generate tiles
- * - live example for settings
+ *   - view.estimateGeneratingTime
+ *   - implement it to interaction?
+ * - cancel button when it takes too long to generate
  * - different coloring (todos in colorMaker)
- * - allTiles in tile manager needed? I don't think so...remove from the documentation too when appears
  */
