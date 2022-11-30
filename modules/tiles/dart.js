@@ -3,7 +3,7 @@ import PenroseTile from './penroseTile.js';
 export default class Dart extends PenroseTile {
     name = 'dart';
 
-    // the agle of the side to the x axis (to the ref. axis) (for example: b - the angle btw. x axis and b side)
+    // The agle of the side to the x axis (to the ref. axis) (for example: b - the angle btw. x axis and b side)
     static refAngles = {
         a: 0,
         b: 144,
@@ -11,7 +11,7 @@ export default class Dart extends PenroseTile {
         d: 252,
     };
 
-    // rotation 0 mean, the angle between 'a' side and the x axis is 0 deg. This is the initial position of the tile.
+    // Rotation 0 mean, the angle between 'a' side and the x axis is 0 deg. This is the initial position of the tile.
     // rotation goes ccw
     constructor(rotation, decoration) {
         super(rotation, decoration);
@@ -24,7 +24,7 @@ export default class Dart extends PenroseTile {
         this.decor.type === 'amman' ? this.#setAmmanCoords() : this.#setArcsCoords();
     }
 
-    // calculate the initial coordinates.
+    // Calculate the initial coordinates.
     #setShapeCoords() {
         this.coord.A = [0, 0];
         this.coord.B = this.#calcBCD(0);
@@ -32,7 +32,7 @@ export default class Dart extends PenroseTile {
         this.coord.D = this.#calcBCD(2);
     }
 
-    // calculate the initial coordinates of BCD points. The ref. point is A in [0,0].
+    // Calculate the initial coordinates of BCD points. The ref. point is A in [0,0].
     #calcBCD(multipl) {
         const rotInRad = this.toRad(multipl * 36 + this.rotation);
         const distance = (multipl + 1) % 2 || 1 / PenroseTile.phi;
@@ -53,7 +53,7 @@ export default class Dart extends PenroseTile {
         this.decor.coord.A4 = this.#calcDecorAn(72 - this.ammDeg, this.ammLong);
     }
 
-    // calculate the decorations A n-th (A1,A2..) coordinates
+    // Calculate the decorations A n-th (A1,A2..) coordinates
     #calcDecorAn(deg, radius) {
         const rotInRad = this.toRad(deg + this.rotation);
         return [Math.cos(rotInRad) * radius, Math.sin(rotInRad) * radius];
@@ -70,7 +70,7 @@ Dart.prototype.arcRadiusS = 1 / (PenroseTile.phi * (1 + PenroseTile.phi));
 Dart.prototype.arcLong = 0.726542528; // 0.72654252800536088589546675748062;
 Dart.prototype.arcShort = (PenroseTile.phi - 1) ** 2;
 
-// inner angle at the points (for example: B: the angle between the 'a' and 'b' sides)
+// Inner angle at the points (for example: B: the angle between the 'a' and 'b' sides)
 Dart.prototype.pointAngles = {
     A: 72,
     B: 36,

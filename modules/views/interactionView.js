@@ -6,6 +6,7 @@
  * - create a downloadable svg image and
  * - set the download link
  */
+import { toggleSwitchOrHide } from '../helpers';
 
 // Interaction elements (buttons, menus)
 const floatingMenu = document.querySelector('.floating-menu');
@@ -22,6 +23,8 @@ const formInputDensity = document.querySelector('#density');
 const formInputRotation = document.querySelector('#rotation');
 const formInputsDecorationColor = document.querySelectorAll('.decoration-color input');
 const formInputDecoration = document.querySelector('.decoration');
+// Element for interaction btw. decoration and decoration color
+const wrapDecorationColors = [...document.querySelectorAll('.decoration-type-color')];
 // Loader
 const loader = document.querySelector('.loader');
 const message = document.querySelector('.loader-message');
@@ -36,20 +39,19 @@ export const interactionHandler = function (patternGenerator, liveImgContainer, 
         ev.preventDefault();
 
         // set gathered inputs together as settings
-        const density = formInputDensity.valueAsNumber;
-        const penroseSettings = getInitSettings(density);
+        const penroseSettings = getInitSettings();
 
         // requestAnimationFrame for not lagging of the submenu closing window animation and showing the loader icon
         requestAnimationFrame(() => {
             toggleLoader('Generating...');
-            submenuToggle();
+            toggleSwitchOrHide(submenuChildren);
             requestAnimationFrame(() => patternGenerator(penroseSettings));
         });
     });
 };
 
 // Gathering and return inputs
-export const getInitSettings = function (density) {
+export const getInitSettings = function () {
     return {
         width: formInputWidth.valueAsNumber || window.innerWidth,
         height: formInputHeight.valueAsNumber || window.innerHeight,
@@ -57,7 +59,10 @@ export const getInitSettings = function (density) {
             kite: formInputColorKite.value,
             dart: formInputColorDart.value,
         },
-        density: Number(formInputDensity.max) + Number(formInputDensity.min) - density,
+        density:
+            Number(formInputDensity.max) +
+            Number(formInputDensity.min) -
+            formInputDensity.valueAsNumber,
         rotation: formInputRotation.valueAsNumber,
         decoration: document.querySelector('.decoration input:checked').value,
         decorationColor: {
@@ -89,7 +94,7 @@ const addHandlersToMenuItems = function (liveImgContainer) {
     menuButton.addEventListener('click', () => {
         menuButton.innerText = menuButton.innerText === '≡' ? '×' : '≡';
         floatingMenu.classList.toggle('slide');
-        submenuToggle();
+        toggleSwitchOrHide(submenuChildren);
     });
 
     settingsButtons.addEventListener('click', ev => {
@@ -112,38 +117,25 @@ const addOnInputChangeHandlers = function (updateLiveView) {
     // tiles and decoration colors change
     formInputColorKite.addEventListener('input', ev => updateLiveView('kite', ev.target.value));
     formInputColorDart.addEventListener('input', ev => updateLiveView('dart', ev.target.value));
-    formInputsDecorationColor.forEach(inputEl =>
+    formInputsDecorationColor.forEach(inputEl => {
         inputEl.addEventListener('input', ev =>
             updateLiveView(ev.target.dataset.name, ev.target.value)
-        )
-    );
-    // decoration radio buttons change
-    formInputDecoration.addEventListener(
-        'click',
-        ev => !ev.target.checked || updateLiveView('decoration', ev.target.value)
-    );
+        );
+    });
+    // decoration radio buttons change (and change of the decoration color in color sumbenu)
+    formInputDecoration.addEventListener('click', ev => {
+        if (!ev.target.checked) return;
+        updateLiveView('decoration', ev.target.value);
+        toggleSwitchOrHide(wrapDecorationColors, ev.target.value);
+    });
 };
 
 // Show / hide submenu window on corresponding button click and replace the live image
 const subMenuWindowHandler = function (subMenuName, liveImgContainer) {
     if (!subMenuName) return;
 
-    const subMenuItem = document.querySelector(`.${subMenuName}`);
-    subMenuItem.querySelector('.image-holder').appendChild(liveImgContainer);
-    submenuToggle(subMenuItem);
-};
-
-// Toggle submenu window and submenu items
-const submenuToggle = function (toToggle = null) {
-    const hideParent = submenuChildren.reduce(
-        (acc, item) =>
-            item.classList.toggle(
-                'hidden',
-                !(item === toToggle && toToggle.classList.contains('hidden'))
-            ) && acc,
-        true
-    );
-    subMenu.classList.toggle('hidden', hideParent);
+    document.querySelector(`.${subMenuName} .image-holder`).appendChild(liveImgContainer);
+    toggleSwitchOrHide(submenuChildren, subMenuName);
 };
 
 // Toggle loader and change text

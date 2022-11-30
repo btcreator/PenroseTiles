@@ -14,7 +14,7 @@ import { randomRange } from './helpers.js';
 const visibleTiles = []; // [TileObj, TileObj...]
 let generatedTiles = 0;
 
-// set the first tile and invoke the mainLoop, then return the collection of renderable tiles
+// Set the first tile and invoke the mainLoop, then return the collection of renderable tiles
 export const generatePatternTiles = function (penroseSettings) {
     const visibleArea = [penroseSettings.width, penroseSettings.height];
     const firstTileName = Math.round(Math.random()) ? 'kite' : 'dart';
@@ -63,7 +63,7 @@ const createElement = function ({
     return setDotsResult.succeed && setDotsResult.renderable ? newTile : null;
 };
 
-// generate the tiles one after another till the viewport is full (untill no more inViewOpenDots are left)
+// Generate the tiles one after another till the viewport is full (untill no more inViewOpenDots are left)
 const mainLoop = function () {
     while (dotManager.getInviewOpenDots().length) {
         const nextTileBlueprint = dotManager.getNextTileBlueprint();
@@ -73,7 +73,7 @@ const mainLoop = function () {
     }
 };
 
-// clear the states for the next generated pattern.
+// Clear the states for the next generated pattern.
 export const cleanUp = function () {
     dotManager.clear();
     visibleTiles.splice(0);

@@ -5,7 +5,7 @@ export default class PenroseTile {
     static phi = (1 + Math.sqrt(5)) / 2;
     static points = ['A', 'B', 'C', 'D'];
 
-    // the vertex rule: 7 different tile kombination is possible around one dot. Each possibility is listed here with possible tile
+    // The vertex rule: 7 different tile kombination is possible around one dot. Each possibility is listed here with possible tile
     // point joining to the dot in the right order. The order is in clockwise direction and circular i.e. after the last element comes the first one.
     static vertexRules = [
         ['dart A', 'dart A', 'dart A', 'dart A', 'dart A'],
@@ -33,17 +33,17 @@ export default class PenroseTile {
         this.decor.coord = {};
     }
 
-    // get neighbour point (-n: previous n-th, n: next n-th)
+    // Get neighbour point (-n: previous n-th, n: next n-th)
     static getNeigPointN(initPoint, n = 1) {
         return this.points.at((this.points.indexOf(initPoint) + n) % 4);
     }
 
-    // add the Dot object to the corresponding point
+    // Add the Dot object to the corresponding point
     addDot(dot, point) {
         this.dots[point] = dot;
     }
 
-    // scale tile (before rendering)
+    // Scale tile (before rendering)
     scaleTile(by) {
         for (const [_, coord] of Object.entries(this.coord)) {
             coord[0] *= by;
@@ -58,7 +58,7 @@ export default class PenroseTile {
         return this;
     }
 
-    // move tile to x,y position (before rendering)
+    // Move tile to x,y position (before rendering)
     moveToPos(x, y) {
         for (const [_, coord] of Object.entries(this.coord)) {
             coord[0] += x;
@@ -73,7 +73,7 @@ export default class PenroseTile {
         return this;
     }
 
-    // degree to radian converter
+    // Degree to radian converter
     toRad(deg) {
         return (deg * Math.PI) / 180;
     }

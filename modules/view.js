@@ -13,7 +13,7 @@ export const initUserMenu = function (penrosePatternGenerator) {
     interact.toggleLoader('Loading Interface...');
 
     // create live view with initial settings
-    const liveViewSettings = interact.getInitSettings(100);
+    const liveViewSettings = interact.getInitSettings();
     const liveImgContainer = live.setLiveView(liveViewSettings);
 
     interact.interactionHandler(penrosePatternGenerator, liveImgContainer, live.updateLiveView);

@@ -21,7 +21,7 @@ export const getDecorColor = function (decor) {
     return colors.decorColor[decor];
 };
 
-// generates a random color
+// Generates a random color
 const randomColor = function (rgbRange) {
     const tint1 = randomRange(rgbRange.red.max, rgbRange.red.min);
     const tint2 = randomRange(rgbRange.green.max, rgbRange.green.min);

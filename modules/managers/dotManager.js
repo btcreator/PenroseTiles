@@ -26,7 +26,7 @@ let border; // [width, height]
 let scaleBase;
 let borderOverlay;
 
-// set the initial settings, then set the dots for the first tile
+// Set the initial settings, then set the dots for the first tile
 export const init = function (firstTile, visibleArea, scale) {
     border = visibleArea;
     scaleBase = scale;
@@ -38,7 +38,7 @@ export const getInviewOpenDots = function () {
     return inviewOpenDots;
 };
 
-// get the tile that is allowed to attache to the dot (the random number of n -0 or 1- is for choose the tile that can be attached to the dot- by restricted dots, the n is always 0. By open, it's random).
+// Get the tile that is allowed to attache to the dot (the random number of n -0 or 1- is for choose the tile that can be attached to the dot- by restricted dots, the n is always 0. By open, it's random).
 const getTileDataByDot = function (dot, n, coffin = { shortSide: false, worm: false }) {
     const { tiles: newTileData, dir: attacheDirection } = dot.nextPossTiles;
     const targetTileData = dot.occupy.at(attacheDirection - 1);
@@ -91,7 +91,7 @@ const calcSquare = function (dotA, dotB) {
 
 // Check the dot is present on the short side of a coffin shape or not, which is essential for the vertices rule (dotA,dotB are the corners)
 const checkDotPresenceOnShortSides = function (dotToCheck, dotA, dotB) {
-    // Because we attach tile on CW direction, the tile attached to one of the corner dots (dotA or dotB) would be
+    // because we attach tile on CW direction, the tile attached to one of the corner dots (dotA or dotB) would be
     // always fall over the corner (on the other side of the shape), and this is always the dotB, to which can we attache randomly.
     if (dotToCheck === dotB) return false;
 
@@ -228,7 +228,7 @@ const verticesRuleReferee = function (openDot) {
     return coffinSetup;
 };
 
-// when we reach a dead surface, the next tile is placed randomly to an open dot (inviewOpenDot). Random select a dot, check for the vertices rule (short side of coffin shape),
+// When we reach a dead surface, the next tile is placed randomly to an open dot (inviewOpenDot). Random select a dot, check for the vertices rule (short side of coffin shape),
 // random select one of the possible tiles that can be attached (kite or dart / 0 or 1). Then based on the dot and the rule, we get a tile data (a "blueprint" of a tile).
 const getOpenPosition = function () {
     const randomOpenDot = inviewOpenDots.at(randomRange(inviewOpenDots.length - 1));
@@ -238,18 +238,18 @@ const getOpenPosition = function () {
     return getTileDataByDot(randomOpenDot, randomPossTileIndex, verticesRule);
 };
 
-// get a tile data from the first restricted dot in the array. Here we are forced to place the one possible tile to the dot (a forced tile). No random selection from the restrictedDots
+// Get a tile data from the first restricted dot in the array. Here we are forced to place the one possible tile to the dot (a forced tile). No random selection from the restrictedDots
 // because it makes no sense - the dead surface would be the same, just the gap issus would be much more (and cause slower performance too).
 const getRestrictedPosition = function () {
     return getTileDataByDot(restrictedDots[0], 0);
 };
 
-// tiles are places till dead surface is reached i.e. till there are some restricted dots. Return the blueprint of the next tile to place.
+// Tiles are places till dead surface is reached i.e. till there are some restricted dots. Return the blueprint of the next tile to place.
 export const getNextTileBlueprint = function () {
     return restrictedDots[0] ? getRestrictedPosition() : getOpenPosition();
 };
 
-// when in setDots we attache the new tile to each dot at its points, we must attache it sometimes in cw(1/true), sometimes in ccw(0/false) direction
+// When in setDots we attache the new tile to each dot at its points, we must attache it sometimes in cw(1/true), sometimes in ccw(0/false) direction
 // when we attache to a dot, which will be be a fully occupied dot (occupy of 360 degree), then the attache direction is cw (actually no matter, but we would have a problem when the initial dot is one of this dot).
 // when it is a new dot (the tile is at this point not added to the dot, so totalDegree is still 0), the attache direction is ccw (yes, actually this one no matters too). After a 360 dot, to the next (not 360) must be attached in ccw
 // so we switch the shift variable (!shift cw->ccw). After a new dot, to the next one (not new) must be attached cw, and like before, it is the same (!shift ccw->cw).
@@ -265,7 +265,7 @@ const attacheDirectionCoordinator = function (initShiftState) {
     };
 };
 
-// when a dot is present on the coordinates, return that dot, when not, create and return the new dot
+// When a dot is present on the coordinates, return that dot, when not, create and return the new dot
 const getDotByCoord = function (coord) {
     let dot = allDots[Dot.getID(coord)];
     if (!dot) {
@@ -276,14 +276,14 @@ const getDotByCoord = function (coord) {
     return dot;
 };
 
-// convert the dot occupation to string
+// Convert the dot occupation to string
 const dotOccupyToString = function (dot) {
     return dot.occupy
         .map(dotOccupiedTile => `${dotOccupiedTile.tile.name} ${dotOccupiedTile.point}`)
         .join('');
 };
 
-// return an object from text presented tiles ('Kite C' => {name: 'Kite', point: 'C'}),
+// Return an object from text presented tiles ('Kite C' => {name: 'Kite', point: 'C'}),
 // [['Kite A','Dart B'], ['Kite A','Dart B']]  =>  [[{name: 'Kite', point: 'A'},{name:...}], [{name:...},{...}]]
 const tileTxtToObject = function (uniqPossibleTilesTxt) {
     const tilesOnCcw = uniqPossibleTilesTxt[0].map(tileTxt => {
@@ -297,7 +297,7 @@ const tileTxtToObject = function (uniqPossibleTilesTxt) {
     return [tilesOnCcw, tilesOnCw];
 };
 
-// the occupation is compared with the data in PenroseTiles vertexRules property, section to section till there is a match
+// The occupation is compared with the data in PenroseTiles vertexRules property, section to section till there is a match
 // then look which tile comes as next and which as previous in the text/rule. The ones would be the possibleNextTiles on cw, others on the ccw direction.
 // Reduce the data to an array, separated to cw and ccw possible tiles, from which are the doubles filtered out.
 const vertexRuleReferee = function (dot) {
@@ -329,7 +329,7 @@ const vertexRuleReferee = function (dot) {
     };
 };
 
-// each dot has its position on the pattern relative to the viewport. A dot can be inside of the viewport, in the not rendering zone, or in the overlay radius by the corners
+// Each dot has its position on the pattern relative to the viewport. A dot can be inside of the viewport, in the not rendering zone, or in the overlay radius by the corners
 // or just in the overlay (btw. the viewport and the not rendering zone). Based on his position, each dot get a value which we can use to decide which tiles are allowed to render or not.
 const borderControl = function (dot) {
     // if the dot is outside the overlayed border, return 0/"false" (the whole tile should be not rendered)
@@ -354,7 +354,7 @@ const borderControl = function (dot) {
     return distanceFromTheCorner < borderOverlay ? -1 : -2;
 };
 
-// organize mean, that a dot gets his border permission(just the new ones) and that, it would be reorganized in the dot holders (open, restricted, inviewOpen).
+// Organize mean, that a dot gets his border permission(just the new ones) and that, it would be reorganized in the dot holders (open, restricted, inviewOpen).
 // At the end the vertex rule set his new possible tiles
 const organizeDot = function (dot) {
     if (dot.borderPermission === void 0) {
@@ -385,7 +385,7 @@ const organizeDot = function (dot) {
     return;
 };
 
-// we loop through each point of the new tile and set a dot to that point (add the dot to the tile dots property - an existing dot or a new one),
+// We loop through each point of the new tile and set a dot to that point (add the dot to the tile dots property - an existing dot or a new one),
 // add the tile to each dot and organize the dots with the new data (reorganize it in the dots holders, gets the new nextPossibleTiles values)
 // decide that the tile should be rendered or not and watch for a gap (gap watchdog)
 // return that the tile can be placed succesfully or not (when not, must be removed - gap happened) and that it reaches in the viewfiled of not (renderable)
@@ -439,7 +439,7 @@ export const setDots = function (newTile, newTileTouchPoint, attacheDirection) {
     return tileRenderSetup;
 };
 
-// removes the given dot from each dot holders, where the dot is present
+// Removes the given dot from each dot holders, where the dot is present
 const removeDot = function (dot) {
     const indexOfRestrictedDot = restrictedDots.indexOf(dot);
 
@@ -469,7 +469,7 @@ export const redefineDot = function (dotToAudit, tile) {
     organizeDot(dotToAudit);
 };
 
-// clear all dot holders. Ready for the new pattern...
+// Clear all dot holders. Ready for the new pattern...
 export const clear = function () {
     for (let dotId in allDots) delete allDots[dotId];
 

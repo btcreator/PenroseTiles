@@ -11,7 +11,7 @@ let width, height;
 let scale;
 const svgContainer = document.querySelector('.penrose-pattern-container');
 
-// save the needed settings, clear the viewport (there can be a previous generated pattern), invoke the rendering process
+// Save the needed settings, clear the viewport (there can be a previous generated pattern), invoke the rendering process
 export const init = function (penroseSettings, visibleTiles) {
     width = penroseSettings.width;
     height = penroseSettings.height;
@@ -28,13 +28,13 @@ export const getMarkup = function () {
     return svgContainer.innerHTML;
 };
 
-// for each tile is a polygon generated
+// For each tile is a polygon generated
 const generateSVGpolygon = function (tile) {
     return `<polygon points="${Object.values(tile.coord).reduce(
         (acc, val) => acc + ' ' + val
     )}" style="fill:${colors.getTileColor(tile.name)};" />`;
 };
-// decorations are added to the separate group element to the end of the svg - actually just because of the darts amman line
+// Decorations are added to the separate group element to the end of the svg - actually just because of the darts amman line
 // it reach to the "outside" of the tile at one point and because of this, it must be on top of the tiles i.e. at the end.
 const generateSVGdecorAmman = function (tile) {
     return `<path fill="none" stroke="${colors.getDecorColor(tile.decor.type)}" stroke-width="${

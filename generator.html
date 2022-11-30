@@ -40,22 +40,20 @@
             </div>
 
             <form class="sub-menu hidden" id="settings">
-
-                <div class="dimension sub-item hidden">
+                <div class="sub-item dimension hidden" data-toggle="dimension">
                     <div class="inputs">
-                        <label class="hidden" for="width" form="settings">Width</label>
+                        <label for="width" form="settings">Width</label>
                         <input id="width" type="number" name="width" form="settings" /><br />
-                        <label class="hidden" for="height" form="settings">Height</label>
+                        <label for="height" form="settings">Height</label>
                         <input id="height" type="number" name="height" form="settings" />
 
                         <p class="notes">Default: <br />Window size (viewport)</p>
                     </div>
 
                     <div class="image-holder"></div>
-                    <!--img src="img/dimension.png" alt="Showing dimension width and height" /-->
                 </div>
 
-                <div class="color sub-item hidden">
+                <div class="sub-item color hidden" data-toggle="color">
                     <div class="inputs">
                         <p>Tile colors</p>
                         <label for="color_kite" form="settings">Kite color</label>
@@ -64,7 +62,7 @@
                             type="color"
                             name="color_kite"
                             form="settings"
-                            value="#2584e9"
+                            value="#07707D"
                         /><br />
                         <label for="color_dart" form="settings">Dart color</label>
                         <input
@@ -72,27 +70,27 @@
                             type="color"
                             name="color_dart"
                             form="settings"
-                            value="#b28b1f"
+                            value="#002F38"
                         />
                     </div>
 
-                    <div class="inputs">
+                    <div class="decoration-color inputs">
                         <p>Decoration colors</p>
-                        <p class="notes">
+                        <p class="decoration-type-color notes" data-toggle="none">
                             No decoraton selected. Please select decoration first from the menu.
                         </p>
-                        <div class="hidden">
+                        <div class="decoration-type-color hidden" data-toggle="amman">
                             <label for="color_amman" form="settings">Amman line color</label>
                             <input
                                 id="color_amman"
                                 type="color"
                                 name="color_amman"
                                 form="settings"
-                                value="#0505ff"
+                                value="#ffffff"
                                 data-name="amman"
                             />
                         </div>
-                        <div class="hidden">
+                        <div class="decoration-type-color hidden" data-toggle="arcs">
                             <label for="color_arc_large" form="settings"
                                 >Arc large-radius color</label
                             >
@@ -101,7 +99,7 @@
                                 type="color"
                                 name="color_arc_large"
                                 form="settings"
-                                value="#c40000"
+                                value="#bdbdbd"
                                 data-name="large"
                             />
                             <label for="color_arc_small" form="settings"
@@ -112,24 +110,18 @@
                                 type="color"
                                 name="color_arc_small"
                                 form="settings"
-                                value="#00b100"
+                                value="#545454"
                                 data-name="small"
                             />
                         </div>
                     </div>
 
                     <div class="image-holder"></div>
-                    <!--img src="img/kiteDartColor.png" alt="Color of Kite and Dart" /-->
-                    <!--img
-                        class="decoration-img"
-                        src="img/decoration-none.png"
-                        alt="Decoration coloring"
-                    /-->
                 </div>
 
-                <div class="density sub-item hidden">
+                <div class="sub-item density hidden" data-toggle="density">
                     <div class="inputs">
-                        <label class="hidden" for="density" form="settings">Density</label>
+                        <label for="density" form="settings">Density</label>
                         <input
                             id="density"
                             type="range"
@@ -147,10 +139,9 @@
                     </div>
 
                     <div class="image-holder"></div>
-                    <!--img src="img/density.png" alt="Showing change in density" /-->
                 </div>
 
-                <div class="rotation sub-item hidden">
+                <div class="sub-item rotation hidden" data-toggle="rotation">
                     <div class="inputs">
                         <label for="rotation" form="settings">Rotation</label>
                         <input
@@ -163,13 +154,17 @@
                             form="settings"
                         />
                         <div class="range-display">25 deg</div>
+                        <p class="notes">
+                            Please consider that the pattern has some kind of 5 fold symmetry and
+                            that's why it makes no sens more than 72 degree rotation, which is
+                            actually interesting by Amman line decoration.
+                        </p>
                     </div>
 
                     <div class="image-holder"></div>
-                    <!--img src="img/rotation.png" alt="Rotation change demo" /-->
                 </div>
 
-                <div class="decoration sub-item hidden">
+                <div class="sub-item decoration hidden" data-toggle="decoration">
                     <div class="inputs">
                         <p>Decoration type</p>
                         <input
@@ -179,7 +174,9 @@
                             value="amman"
                             form="settings"
                         />
-                        <label class="radio" for="decor_amman" form="settings">Amman-lines</label>
+                        <label class="radio-label" for="decor_amman" form="settings"
+                            >Amman-lines</label
+                        >
                         <br />
                         <input
                             id="decor_arcs"
@@ -188,7 +185,7 @@
                             value="arcs"
                             form="settings"
                         />
-                        <label class="radio" for="decor_arcs" form="settings">Arcs</label>
+                        <label class="radio-label" for="decor_arcs" form="settings">Arcs</label>
                         <br />
                         <input
                             id="decor_none"
@@ -198,11 +195,10 @@
                             form="settings"
                             checked
                         />
-                        <label class="radio" for="decor_none" form="settings">None</label>
+                        <label class="radio-label" for="decor_none" form="settings">None</label>
                     </div>
 
                     <div class="image-holder"></div>
-                    <!--img src="img/deco.png" alt="Decoration possibilities" /-->
                 </div>
             </form>
         </div>

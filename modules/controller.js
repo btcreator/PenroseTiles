@@ -25,3 +25,7 @@ init();
  * - cancel button when it takes too long to generate
  * - different coloring (todos in colorMaker)
  */
+/**
+ * - distribute rendered svg kite/dart/ decorations to mannam, arcs -large/small..
+ * - todo in liveView
+ */

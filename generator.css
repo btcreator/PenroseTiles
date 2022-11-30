@@ -2,7 +2,7 @@
 
 * {
     box-sizing: border-box;
-    font-family: 'Copperplate Gothic', 'Poppins', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 12px;
 }
 
@@ -152,14 +152,18 @@ body {
 
 .sub-menu .inputs {
     grid-column: 1 / 2;
+    margin-bottom: 20px;
     padding: 0 40px;
     width: fit-content;
 }
 
 .sub-menu input {
-    padding: 5px 0;
     margin-top: 10px;
     width: 180px;
+}
+
+.sub-menu input[type='radio'] {
+    width: auto;
 }
 
 .sub-menu label {
@@ -167,30 +171,17 @@ body {
     margin-top: 15px;
 }
 
-.sub-menu input[type='radio'] {
-    width: auto;
-}
-
-.sub-menu .radio {
+.sub-menu .radio-label {
+    position: relative;
+    bottom: 2px;
     display: inline-block;
+    margin: 0;
 }
 
 .image-holder {
     grid-column: 2 / 3;
+    grid-row: 1 / 3;
     margin: 10px;
-}
-/*
-.sub-menu img {
-    grid-column: 2 / 3;
-    margin: 10px;
-}
-
-.sub-item img:first-of-type {
-    grid-row: 1 / 2;
-}
-*/
-.inputs {
-    margin-bottom: 20px;
 }
 
 input::-webkit-outer-spin-button,
@@ -200,13 +191,13 @@ input::-webkit-inner-spin-button {
     margin: 0;
 }
 
+.dimension input {
+    height: 26px;
+}
+
 .color input {
     padding: 0;
 }
-/*
-.color img {
-    margin-top: 38px;
-}*/
 
 .notes {
     width: 200px;
@@ -272,17 +263,10 @@ input::-webkit-inner-spin-button {
     .link-console {
         column-gap: 20px;
     }
-    .sub-item img {
-        width: 200px;
-        height: auto;
-    }
 }
 
 @media (max-width: 530px) {
     .image-holder {
         display: none;
     }
-    /*.sub-item img {
-        display: none;
-    }*/
 }

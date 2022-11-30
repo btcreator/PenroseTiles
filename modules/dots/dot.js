@@ -48,7 +48,7 @@ export default class Dot {
         this.#totalDegree += tile.pointAngles[point];
     }
 
-    // the removed tile would be always the first or last when a "gap" issue happens (see documentation -> Issues)
+    // The removed tile would be always the first or last when a "gap" issue happens (see documentation -> Issues)
     removeTile(tile) {
         const index = this.occupy.findIndex(occupationObj => occupationObj.tile === tile);
         const point = this.occupy[index].point;

@@ -6,36 +6,49 @@ export const stylesheetText = `
     --amman: #000000;
     --large: #000000;
     --small: #000000;
-    --density: 110;
+    --density: 100;
     --rotation: 0deg;
+}
 
+.image-wrapper {
     width: 120px;
     height: 120px;
     overflow: hidden;
     border-radius: 50%;
+    border: 7px solid #ffffff;
+    outline: 1px solid #00000087;
 }
 
-#live-image svg{
+#live-image p {
+    margin: 5px 0 8px;
+    text-align: center;
+}
+
+#live-sample svg {
     transform: scale(calc(var(--density)/10)) rotate(var(--rotation));
 }
 
-#kite {
+#bird-view svg {
+    transform: rotate(var(--rotation));
+}
+
+.kite {
     fill: var(--kite);
 }
 
-#dart {
+.dart {
     fill: var(--dart);
 }
 
-#amman {
+.amman {
     stroke: var(--amman);
 }
 
-#large {
+.large {
     stroke: var(--large);
 }
 
-#small {
+.small {
     stroke: var(--small);
 }
 

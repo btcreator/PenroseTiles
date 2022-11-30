@@ -3,6 +3,7 @@
  * - set the initial state
  * - updates the image
  */
+import { toggleSwitchOrHide } from '../helpers.js';
 import { svgImg } from './live_view_elements/settingsSVG.js'; // todo functioning with svg import too?
 import { stylesheetText } from './live_view_elements/customCss.js';
 
@@ -12,17 +13,30 @@ const decorations = [];
 // Create a shadow root, set a custom css and elements for the live view svg. Then manipulate/update just the css variables.
 const initElements = function () {
     const root = liveContainer.attachShadow({ mode: 'open' });
-    const liveImage = document.createElement('div');
     const liveStyle = document.createElement('style');
+    const liveImage = document.createElement('div');
+    const sample = liveImage.cloneNode();
+    const birdView = liveImage.cloneNode();
+    const sampleLabel = document.createElement('p');
+    const birdViewLabel = document.createElement('p');
+
+    sampleLabel.innerText = 'Live sample';
+    birdViewLabel.innerText = 'Birdview';
 
     liveImage.setAttribute('id', 'live-image');
-    liveImage.innerHTML = svgImg;
+    sample.setAttribute('id', 'live-sample');
+    birdView.setAttribute('id', 'bird-view');
+    sample.classList.add('image-wrapper');
+    birdView.classList.add('image-wrapper');
+
     liveStyle.innerHTML = stylesheetText;
+    sample.innerHTML = birdView.innerHTML = svgImg;
+
+    liveImage.append(sample, sampleLabel, birdView, birdViewLabel);
+    root.append(liveStyle, liveImage);
 
     // save decoration nodes for faster access when update
-    decorations.push(...liveImage.querySelector('#decor').children);
-
-    root.append(liveStyle, liveImage);
+    decorations.push(...liveImage.querySelectorAll('.decor-type'));
 
     return liveImage;
 };
@@ -41,7 +55,7 @@ export const setLiveView = function (liveViewSettings) {
     liveImage.style.setProperty('--density', liveViewSettings.density);
     liveImage.style.setProperty('--rotation', `${liveViewSettings.rotation}deg`);
     // set decoration
-    decorations.forEach(el => el.classList.toggle('hidden', liveViewSettings.decoration !== el.id));
+    toggleSwitchOrHide(decorations, liveViewSettings.decoration);
 
     return liveContainer;
 };
@@ -49,9 +63,8 @@ export const setLiveView = function (liveViewSettings) {
 // Updates the svg poperties with the actual values
 export const updateLiveView = function (prop, value) {
     prop === 'decoration'
-        ? decorations.forEach(el => el.classList.toggle('hidden', value !== el.id))
+        ? toggleSwitchOrHide(decorations, value)
         : liveContainer.shadowRoot
               .querySelector('#live-image')
               .style.setProperty(`--${prop}`, value);
-    // liveContainer.shadowRoot.lastElementChild.style.setProperty(`--${prop}`, value);
 };
