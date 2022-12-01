@@ -17,7 +17,7 @@ export default class PenroseTile {
         ['dart B', 'kite C', 'kite C', 'dart D'],
     ];
     coord = {}; // {A: [254,854], B: [658,78],...D: [658,74]}
-    decor = {}; // {type: "amman", coord: {A1:[15.458, 122.89], A2:.... A4:[18.9, 119]}}
+    decoord = {}; // {A1:[15.458, 122.89], A2:.... A4:[18.9, 119]}
 
     // The occupation of the points with dots.
     dots = { // {A: DotObj, B: DotObj,...D: DotObj}
@@ -27,10 +27,8 @@ export default class PenroseTile {
         D: null,
     };
 
-    constructor(rotation, decoration) {
+    constructor(rotation) {
         this.rotation = rotation;
-        this.decor.type = decoration === 'none' ? null : decoration;
-        this.decor.coord = {};
     }
 
     // Get neighbour point (-n: previous n-th, n: next n-th)
@@ -49,11 +47,10 @@ export default class PenroseTile {
             coord[0] *= by;
             coord[1] *= by;
         }
-        if (!this.decor.type) return this;
 
-        for (const [_, decoord] of Object.entries(this.decor.coord)) {
-            decoord[0] *= by;
-            decoord[1] *= by;
+        for (const [_, coord] of Object.entries(this.decoord)) {
+            coord[0] *= by;
+            coord[1] *= by;
         }
         return this;
     }
@@ -64,11 +61,10 @@ export default class PenroseTile {
             coord[0] += x;
             coord[1] += y;
         }
-        if (!this.decor.type) return this;
 
-        for (const [_, decoord] of Object.entries(this.decor.coord)) {
-            decoord[0] += x;
-            decoord[1] += y;
+        for (const [_, coord] of Object.entries(this.decoord)) {
+            coord[0] += x;
+            coord[1] += y;
         }
         return this;
     }
@@ -76,5 +72,11 @@ export default class PenroseTile {
     // Degree to radian converter
     toRad(deg) {
         return (deg * Math.PI) / 180;
+    }
+
+    // Convert polar to rectangular coordinates (calculate a coordinate relative to a ref [0,0] position)
+    polarToRect(deg, radius = 1) {
+        const rotInRad = this.toRad(deg + this.rotation);
+        return [Math.cos(rotInRad) * radius, Math.sin(rotInRad) * radius];
     }
 }

@@ -4,7 +4,7 @@
  * - updates the image
  */
 import { toggleSwitchOrHide } from '../helpers.js';
-import { svgImg } from './live_view_elements/settingsSVG.js'; // todo functioning with svg import too?
+import { svgImg } from './live_view_elements/settingsSVG.js';
 import { stylesheetText } from './live_view_elements/customCss.js';
 
 const liveContainer = document.createElement('div');
@@ -15,26 +15,18 @@ const initElements = function () {
     const root = liveContainer.attachShadow({ mode: 'open' });
     const liveStyle = document.createElement('style');
     const liveImage = document.createElement('div');
-    const sample = liveImage.cloneNode();
-    const birdView = liveImage.cloneNode();
-    const sampleLabel = document.createElement('p');
-    const birdViewLabel = document.createElement('p');
-
-    sampleLabel.innerText = 'Live sample';
-    birdViewLabel.innerText = 'Birdview';
+    const markup = `
+        <div id='live-sample' class='image-wrapper'>${svgImg}</div>
+        <p>Live sample</p>
+        <div id='bird-view' class='image-wrapper'>${svgImg}</div>
+        <p>Birdview</p>`;
 
     liveImage.setAttribute('id', 'live-image');
-    sample.setAttribute('id', 'live-sample');
-    birdView.setAttribute('id', 'bird-view');
-    sample.classList.add('image-wrapper');
-    birdView.classList.add('image-wrapper');
-
     liveStyle.innerHTML = stylesheetText;
-    sample.innerHTML = birdView.innerHTML = svgImg;
+    liveImage.innerHTML = markup;
 
-    liveImage.append(sample, sampleLabel, birdView, birdViewLabel);
     root.append(liveStyle, liveImage);
-
+    
     // save decoration nodes for faster access when update
     decorations.push(...liveImage.querySelectorAll('.decor-type'));
 
@@ -64,7 +56,5 @@ export const setLiveView = function (liveViewSettings) {
 export const updateLiveView = function (prop, value) {
     prop === 'decoration'
         ? toggleSwitchOrHide(decorations, value)
-        : liveContainer.shadowRoot
-              .querySelector('#live-image')
-              .style.setProperty(`--${prop}`, value);
+        : liveContainer.shadowRoot.querySelector('#live-image').style.setProperty(`--${prop}`, value);
 };

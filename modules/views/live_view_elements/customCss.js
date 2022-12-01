@@ -28,6 +28,10 @@ export const stylesheetText = `
     transform: scale(calc(var(--density)/10)) rotate(var(--rotation));
 }
 
+#live-sample .decor-type {
+    stroke-width: calc(0.65 - var(--density) / 200);
+}
+
 #bird-view svg {
     transform: rotate(var(--rotation));
 }

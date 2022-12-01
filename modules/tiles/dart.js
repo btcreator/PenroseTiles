@@ -14,49 +14,36 @@ export default class Dart extends PenroseTile {
     // Rotation 0 mean, the angle between 'a' side and the x axis is 0 deg. This is the initial position of the tile.
     // rotation goes ccw
     constructor(rotation, decoration) {
-        super(rotation, decoration);
-        this.#createDart();
+        super(rotation);
+        this.#createDart(decoration);
     }
 
-    #createDart() {
+    #createDart(decoration) {
         this.#setShapeCoords();
-        if (!this.decor.type) return;
-        this.decor.type === 'amman' ? this.#setAmmanCoords() : this.#setArcsCoords();
+        if (decoration === 'none') return;
+        decoration === 'amman' ? this.#setAmmanCoords() : this.#setArcsCoords();
     }
 
     // Calculate the initial coordinates.
     #setShapeCoords() {
         this.coord.A = [0, 0];
-        this.coord.B = this.#calcBCD(0);
-        this.coord.C = this.#calcBCD(1);
-        this.coord.D = this.#calcBCD(2);
-    }
-
-    // Calculate the initial coordinates of BCD points. The ref. point is A in [0,0].
-    #calcBCD(multipl) {
-        const rotInRad = this.toRad(multipl * 36 + this.rotation);
-        const distance = (multipl + 1) % 2 || 1 / PenroseTile.phi;
-        return [Math.cos(rotInRad) * distance, Math.sin(rotInRad) * distance];
+        this.coord.B = this.polarToRect(0);
+        this.coord.C = this.polarToRect(36, 1 / PenroseTile.phi);
+        this.coord.D = this.polarToRect(72);
     }
 
     #setArcsCoords() {
-        this.decor.coord.A1 = this.#calcDecorAn(0, this.arcShort);
-        this.decor.coord.A2 = this.#calcDecorAn(72, this.arcShort);
-        this.decor.coord.A3 = this.#calcDecorAn(72 - this.arcDeg, this.arcLong);
-        this.decor.coord.A4 = this.#calcDecorAn(this.arcDeg, this.arcLong);
+        this.decoord.A1 = this.polarToRect(0, this.arcShort);
+        this.decoord.A2 = this.polarToRect(72, this.arcShort);
+        this.decoord.A3 = this.polarToRect(72 - this.arcDeg, this.arcLong);
+        this.decoord.A4 = this.polarToRect(this.arcDeg, this.arcLong);
     }
 
     #setAmmanCoords() {
-        this.decor.coord.A1 = this.#calcDecorAn(this.ammDeg, this.ammLong);
-        this.decor.coord.A2 = this.#calcDecorAn(0, this.ammShort);
-        this.decor.coord.A3 = this.#calcDecorAn(72, this.ammShort);
-        this.decor.coord.A4 = this.#calcDecorAn(72 - this.ammDeg, this.ammLong);
-    }
-
-    // Calculate the decorations A n-th (A1,A2..) coordinates
-    #calcDecorAn(deg, radius) {
-        const rotInRad = this.toRad(deg + this.rotation);
-        return [Math.cos(rotInRad) * radius, Math.sin(rotInRad) * radius];
+        this.decoord.A1 = this.polarToRect(this.ammDeg, this.ammLong);
+        this.decoord.A2 = this.polarToRect(0, this.ammShort);
+        this.decoord.A3 = this.polarToRect(72, this.ammShort);
+        this.decoord.A4 = this.polarToRect(72 - this.ammDeg, this.ammLong);
     }
 }
 
