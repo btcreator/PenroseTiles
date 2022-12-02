@@ -107,7 +107,7 @@ const addOnInputChangeHandlers = function (updateLiveView) {
     // density range change
     formInputDensity.addEventListener('input', function () {
         this.parentElement.querySelector('.range-display').innerText = this.value;
-        updateLiveView('density', Number(formInputDensity.max) + Number(formInputDensity.min) - this.value);
+        updateLiveView('density', this.value);
     });
     // rotation range change
     formInputRotation.addEventListener('input', function () {

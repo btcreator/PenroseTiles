@@ -31,7 +31,9 @@ export const getMarkup = function () {
 
 // For each tile is a polygon generated
 const generateSVGpolygon = function (tile) {
-    const mark = `<polygon points="${Object.values(tile.coord).reduce((acc, val) => acc + ' ' + val)}" />`;
+    const mark = `<polygon points="${Object.values(tile.coord).reduce(
+        (acc, val) => acc + ' ' + val
+    )}" />`;
 
     tile.name === 'kite'
         ? kiteSvgGroup.insertAdjacentHTML('afterbegin', mark)
@@ -41,7 +43,8 @@ const generateSVGpolygon = function (tile) {
 // Decorations are added to the end of the svg, because of the darts amman line.
 // It reaches to the "outside" of the tile at one point and because of this, it must be on top of the tiles i.e. at the end.
 const generateSVGdecorAmman = function (tile) {
-    ammanSvgGroup.insertAdjacentHTML('afterbegin',
+    ammanSvgGroup.insertAdjacentHTML(
+        'afterbegin',
         `<path d="M${Object.values(tile.decoord).reduce((acc, val) => acc + ' L' + val)}" />`
     );
 };
@@ -49,14 +52,12 @@ const generateSVGdecorAmman = function (tile) {
 const generateSVGdecorArcs = function (tile) {
     const largeA = `<path d="M ${tile.decoord.A1[0]} ${tile.decoord.A1[1]} A ${
         tile.arcRadiusL * scale
-    } ${tile.arcRadiusL * scale} 0 0 1 ${tile.decoord.A2[0]} ${
-        tile.decoord.A2[1]
-    }" />`;
+    } ${tile.arcRadiusL * scale} 0 0 1 ${tile.decoord.A2[0]} ${tile.decoord.A2[1]}" />`;
     const smallA = `<path d="M ${tile.decoord.A3[0]} ${tile.decoord.A3[1]} A ${
         tile.arcRadiusS * scale
-    } ${tile.arcRadiusS * scale} 0 ${tile.name === 'kite' ? '0' : '1'} 1 ${
-        tile.decoord.A4[0]
-    } ${tile.decoord.A4[1]}" />`;
+    } ${tile.arcRadiusS * scale} 0 ${tile.name === 'kite' ? '0' : '1'} 1 ${tile.decoord.A4[0]} ${
+        tile.decoord.A4[1]
+    }" />`;
 
     largeSvgGroup.insertAdjacentHTML('afterbegin', largeA);
     smallSvgGroup.insertAdjacentHTML('afterbegin', smallA);
@@ -70,11 +71,10 @@ const renderSVG = function (visibleTiles) {
         });
     } else if (decor === 'arcs') {
         visibleTiles.forEach(tile => {
-           generateSVGpolygon(tile);
-           generateSVGdecorArcs(tile);
+            generateSVGpolygon(tile);
+            generateSVGdecorArcs(tile);
         });
-    } else
-        visibleTiles.forEach(tile => generateSVGpolygon(tile));
+    } else visibleTiles.forEach(tile => generateSVGpolygon(tile));
 };
 
 const clearView = function () {
@@ -84,9 +84,9 @@ const clearView = function () {
             <g id="kite" fill="${colors.getTileColor('kite')}"></g>
             <g id="dart" fill="${colors.getTileColor('dart')}"></g>
         </g>
-        <g id="decor">
-            <g id="amman" fill="none" stroke="${colors.getDecorColor('amman')}" stroke-width="${scale * 0.01 + 0.5}"></g>
-            <g id="arcs" fill="none" stroke-width="1">
+        <g id="decor" stroke-width="${scale * 0.01 + 0.6}">
+            <g id="amman" fill="none" stroke="${colors.getDecorColor('amman')}"></g>
+            <g id="arcs" fill="none">
                 <g id="large" stroke="${colors.getDecorColor('arcs').large}"></g>
                 <g id="small" stroke="${colors.getDecorColor('arcs').small}"></g>
             </g>

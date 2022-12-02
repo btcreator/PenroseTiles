@@ -26,7 +26,7 @@ const initElements = function () {
     liveImage.innerHTML = markup;
 
     root.append(liveStyle, liveImage);
-    
+
     // save decoration nodes for faster access when update
     decorations.push(...liveImage.querySelectorAll('.decor-type'));
 
@@ -56,5 +56,7 @@ export const setLiveView = function (liveViewSettings) {
 export const updateLiveView = function (prop, value) {
     prop === 'decoration'
         ? toggleSwitchOrHide(decorations, value)
-        : liveContainer.shadowRoot.querySelector('#live-image').style.setProperty(`--${prop}`, value);
+        : liveContainer.shadowRoot
+              .querySelector('#live-image')
+              .style.setProperty(`--${prop}`, value);
 };

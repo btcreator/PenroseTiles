@@ -25,11 +25,11 @@ export const stylesheetText = `
 }
 
 #live-sample svg {
-    transform: scale(calc(var(--density)/10)) rotate(var(--rotation));
+    transform: scale(calc((110 - var(--density)) / 10)) rotate(var(--rotation));
 }
 
-#live-sample .decor-type {
-    stroke-width: calc(0.65 - var(--density) / 200);
+#live-sample .decor {
+    stroke-width: calc((178.75 - var(--density)) / (11.25 * (110 - var(--density))));
 }
 
 #bird-view svg {
