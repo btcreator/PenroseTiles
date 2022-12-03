@@ -2,7 +2,7 @@
 Random Penrose Pattern Generator
 =========================================
 
-This generator generates a PPT (Perfect Pattern Tileing) from a randomly placed tile.
+This generator generates a PPT (Perfect Penrose Tileing) from a randomly placed tile.
 
 ### Why is this different than other penrose pattern generators
 
