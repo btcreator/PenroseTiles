@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;400;700&display=swap');
-
-* {
+* * {
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
     font-size: 12px;
@@ -147,7 +146,10 @@ body {
 .sub-item {
     display: grid;
     grid-template-columns: repeat(2, auto);
-    justify-items: center;
+}
+
+.sub-item p:first-child {
+    font-weight: bold;
 }
 
 .sub-menu .inputs {
@@ -205,6 +207,31 @@ input::-webkit-inner-spin-button {
     font-family: 'Poppins', Helvetica, sans-serif;
     color: rgb(151, 151, 151);
 }
+
+.special-settings {
+    min-height: 25px;
+    margin-top: 15px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    row-gap: 10px;
+    padding-block: 5px;
+}
+
+.special-settings input {
+    width: auto;
+    margin: auto;
+    margin-right: 5px;
+}
+
+.special-settings label {
+    display: inline-block;
+    margin-block: auto;
+    user-select: none;
+}
+
+.special-settings p {
+    grid-column: 1 / 3;
+}
 /******************************************** Loader*/
 .loader {
     position: absolute;
@@ -243,9 +270,16 @@ input::-webkit-inner-spin-button {
     }
 }
 
+/*********************************************************************** Toggled classes*/
+.disabled {
+    color: #c5c1c1;
+}
+
 .hidden {
     display: none;
 }
+
+/*********************************************************************** Media*/
 
 @media (max-width: 800px) {
     .floating-menu {

@@ -39,9 +39,10 @@
                 <div class="hamburger">×</div>
             </div>
 
-            <form class="sub-menu hidden" id="settings">
+            <form class="sub-menu" id="settings">
                 <div class="sub-item dimension hidden" data-toggle="dimension">
                     <div class="inputs">
+                        <p>Dimension</p>
                         <label for="width" form="settings">Width</label>
                         <input id="width" type="number" name="width" form="settings" /><br />
                         <label for="height" form="settings">Height</label>
@@ -53,7 +54,7 @@
                     <div class="image-holder"></div>
                 </div>
 
-                <div class="sub-item color hidden" data-toggle="color">
+                <div class="sub-item color" data-toggle="color">
                     <div class="inputs">
                         <p>Tile colors</p>
                         <label for="color_kite" form="settings">Kite color</label>
@@ -71,7 +72,24 @@
                             name="color_dart"
                             form="settings"
                             value="#002F38"
-                        />
+                        /><br />
+                        <div class="special-settings">
+                            <p>Special coloring</p>
+                            <input
+                                id="random_tile_color"
+                                type="checkbox"
+                                name="color_random"
+                                form="settings"
+                            />
+                            <label for="random_tile_color" form="settings">Random</label>
+                            <input
+                                id="gradient_tile_color"
+                                type="checkbox"
+                                name="color_gradient"
+                                form="settings"
+                            />
+                            <label for="gradient_tile_color" form="settings">Gradient</label>
+                        </div>
                     </div>
 
                     <div class="decoration-color inputs">
@@ -196,6 +214,20 @@
                             checked
                         />
                         <label class="radio-label" for="decor_none" form="settings">None</label>
+
+                        <div class="special-settings">
+                            <input
+                                id="advanced_settings"
+                                type="checkbox"
+                                name="advanced_settings"
+                                form="settings"
+                                disabled
+                            />
+                            <label class="disabled" for="advanced_settings" form="settings"
+                                >Advanced settings</label
+                            >
+                            <p class="notes">Advanced Settings are available for arcs</p>
+                        </div>
                     </div>
 
                     <div class="image-holder"></div>
