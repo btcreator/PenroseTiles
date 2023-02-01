@@ -23,6 +23,11 @@ const formInputDensity = document.querySelector('#density');
 const formInputRotation = document.querySelector('#rotation');
 const formInputsDecorationColor = document.querySelectorAll('.decoration-color input');
 const formInputDecoration = document.querySelector('.decoration');
+// Special settings inputs
+const formInputSpecRandom = document.querySelector('#random_tile_color');
+const formInputSpedGradient = document.querySelector('#gradient_tile_color');
+const formInputSpecAdvancedArc = document.querySelector('#advanced_arc_settings');
+const inputFormAdvancedArcPanel = document.querySelector('.advanced-arc');
 // Element for interaction btw. decoration and decoration color
 const wrapDecorationColors = [...document.querySelectorAll('.decoration-type-color')];
 // Loader
@@ -128,6 +133,28 @@ const addOnInputChangeHandlers = function (updateLiveView) {
         updateLiveView('decoration', ev.target.value);
         toggleSwitchOrHide(wrapDecorationColors, ev.target.value);
     });
+    // special coloring settings (random-coloring)
+    formInputSpecRandom.addEventListener('click', ev => {
+        formInputColorKite.disabled = formInputColorDart.disabled = ev.target.checked
+            ? true
+            : false;
+        formInputColorKite.classList.toggle('disabled', ev.target.checked);
+        formInputColorDart.classList.toggle('disabled', ev.target.checked);
+        updateLiveView("disabled", ev.target.checked);
+    });
+    // special arc decoration settings
+    formInputSpecAdvancedArc.addEventListener('click', ev => {
+        inputFormAdvancedArcPanel.classList.toggle("hidden", ev.target.checked); // continue
+        // loop set hiden 
+        // unhide checkbox when arc is set, otherwise hide
+        // make panel in html + css
+        // create gradient panel in html + css
+        // hide / unhide gradient panel when the gradient checkbox is checked
+        // set the input values, when generate is pressed
+        // use these in render view
+        // colors add to colorMaker
+        // make random and gradient coloring in colorMaker
+    })
 };
 
 // Show / hide submenu window on corresponding button click and replace the live image

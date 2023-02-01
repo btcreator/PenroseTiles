@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;400;700&display=swap');
-* * {
+
+* {
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
     font-size: 12px;
@@ -207,20 +208,21 @@ input::-webkit-inner-spin-button {
     font-family: 'Poppins', Helvetica, sans-serif;
     color: rgb(151, 151, 151);
 }
-
+/******************************************** Special-settings*/
 .special-settings {
     min-height: 25px;
     margin-top: 15px;
     display: grid;
     grid-template-columns: auto 1fr;
     row-gap: 10px;
+    column-gap: 5px;
     padding-block: 5px;
 }
 
 .special-settings input {
     width: auto;
-    margin: auto;
-    margin-right: 5px;
+    max-width: 3em;
+    margin: 0;
 }
 
 .special-settings label {
@@ -229,10 +231,20 @@ input::-webkit-inner-spin-button {
     user-select: none;
 }
 
-.special-settings p {
+.special-settings p,
+.special-settings-panel {
     grid-column: 1 / 3;
 }
-/******************************************** Loader*/
+
+.special-settings-panel {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-items: left;
+    row-gap: 10px;
+    column-gap: 10px;
+}
+
+/******************************************************************************** Loader*/
 .loader {
     position: absolute;
     top: 0;
@@ -272,14 +284,18 @@ input::-webkit-inner-spin-button {
 
 /*********************************************************************** Toggled classes*/
 .disabled {
-    color: #c5c1c1;
+    color: #e1e1e1;
+}
+.tile-color .disabled {
+    opacity: 0.3;
 }
 
+label.hidden,
 .hidden {
     display: none;
 }
 
-/*********************************************************************** Media*/
+/********************************************************************************* Media*/
 
 @media (max-width: 800px) {
     .floating-menu {

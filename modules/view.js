@@ -16,7 +16,7 @@ export const initUserMenu = function (penrosePatternGenerator) {
     const liveViewSettings = interact.getInitSettings();
     const liveImgContainer = live.setLiveView(liveViewSettings);
 
-    interact.interactionHandler(penrosePatternGenerator, liveImgContainer, live.updateLiveView);
+    interact.interactionHandler(penrosePatternGenerator, liveImgContainer, live.updateLiveView());
 
     interact.toggleLoader();
 };

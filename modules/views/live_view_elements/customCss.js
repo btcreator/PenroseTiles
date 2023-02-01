@@ -59,4 +59,15 @@ export const stylesheetText = `
 .hidden {
     display: none;
 }
+
+.disabled {
+    transform: scale(1) rotate(0deg);
+}
+.disabled .kite,
+.disabled .dart {
+    fill: #e7e7e7;
+}
+.disabled .decor {
+    display: none;
+}
 `;

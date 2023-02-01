@@ -39,7 +39,7 @@
                 <div class="hamburger">×</div>
             </div>
 
-            <form class="sub-menu" id="settings">
+            <form class="sub-menu hidden" id="settings">
                 <div class="sub-item dimension hidden" data-toggle="dimension">
                     <div class="inputs">
                         <p>Dimension</p>
@@ -54,8 +54,8 @@
                     <div class="image-holder"></div>
                 </div>
 
-                <div class="sub-item color" data-toggle="color">
-                    <div class="inputs">
+                <div class="sub-item color hidden" data-toggle="color">
+                    <div class="inputs tile-color">
                         <p>Tile colors</p>
                         <label for="color_kite" form="settings">Kite color</label>
                         <input
@@ -89,10 +89,14 @@
                                 form="settings"
                             />
                             <label for="gradient_tile_color" form="settings">Gradient</label>
+
+                            <div class="gradient special-settings-panel hidden">
+                                <p>Gradient settings</p>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="decoration-color inputs">
+                    <div class="inputs decoration-color">
                         <p>Decoration colors</p>
                         <p class="decoration-type-color notes" data-toggle="none">
                             No decoraton selected. Please select decoration first from the menu.
@@ -139,7 +143,8 @@
 
                 <div class="sub-item density hidden" data-toggle="density">
                     <div class="inputs">
-                        <label for="density" form="settings">Density</label>
+                        <p>Density</p>
+                        <label for="density" form="settings" class="hidden">Density</label>
                         <input
                             id="density"
                             type="range"
@@ -161,7 +166,8 @@
 
                 <div class="sub-item rotation hidden" data-toggle="rotation">
                     <div class="inputs">
-                        <label for="rotation" form="settings">Rotation</label>
+                        <p>Rotation</p>
+                        <label for="rotation" form="settings" class="hidden">Rotation</label>
                         <input
                             id="rotation"
                             type="range"
@@ -217,16 +223,41 @@
 
                         <div class="special-settings">
                             <input
-                                id="advanced_settings"
+                                id="advanced_arc_settings"
                                 type="checkbox"
                                 name="advanced_settings"
                                 form="settings"
                                 disabled
                             />
-                            <label class="disabled" for="advanced_settings" form="settings"
+                            <label class="disabled" for="advanced_arc_settings" form="settings"
                                 >Advanced settings</label
                             >
+
                             <p class="notes">Advanced Settings are available for arcs</p>
+                            <div class="advanced-arc special-settings-panel hidden">
+                                <p>Advanced Arc SVG settings</p>
+                                <label for="arc_radius">Radius</label>
+                                <input
+                                    id="arc_radius"
+                                    type="number"
+                                    name="arc_radius"
+                                    form="settings"
+                                />
+                                <label for="large_arc_flag">Large arc flag</label>
+                                <input
+                                    id="large_arc_flag"
+                                    type="checkbox"
+                                    name="large_arc_flag"
+                                    form="settings"
+                                />
+                                <label for="sweep_flag">Sweep flag</label>
+                                <input
+                                    id="sweep_flag"
+                                    type="checkbox"
+                                    name="sweep_flag"
+                                    form="settings"
+                                />
+                            </div>
                         </div>
                     </div>
 

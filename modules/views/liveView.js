@@ -52,11 +52,21 @@ export const setLiveView = function (liveViewSettings) {
     return liveContainer;
 };
 
-// Updates the svg poperties with the actual values
-export const updateLiveView = function (prop, value) {
-    prop === 'decoration'
-        ? toggleSwitchOrHide(decorations, value)
-        : liveContainer.shadowRoot
-              .querySelector('#live-image')
-              .style.setProperty(`--${prop}`, value);
+// Updates the svg poperties with the actual values or disable live-sample
+export const updateLiveView = function() {
+    const liveImage = liveContainer.shadowRoot.querySelector('#live-image');
+    const liveSample = liveContainer.shadowRoot.querySelector('#live-sample');
+    return function (prop, value) {
+        switch(prop) {
+            case "disabled":
+                liveSample.classList.toggle("disabled", value);
+                break;
+            case "decoration":
+                toggleSwitchOrHide(decorations, value);
+                break;
+            default:
+                liveImage.style.setProperty(`--${prop}`, value);
+
+        }        
+    };
 };
