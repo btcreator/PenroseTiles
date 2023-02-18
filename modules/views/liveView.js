@@ -8,7 +8,7 @@ import { svgImg } from './live_view_elements/settingsSVG.js';
 import { stylesheetText } from './live_view_elements/customCss.js';
 
 const liveContainer = document.createElement('div');
-const decorations = [];
+const liveImageDecorations = [];
 
 // Create a shadow root, set a custom css and elements for the live view svg. Then manipulate/update just the css variables.
 const initElements = function () {
@@ -28,7 +28,7 @@ const initElements = function () {
     root.append(liveStyle, liveImage);
 
     // save decoration nodes for faster access when update
-    decorations.push(...liveImage.querySelectorAll('.decor-type'));
+    liveImageDecorations.push(...liveImage.querySelectorAll('.decor-type'));
 
     return liveImage;
 };
@@ -43,11 +43,11 @@ export const setLiveView = function (liveViewSettings) {
     liveImage.style.setProperty('--amman', liveViewSettings.decorationColor.amman);
     liveImage.style.setProperty('--large', liveViewSettings.decorationColor.arcs.large);
     liveImage.style.setProperty('--small', liveViewSettings.decorationColor.arcs.small);
-    // set density and rotation
-    liveImage.style.setProperty('--density', liveViewSettings.density);
+    // set scale (density) and rotation
+    liveImage.style.setProperty('--scale', liveViewSettings.scale);
     liveImage.style.setProperty('--rotation', `${liveViewSettings.rotation}deg`);
     // set decoration
-    toggleSwitchOrHide(decorations, liveViewSettings.decoration);
+    toggleSwitchOrHide(liveImageDecorations, liveViewSettings.decoration);
 
     return liveContainer;
 };
@@ -62,11 +62,10 @@ export const updateLiveView = function() {
                 liveSample.classList.toggle("disabled", value);
                 break;
             case "decoration":
-                toggleSwitchOrHide(decorations, value);
+                toggleSwitchOrHide(liveImageDecorations, value);
                 break;
             default:
                 liveImage.style.setProperty(`--${prop}`, value);
-
         }        
     };
 };

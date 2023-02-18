@@ -23,9 +23,11 @@
     },
     "homepage": "https://github.com/btcreator/PenroseTiles#readme",
     "devDependencies": {
-        "parcel": "^2.7.0"
+        "@types/core-js": "^2.5.5",
+        "parcel": "^2.7.0",
+        "process": "^0.11.10"
     },
     "dependencies": {
-        "core-js": "^3.25.2"
+        "core-js": "^3.28.0"
     }
 }

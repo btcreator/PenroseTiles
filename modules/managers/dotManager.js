@@ -83,9 +83,7 @@ const getTileDataByDot = function (dot, n, coffin = { shortSide: false, worm: fa
 // 2xround for floating point fail correction
 const calcSquare = function (dotA, dotB) {
     return Math.round(
-        Math.round(
-            ((dotB.coord[0] - dotA.coord[0]) ** 2 + (dotB.coord[1] - dotA.coord[1]) ** 2) * 100
-        ) / 100
+        Math.round(((dotB.coord[0] - dotA.coord[0]) ** 2 + (dotB.coord[1] - dotA.coord[1]) ** 2) * 100) / 100
     );
 };
 
@@ -118,9 +116,7 @@ const verticesRuleReferee = function (openDot) {
             dot.occupy.every((occupationObj, i) => {
                 return (
                     occupationObj.tile.name === 'kite' &&
-                    (i
-                        ? occupationObj.point === 'D'
-                        : occupationObj.point === 'C' || occupationObj.point === 'B')
+                    (i ? occupationObj.point === 'D' : occupationObj.point === 'C' || occupationObj.point === 'B')
                 );
             })
         );
@@ -139,8 +135,7 @@ const verticesRuleReferee = function (openDot) {
                 const y2 = corners.at(-1).coord[1];
 
                 return function (acc, corner, i) {
-                    const position =
-                        (corner.coord[0] - x1) * (y2 - y1) - (corner.coord[1] - y1) * (x2 - x1);
+                    const position = (corner.coord[0] - x1) * (y2 - y1) - (corner.coord[1] - y1) * (x2 - x1);
 
                     position > 0 && acc.unshift(i);
                     return acc;
@@ -165,10 +160,7 @@ const verticesRuleReferee = function (openDot) {
         !acuteAnglesIndex[0] && acuteAnglesIndex[1] === 3 && acuteAnglesIndex.reverse();
 
         const sideA = calcSquare(corners.at(acuteAnglesIndex[0] - 1), corners[acuteAnglesIndex[0]]);
-        const sideB = calcSquare(
-            corners.at(acuteAnglesIndex[0] - 2),
-            corners.at(acuteAnglesIndex[0] - 1)
-        );
+        const sideB = calcSquare(corners.at(acuteAnglesIndex[0] - 2), corners.at(acuteAnglesIndex[0] - 1));
 
         // if the length of the two sides of the romboid shape are the same, then it's a rhombus,
         // when the sideB is longer/bigger (which by coffin shape is the short side), then it's a trapezoid, when the sideA, then it's an isosceles trapezoid (cup shape)
@@ -198,9 +190,7 @@ const verticesRuleReferee = function (openDot) {
     const cornersMap = corners.reduce((acc, val, i) => {
         const actSquare = calcSquare(corners.at(i - 1), val);
         const cornerPairs = acc.get(actSquare);
-        cornerPairs
-            ? cornerPairs.push([corners.at(i - 1), val])
-            : acc.set(actSquare, [[corners.at(i - 1), val]]);
+        cornerPairs ? cornerPairs.push([corners.at(i - 1), val]) : acc.set(actSquare, [[corners.at(i - 1), val]]);
         return acc;
     }, new Map());
 
@@ -278,9 +268,7 @@ const getDotByCoord = function (coord) {
 
 // Convert the dot occupation to string
 const dotOccupyToString = function (dot) {
-    return dot.occupy
-        .map(dotOccupiedTile => `${dotOccupiedTile.tile.name} ${dotOccupiedTile.point}`)
-        .join('');
+    return dot.occupy.map(dotOccupiedTile => `${dotOccupiedTile.tile.name} ${dotOccupiedTile.point}`).join('');
 };
 
 // Return an object from text presented tiles ('Kite C' => {name: 'Kite', point: 'C'}),
@@ -333,9 +321,7 @@ const vertexRuleReferee = function (dot) {
 // or just in the overlay (btw. the viewport and the not rendering zone). Based on his position, each dot get a value which we can use to decide which tiles are allowed to render or not.
 const borderControl = function (dot) {
     // if the dot is outside the overlayed border, return 0/"false" (the whole tile should be not rendered)
-    const dotInRenderZone = dot.coord.every(
-        (xy, i) => xy > 0 - borderOverlay && xy < border[i] + borderOverlay
-    );
+    const dotInRenderZone = dot.coord.every((xy, i) => xy > 0 - borderOverlay && xy < border[i] + borderOverlay);
     if (!dotInRenderZone) return 0;
 
     // the dot is inside the borders of viewport, return 1/"true" (the whole tile must be rendered)
@@ -378,8 +364,7 @@ const organizeDot = function (dot) {
 
     // the vertex rule decides, that a dot would be a restricted dot too or just an open dot
     const possTilesByRule = vertexRuleReferee(dot);
-    (possTilesByRule.cw.length === 1 || possTilesByRule.ccw.length === 1) &&
-        restrictedDots.push(dot);
+    (possTilesByRule.cw.length === 1 || possTilesByRule.ccw.length === 1) && restrictedDots.push(dot);
 
     dot.nextPossTiles = possTilesByRule;
     return;
@@ -412,9 +397,7 @@ export const setDots = function (newTile, newTileTouchPoint, attacheDirection) {
         // When true or false (1/0) is anytime set, then the destiny of the tile is set (can't be changed anymore). Just by the weak true or weak false must we look closer.
         // renderable starts with -1, when is switched to -2, then it stays so and just a 0 or 1 can it switch over (shortly, it can be switched from -1 to -2, ftom -2 to 0/1 but not the other way) (see documentation)
         if (renderable < 0)
-            renderable = !(renderable % 2 || dot.borderPermission > -1)
-                ? renderable
-                : dot.borderPermission;
+            renderable = !(renderable % 2 || dot.borderPermission > -1) ? renderable : dot.borderPermission;
         // the if statement above is the same as the next one (just for the better readability)
         /*  
             if (renderable > -1) {

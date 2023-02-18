@@ -22,15 +22,11 @@
 
                     <input class="button" type="button" value="Decoration" data-type="decoration" />
 
-                    <button class="generate-pattern button" type="submit" form="settings">
-                        Generate
-                    </button>
+                    <button class="generate-pattern button" type="submit" form="settings">Generate</button>
                 </div>
                 <div class="link-console">
                     <div class="home-link">
-                        <a href="index.html" alt="Home"
-                            ><img src="img/logo.png" alt="logo" width="25"
-                        /></a>
+                        <a href="index.html" alt="Home"><img src="img/logo.png" alt="logo" width="25" /></a>
                     </div>
                     <div class="download-link">
                         <p>Download link would be available after generating a pattern.</p>
@@ -58,21 +54,9 @@
                     <div class="inputs tile-color">
                         <p>Tile colors</p>
                         <label for="color_kite" form="settings">Kite color</label>
-                        <input
-                            id="color_kite"
-                            type="color"
-                            name="color_kite"
-                            form="settings"
-                            value="#07707D"
-                        /><br />
+                        <input id="color_kite" type="color" name="color_kite" form="settings" value="#07707D" /><br />
                         <label for="color_dart" form="settings">Dart color</label>
-                        <input
-                            id="color_dart"
-                            type="color"
-                            name="color_dart"
-                            form="settings"
-                            value="#002F38"
-                        /><br />
+                        <input id="color_dart" type="color" name="color_dart" form="settings" value="#002F38" /><br />
                         <div class="special-settings">
                             <p>Special coloring</p>
                             <input
@@ -80,6 +64,7 @@
                                 type="checkbox"
                                 name="color_random"
                                 form="settings"
+                                value="random"
                             />
                             <label for="random_tile_color" form="settings">Random</label>
                             <input
@@ -87,11 +72,24 @@
                                 type="checkbox"
                                 name="color_gradient"
                                 form="settings"
+                                value="gradient"
                             />
                             <label for="gradient_tile_color" form="settings">Gradient</label>
 
-                            <div class="gradient special-settings-panel hidden">
-                                <p>Gradient settings</p>
+                            <div class="special-coloring-opt special-settings-panel hidden" data-toggle="random">
+                                <label for="color_from" form="settings">From color</label>
+                                <input id="color_from" type="color" name="color_from" form="settings" value="#52BC24" />
+                                <label for="color_to" form="settings">To color</label>
+                                <input id="color_to" type="color" name="color_to" form="settings" value="#29920C" />
+                            </div>
+
+                            <div class="special-coloring-opt special-settings-panel hidden" data-toggle="gradient">
+                                <label for="grad_distance">Distance (px)</label>
+                                <input id="grad_distance" type="number" name="grad_distance" form="settings" />
+                                <label for="grad_rotation">Rotation (deg)</label>
+                                <input id="grad_rotation" type="number" name="grad_rotation" form="settings" />
+                                <label for="grad_spread">Color spread</label>
+                                <input id="grad_spread" type="number" name="grad_spread" form="settings" />
                             </div>
                         </div>
                     </div>
@@ -113,9 +111,7 @@
                             />
                         </div>
                         <div class="decoration-type-color hidden" data-toggle="arcs">
-                            <label for="color_arc_large" form="settings"
-                                >Arc large-radius color</label
-                            >
+                            <label for="color_arc_large" form="settings">Arc large-radius color</label>
                             <input
                                 id="color_arc_large"
                                 type="color"
@@ -124,9 +120,7 @@
                                 value="#bdbdbd"
                                 data-name="large"
                             />
-                            <label for="color_arc_small" form="settings"
-                                >Arc small-radius color</label
-                            >
+                            <label for="color_arc_small" form="settings">Arc small-radius color</label>
                             <input
                                 id="color_arc_small"
                                 type="color"
@@ -145,19 +139,10 @@
                     <div class="inputs">
                         <p>Density</p>
                         <label for="density" form="settings" class="hidden">Density</label>
-                        <input
-                            id="density"
-                            type="range"
-                            name="density"
-                            min="10"
-                            max="100"
-                            value="50"
-                            form="settings"
-                        />
+                        <input id="density" type="range" name="density" min="10" max="100" value="50" form="settings" />
                         <div class="range-display">50</div>
                         <p class="notes">
-                            Please note that the larger and denser the image, the longer it takes to
-                            generate.
+                            Please note that the larger and denser the image, the longer it takes to generate.
                         </p>
                     </div>
 
@@ -168,20 +153,11 @@
                     <div class="inputs">
                         <p>Rotation</p>
                         <label for="rotation" form="settings" class="hidden">Rotation</label>
-                        <input
-                            id="rotation"
-                            type="range"
-                            name="rotation"
-                            min="0"
-                            max="72"
-                            value="25"
-                            form="settings"
-                        />
+                        <input id="rotation" type="range" name="rotation" min="0" max="72" value="25" form="settings" />
                         <div class="range-display">25 deg</div>
                         <p class="notes">
-                            Please consider that the pattern has some kind of 5 fold symmetry and
-                            that's why it makes no sens more than 72 degree rotation, which is
-                            actually interesting by Amman line decoration.
+                            Please consider that the pattern has some kind of 5 fold symmetry and that's why it makes no
+                            sens more than 72 degree rotation, which is actually interesting by Amman line decoration.
                         </p>
                     </div>
 
@@ -191,72 +167,33 @@
                 <div class="sub-item decoration hidden" data-toggle="decoration">
                     <div class="inputs">
                         <p>Decoration type</p>
-                        <input
-                            id="decor_amman"
-                            type="radio"
-                            name="decoration"
-                            value="amman"
-                            form="settings"
-                        />
-                        <label class="radio-label" for="decor_amman" form="settings"
-                            >Amman-lines</label
-                        >
+                        <input id="decor_amman" type="radio" name="decoration" value="amman" form="settings" />
+                        <label class="radio-label" for="decor_amman" form="settings">Amman-lines</label>
                         <br />
-                        <input
-                            id="decor_arcs"
-                            type="radio"
-                            name="decoration"
-                            value="arcs"
-                            form="settings"
-                        />
+                        <input id="decor_arcs" type="radio" name="decoration" value="arcs" form="settings" />
                         <label class="radio-label" for="decor_arcs" form="settings">Arcs</label>
                         <br />
-                        <input
-                            id="decor_none"
-                            type="radio"
-                            name="decoration"
-                            value="none"
-                            form="settings"
-                            checked
-                        />
+                        <input id="decor_none" type="radio" name="decoration" value="none" form="settings" checked />
                         <label class="radio-label" for="decor_none" form="settings">None</label>
 
                         <div class="special-settings">
-                            <input
-                                id="advanced_arc_settings"
-                                type="checkbox"
-                                name="advanced_settings"
-                                form="settings"
-                                disabled
-                            />
-                            <label class="disabled" for="advanced_arc_settings" form="settings"
-                                >Advanced settings</label
-                            >
+                            <p>Advanced SVG settings</p>
 
-                            <p class="notes">Advanced Settings are available for arcs</p>
-                            <div class="advanced-arc special-settings-panel hidden">
-                                <p>Advanced Arc SVG settings</p>
-                                <label for="arc_radius">Radius</label>
+                            <p class="advanced-arc-opt notes" data-toggle="none">Available for arcs</p>
+                            <div class="advanced-arc-opt special-settings-panel hidden" data-toggle="arcs">
+                                <label for="arc_radius_scale">Radius scale</label>
                                 <input
-                                    id="arc_radius"
+                                    id="arc_radius_scale"
                                     type="number"
-                                    name="arc_radius"
+                                    name="arc_radius_scale"
                                     form="settings"
+                                    value="1"
                                 />
-                                <label for="large_arc_flag">Large arc flag</label>
-                                <input
-                                    id="large_arc_flag"
-                                    type="checkbox"
-                                    name="large_arc_flag"
-                                    form="settings"
-                                />
-                                <label for="sweep_flag">Sweep flag</label>
-                                <input
-                                    id="sweep_flag"
-                                    type="checkbox"
-                                    name="sweep_flag"
-                                    form="settings"
-                                />
+                                <label for="large_arc_flag">Swap large arc flag</label>
+                                <input id="large_arc_flag" type="checkbox" name="large_arc_flag" form="settings" />
+                                <label for="sweep_flag">Swap sweep flag</label>
+                                <input id="sweep_flag" type="checkbox" name="sweep_flag" form="settings" />
+                                <p class="notes">This settings changes the svg values relative to default values.</p>
                             </div>
                         </div>
                     </div>

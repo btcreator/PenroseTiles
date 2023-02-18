@@ -7,10 +7,20 @@
 
 import { randomRange } from './helpers.js';
 
-let colors; // {tileColor: {kite: '#56DF8C', dart: '#FF12A3'}, decorColor: {amman: '#...', arcs: {large: '#...', small: '#...'}}
+const colors = {}; // {tileColor: {kite: '#56DF8C', dart: '#FF12A3'}, decorColor: {amman: '#...', arcs: {large: '#...', small: '#...'}, specialColor: {from: '#...', to: '#...'}}
+let specColorFunc;
 
-export const setPalette = function (colorPalette) {
-    colors = colorPalette;
+// The initial function which sets the initital settings and
+export const setPalette = function (colorPalette, specSettings) {
+    const fromHSL = hexToHSLArray(colorPalette.specialColor.from);
+    const toHSL = hexToHSLArray(colorPalette.specialColor.to);
+
+    const hslOffsets = hslOffsetMinData(fromHSL, toHSL, "offset");
+    const minHSLvalues = hslOffsetMinData(fromHSL, toHSL, "min");
+
+    specColorFunc = selectSpecFunc(hslOffsets, minHSLvalues, specSettings);
+
+    Object.assign(colors, colorPalette);
 };
 
 export const getTileColor = function (tileName) {
@@ -21,44 +31,96 @@ export const getDecorColor = function (decor) {
     return colors.decorColor[decor];
 };
 
+export const getSpecialColor = function (coord) {
+   const hsl = specColorFunc(coord);
+   return `hsl(${hsl[0]}, ${hsl[1]}%, ${hsl[2]}%)`;
+}
+
 // Generates a random color
-const randomColor = function (rgbRange) {
-    const tint1 = randomRange(rgbRange.red.max, rgbRange.red.min);
-    const tint2 = randomRange(rgbRange.green.max, rgbRange.green.min);
-    const tint3 = randomRange(rgbRange.blue.max, rgbRange.blue.min);
-    return `rgb(${tint1}, ${tint2}, ${tint3})`;
+const randomColorData = function (hslOffsets, minHSLvalues) {
+    return hslOffsets.map((offset, i) => randomRange(offset) + minHSLvalues[i]);
 };
-/*
-//rotated gradient coloring
-const gradient = function () {
-    const maxGradWidth = width - 100;
-    const maxGradHeight = height - 100;
-    const colorSpread = 80;
-    const maxcolorAdd = 255 - colorSpread;
-    const diff = 15;
 
-    let minS = (Math.abs(tile.coord.A[0]) / maxGradWidth) * colorSpread; // 0-80 +
-    minS = minS > colorSpread ? colorSpread : minS; // 0 - 80
-    let maxS = (1 - Math.abs(tile.coord.A[0]) / maxGradWidth) * maxGradHeight; // maxGradHeight - (-)
-    maxS = maxS < 1 ? 1 : maxS; // maxGradHeight - 1
 
-    let spreadVertical = colorSpread - minS; // 80 - 0
-    spreadVertical = spreadVertical < 1 ? 1 : spreadVertical; // 80 - 1
-    let grad = (Math.abs(tile.coord.A[1]) / maxS) * spreadVertical; // 1.col: 0 - 80 , mid col: 0 - 40, last col: 0 - 1
-    grad += minS;
+// Generate a rotated linear gradient coloring
+const gradientColor = function(hslOffsets, minHSLvalues, distance, gradRotation, colorSpread, random, coord) {
+    const a = coord.A[0];
+    const b = coord.A[1];
+    const c = Math.sqrt(a**2 + b**2);
 
-    const tint = randomRange(grad + maxcolorAdd, grad + maxcolorAdd - diff);
-    return `rgb(${tint}, ${tint}, ${tint})`;
-};*/
+    // ratio between the distance and the line from point(coord) perpendicular to the gradients beginning "border"
+    // ratio is between 0 and 1
+    let ratio = Math.cos(gradRotation * Math.PI / 180 - Math.asin(b / c)) * c / distance;
+    ratio = ratio > 1 ? 1 : ratio;
+  
+    return random ?
+    hslOffsets.map((offset, i) => {
+        const channelMax = minHSLvalues[i] + offset;
+        const channelMin = minHSLvalues[i] + ratio * offset;
+        return randomRange(channelMax, channelMin);
+    }) :
+    hslOffsets.map((offset, i) => {
+        const channelMax = minHSLvalues[i] + ratio * offset;
+        return randomRange(channelMax, channelMax - colorSpread);
+    });
+}
 
-const gradient = function (width, height, colorRange, colorSpread, coord) {
-    const minColorNum = 255 - colorRange;
-    const x = coord.A[0];
-    const y = coord.A[1];
+////////////////////////
+// Functions for set the inital settings - evoked just on the beginning (for the faster data access and so faster generating of the colors)
 
-    // the ratio btw. the x and the width of the gradient
-    const ratioOfX = x / width < 1 ? x / width : 1;
-    // the ratio between value x+y (from origo throuhg x, then down y till the point) and the same line through x, down y till the border of the gradient line
-    const ratio = (x + y) / (x + (1 - ratioOfX) * height);
-    //continue
-};
+// Convert hex color to HSL
+const hexToHSLArray = function (colorHex) {
+    let r = parseInt(colorHex[1] + colorHex[2], 16) / 255;
+    let g = parseInt(colorHex[3] + colorHex[4], 16) / 255;
+    let b = parseInt(colorHex[5] + colorHex[6], 16) / 255;
+
+
+    let cmin = Math.min(r,g,b),
+        cmax = Math.max(r,g,b),
+        delta = cmax - cmin,
+        h = 0,
+        s = 0,
+        l = 0;
+    
+    if (delta === 0)
+        h = 0;
+    else if (cmax === r)
+        h = ((g - b) / delta) % 6;
+    else if (cmax === g)
+        h = (b - r) / delta + 2;
+    else
+        h = (r - g) / delta + 4;
+    
+    h = Math.round(h * 60);
+    
+    if (h < 0)
+        h += 360;
+    
+    l = (cmax + cmin) / 2;
+    s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+    s = +(s * 100).toFixed(1);
+    l = +(l * 100).toFixed(1);
+    
+    return [h,s,l];
+}
+
+// Return the HSL channels offsets (the value between min and max) and the minimum values of each channel
+const hslOffsetMinData = function(fromHSL, toHSL, offsetOrMin) {
+    return offsetOrMin === "min" ?
+        fromHSL.map((value, i) => Math.min(toHSL[i],value)) :
+        fromHSL.map((value, i) => Math.abs(toHSL[i] - value));
+}
+
+// Set the needed function for generating the colors for faster call (can be rid of if statements for each call)
+const selectSpecFunc = function(hslOffsets, minHSLvalues, specSettings) {
+    //{ random: boolean, gradient: boolean, gradDistance: number, gradRotation: number(degree), gradSpread: number }
+    const { random, gradient, gradDistance, gradRotation, gradSpread } = specSettings;
+    return random && !gradient ? 
+        randomColorData.bind(null, hslOffsets, minHSLvalues) : 
+        gradientColor.bind(null, hslOffsets, minHSLvalues, gradDistance, gradRotation, gradSpread, random);
+}
+
+// continue
+
+// on small screen the settings are overflowing the viewport
+// gradient info for users

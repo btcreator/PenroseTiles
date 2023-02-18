@@ -2,7 +2,7 @@
  * - creates a ready to render tile or
  * - remove when nencessary
  * - generate tiles in loop until all tiles for the pattern are not created
- * 
+ *
  * - in tileManager is a tile created, rotated, scaled, and set his position on coordinate system
  * - in dotManager are the placement rules managed and other important data added to the Tiles and Dots
  */
@@ -20,10 +20,7 @@ export const generatePatternTiles = function (penroseSettings) {
     const firstTileName = Math.round(Math.random()) ? 'kite' : 'dart';
     const initX = randomRange(visibleArea[0]);
     const initY = randomRange(visibleArea[1]);
-    const rotation = penroseSettings.rotation;
-    const scale = penroseSettings.density;
-    const decoration = penroseSettings.decoration;
-
+    const { rotation, scale, decoration } = penroseSettings;
     const firstTile = tileManager.init(firstTileName, initX, initY, rotation, scale, decoration);
     dotManager.init(firstTile, visibleArea, scale);
     visibleTiles.push(firstTile);
@@ -42,20 +39,8 @@ const removeElement = function (tile) {
 
 // This function gets an object, a blueprint of new tile. Based on that, creates a new Tile, loaded with all necessary data like coordinates, occupation...
 // (i.e. return a "redy to render" tile)
-const createElement = function ({
-    newTileName,
-    newTileTouchPoint,
-    targetTile,
-    targetTouchPoint,
-    attacheDirection,
-}) {
-    const newTile = tileManager.setTile(
-        newTileName,
-        newTileTouchPoint,
-        targetTile,
-        targetTouchPoint,
-        attacheDirection
-    );
+const createElement = function ({ newTileName, newTileTouchPoint, targetTile, targetTouchPoint, attacheDirection }) {
+    const newTile = tileManager.setTile(newTileName, newTileTouchPoint, targetTile, targetTouchPoint, attacheDirection);
     const setDotsResult = dotManager.setDots(newTile, newTileTouchPoint, attacheDirection);
 
     !setDotsResult.succeed && removeElement(newTile);

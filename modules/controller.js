@@ -1,5 +1,5 @@
 /** The controller in init
- * - calls the initUserMenu which initialize the main menu 
+ * - calls the initUserMenu which initialize the main menu
  * - click on generate button is the penrosePatternGenerator called...and the magic begins ;)
  */
 import 'core-js/stable';

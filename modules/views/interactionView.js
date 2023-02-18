@@ -24,11 +24,20 @@ const formInputRotation = document.querySelector('#rotation');
 const formInputsDecorationColor = document.querySelectorAll('.decoration-color input');
 const formInputDecoration = document.querySelector('.decoration');
 // Special settings inputs
+const formInputColorFrom = document.querySelector('#color_from');
+const formInputColorTo = document.querySelector('#color_to');
+const formInputGradDistance = document.querySelector('#grad_distance');
+const formInputGradRotation = document.querySelector('#grad_rotation');
+const formInputGradSpread = document.querySelector('#grad_spread');
+const formInputArcRadiusScale = document.querySelector('#arc_radius_scale');
+const formInputLargeArcFlag = document.querySelector('#large_arc_flag');
+const formInputSweepFlag = document.querySelector('#sweep_flag');
+// Special settings control inputs/elements
 const formInputSpecRandom = document.querySelector('#random_tile_color');
 const formInputSpedGradient = document.querySelector('#gradient_tile_color');
-const formInputSpecAdvancedArc = document.querySelector('#advanced_arc_settings');
-const inputFormAdvancedArcPanel = document.querySelector('.advanced-arc');
-// Element for interaction btw. decoration and decoration color
+const wrapSpecialColorings = [...document.querySelectorAll('.special-coloring-opt')];
+const wrapAdvancedArcs = [...document.querySelectorAll('.advanced-arc-opt')];
+// Elements for interaction btw. decoration and decoration color
 const wrapDecorationColors = [...document.querySelectorAll('.decoration-type-color')];
 // Loader
 const loader = document.querySelector('.loader');
@@ -57,6 +66,7 @@ export const interactionHandler = function (patternGenerator, liveImgContainer, 
 
 // Gathering and return inputs
 export const getInitSettings = function () {
+    const arcRadiusScaleTemp = formInputArcRadiusScale.valueAsNumber;
     return {
         width: formInputWidth.valueAsNumber || window.innerWidth,
         height: formInputHeight.valueAsNumber || window.innerHeight,
@@ -64,10 +74,7 @@ export const getInitSettings = function () {
             kite: formInputColorKite.value,
             dart: formInputColorDart.value,
         },
-        density:
-            Number(formInputDensity.max) +
-            Number(formInputDensity.min) -
-            formInputDensity.valueAsNumber,
+        scale: Number(formInputDensity.max) + Number(formInputDensity.min) - formInputDensity.valueAsNumber,
         rotation: formInputRotation.valueAsNumber,
         decoration: document.querySelector('.decoration input:checked').value,
         decorationColor: {
@@ -76,6 +83,21 @@ export const getInitSettings = function () {
                 large: document.querySelector('#color_arc_large').value,
                 small: document.querySelector('#color_arc_small').value,
             },
+        },
+        special: {
+            random: formInputSpecRandom.checked,
+            gradient: formInputSpedGradient.checked,
+            // TODO special arc checked
+            color: {
+                from: formInputColorFrom.value,
+                to: formInputColorTo.value,
+            },
+            gradDistance: formInputGradDistance.valueAsNumber,
+            gradRotation: formInputGradRotation.valueAsNumber,
+            gradSpread: formInputGradSpread.valueAsNumber,
+            arcRadiusScale: arcRadiusScaleTemp < 2.5 ? (arcRadiusScaleTemp > 1 ? arcRadiusScaleTemp : 1) : 2.5,
+            arcSwapLargeFlag: formInputLargeArcFlag.checked,
+            arcSwapSweepFlag: formInputSweepFlag.checked,
         },
     };
 };
@@ -109,10 +131,10 @@ const addHandlersToMenuItems = function (liveImgContainer) {
 
 // Add onchange listeners to inputs. When triggered, update the live view.
 const addOnInputChangeHandlers = function (updateLiveView) {
-    // density range change
+    // density(scale) range change
     formInputDensity.addEventListener('input', function () {
         this.parentElement.querySelector('.range-display').innerText = this.value;
-        updateLiveView('density', this.value);
+        updateLiveView('scale', this.value);
     });
     // rotation range change
     formInputRotation.addEventListener('input', function () {
@@ -123,38 +145,38 @@ const addOnInputChangeHandlers = function (updateLiveView) {
     formInputColorKite.addEventListener('input', ev => updateLiveView('kite', ev.target.value));
     formInputColorDart.addEventListener('input', ev => updateLiveView('dart', ev.target.value));
     formInputsDecorationColor.forEach(inputEl => {
-        inputEl.addEventListener('input', ev =>
-            updateLiveView(ev.target.dataset.name, ev.target.value)
-        );
+        inputEl.addEventListener('input', ev => updateLiveView(ev.target.dataset.name, ev.target.value));
     });
-    // decoration radio buttons change (and change of the decoration color in color sumbenu)
+    // decoration radio buttons change (and change of the decoration color in color sumbenu, and the special arc settings panel)
     formInputDecoration.addEventListener('click', ev => {
-        if (!ev.target.checked) return;
+        if (!(ev.target.type === 'radio')) return;
         updateLiveView('decoration', ev.target.value);
         toggleSwitchOrHide(wrapDecorationColors, ev.target.value);
+        // special arc decoration settings reveal or hide
+        toggleSwitchOrHide(wrapAdvancedArcs, ev.target.value === 'arcs' ? 'arcs' : 'none');
     });
-    // special coloring settings (random-coloring)
-    formInputSpecRandom.addEventListener('click', ev => {
-        formInputColorKite.disabled = formInputColorDart.disabled = ev.target.checked
-            ? true
-            : false;
-        formInputColorKite.classList.toggle('disabled', ev.target.checked);
-        formInputColorDart.classList.toggle('disabled', ev.target.checked);
-        updateLiveView("disabled", ev.target.checked);
+    // special coloring settings (random & gradient -coloring)
+    [formInputSpecRandom, formInputSpedGradient].forEach(checkbox =>
+        checkbox.addEventListener('click', ev => specialSettingsHandler(ev.target, updateLiveView))
+    );
+};
+
+// Disable tile coloring, live view, and reveal the corresponding special settings tab
+const specialSettingsHandler = function (target, updateLiveView) {
+    let disableElements = false;
+
+    wrapSpecialColorings.forEach(panel => {
+        if (target.value === 'random')
+            target.value === panel.dataset.toggle && panel.classList.toggle('hidden', !target.checked);
+        else panel.classList.toggle('reveal', target.checked);
+        disableElements =
+            disableElements || !(panel.classList.contains('hidden') && !panel.classList.contains('reveal'));
     });
-    // special arc decoration settings
-    formInputSpecAdvancedArc.addEventListener('click', ev => {
-        inputFormAdvancedArcPanel.classList.toggle("hidden", ev.target.checked); // continue
-        // loop set hiden 
-        // unhide checkbox when arc is set, otherwise hide
-        // make panel in html + css
-        // create gradient panel in html + css
-        // hide / unhide gradient panel when the gradient checkbox is checked
-        // set the input values, when generate is pressed
-        // use these in render view
-        // colors add to colorMaker
-        // make random and gradient coloring in colorMaker
-    })
+
+    formInputColorKite.disabled = formInputColorDart.disabled = disableElements;
+    formInputColorKite.classList.toggle('disabled', disableElements);
+    formInputColorDart.classList.toggle('disabled', disableElements);
+    updateLiveView('disabled', disableElements);
 };
 
 // Show / hide submenu window on corresponding button click and replace the live image

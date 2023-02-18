@@ -6,7 +6,7 @@ export const stylesheetText = `
     --amman: #000000;
     --large: #000000;
     --small: #000000;
-    --density: 100;
+    --scale: 100;
     --rotation: 0deg;
 }
 
@@ -25,11 +25,11 @@ export const stylesheetText = `
 }
 
 #live-sample svg {
-    transform: scale(calc((110 - var(--density)) / 10)) rotate(var(--rotation));
+    transform: scale(calc((110 - var(--scale)) / 10)) rotate(var(--rotation));
 }
 
 #live-sample .decor {
-    stroke-width: calc((178.75 - var(--density)) / (11.25 * (110 - var(--density))));
+    stroke-width: calc((178.75 - var(--scale)) / (11.25 * (110 - var(--scale))));
 }
 
 #bird-view svg {
