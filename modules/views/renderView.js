@@ -8,29 +8,37 @@ import * as colors from '../colorMaker.js';
 let kiteSvgGroup, dartSvgGroup;
 let ammanSvgGroup, largeSvgGroup, smallSvgGroup;
 let width, height, scale, decoration;
-let arcRadiusScale, arcLargeFlag, arcSweepFlag, specialColoring;
+let arcRadiusScale, lArcFlags, sArcFlags, specialColoring;
 const svgContainer = document.querySelector('.penrose-pattern-container');
 
 // Save the needed settings, clear the viewport (there can be a previous generated pattern), invoke the rendering process
 export const init = function (penroseSettings, visibleTiles) {
     const palette = {
-        tileColor: penroseSettings.tileColor,
-        decorColor: penroseSettings.decorationColor,
-        specialColor: penroseSettings.special.color,
+        tileColor: { kite: penroseSettings.colorKite, dart: penroseSettings.colorDart },
+        decorColor: {
+            amman: penroseSettings.colorAmman,
+            arcs: {
+                large: penroseSettings.colorLargeArc,
+                small: penroseSettings.colorSmallArc,
+            },
+        },
+        specialColor: { threshOne: penroseSettings.colorThresholdOne, threshTwo: penroseSettings.colorThresholdTwo },
     };
     const specSettings = {
-        random: penroseSettings.special.random,
-        gradient: penroseSettings.special.gradient,
-        gradDistance: penroseSettings.special.gradDistance,
-        gradRotation: penroseSettings.special.gradRotation,
-        gradSpread: penroseSettings.special.gradSpread,
+        random: Boolean(penroseSettings.random),
+        gradient: Boolean(penroseSettings.gradient),
+        gradDistance: penroseSettings.gradDistance,
+        gradRotation: penroseSettings.gradRotation,
+        gradSpread: penroseSettings.gradSpread,
     };
-    specialColoring = penroseSettings.special.random || penroseSettings.special.gradient;
 
     // sweep Falg default is 1
-    arcSweepFlag = Number(!penroseSettings.special.arcSwapSweepFlag);
-    arcLargeFlag = Number(penroseSettings.special.arcSwapArcFlag);
-    ({ width, height, scale, decoration, arcRadiusScale } = penroseSettings);
+    lArcFlags = [Number(Boolean(penroseSettings.lradLargeArcFlag)), Number(!penroseSettings.lradSweepFlag)];
+    sArcFlags = [Number(Boolean(penroseSettings.sradLargeArcFlag)), Number(!penroseSettings.sradSweepFlag)];
+
+    arcRadiusScale = penroseSettings.arcRadiusScale;
+    ({ width, height, scale, decoration } = penroseSettings);
+    specialColoring = specSettings.random || specSettings.gradient;
 
     colors.setPalette(palette, specSettings);
     clearView();
@@ -74,13 +82,13 @@ const generateSVGdecorAmman = function (tile) {
 const generateSVGdecorArcs = function (tile) {
     const multipl = arcRadiusScale * scale;
     const largeA = `<path d="M ${tile.decoord.A1[0]} ${tile.decoord.A1[1]} 
-    A ${tile.arcRadiusL * multipl} ${tile.arcRadiusL * multipl} 0 ${arcLargeFlag} ${arcSweepFlag} 
+    A ${tile.arcRadiusL * multipl} ${tile.arcRadiusL * multipl} 0 ${lArcFlags.join(' ')} 
     ${tile.decoord.A2[0]} ${tile.decoord.A2[1]}" />`;
 
     const smallA = `<path d="M ${tile.decoord.A3[0]} ${tile.decoord.A3[1]} 
-    A ${tile.arcRadiusS * multipl} ${tile.arcRadiusS * multipl} 0 ${Number(
-        (tile.name === 'dart') ^ arcLargeFlag
-    )} ${arcSweepFlag} 
+    A ${tile.arcRadiusS * multipl} ${tile.arcRadiusS * multipl} 0 ${Number(tile.name === 'dart') ^ sArcFlags[0]} ${
+        sArcFlags[1]
+    } 
     ${tile.decoord.A4[0]} ${tile.decoord.A4[1]}" />`;
 
     largeSvgGroup.insertAdjacentHTML('afterbegin', largeA);

@@ -38,34 +38,36 @@ export const setLiveView = function (liveViewSettings) {
     const liveImage = initElements();
 
     // set colors
-    liveImage.style.setProperty('--kite', liveViewSettings.tileColor.kite);
-    liveImage.style.setProperty('--dart', liveViewSettings.tileColor.dart);
-    liveImage.style.setProperty('--amman', liveViewSettings.decorationColor.amman);
-    liveImage.style.setProperty('--large', liveViewSettings.decorationColor.arcs.large);
-    liveImage.style.setProperty('--small', liveViewSettings.decorationColor.arcs.small);
+    liveImage.style.setProperty('--kite', liveViewSettings.colorKite);
+    liveImage.style.setProperty('--dart', liveViewSettings.colorDart);
+    liveImage.style.setProperty('--amman', liveViewSettings.colorAmman);
+    liveImage.style.setProperty('--large', liveViewSettings.colorLargeArc);
+    liveImage.style.setProperty('--small', liveViewSettings.colorSmallArc);
     // set scale (density) and rotation
     liveImage.style.setProperty('--scale', liveViewSettings.scale);
     liveImage.style.setProperty('--rotation', `${liveViewSettings.rotation}deg`);
     // set decoration
-    toggleSwitchOrHide(liveImageDecorations, liveViewSettings.decoration);
+    liveImageDecorations.forEach(el =>
+        el.classList.toggle('hidden', el.dataset.toggle !== liveViewSettings.decoration)
+    );
 
     return liveContainer;
 };
 
 // Updates the svg poperties with the actual values or disable live-sample
-export const updateLiveView = function() {
+export const updateLiveView = function () {
     const liveImage = liveContainer.shadowRoot.querySelector('#live-image');
     const liveSample = liveContainer.shadowRoot.querySelector('#live-sample');
     return function (prop, value) {
-        switch(prop) {
-            case "disabled":
-                liveSample.classList.toggle("disabled", value);
+        switch (prop) {
+            case 'disabled':
+                liveSample.classList.toggle('disabled', value);
                 break;
-            case "decoration":
-                toggleSwitchOrHide(liveImageDecorations, value);
+            case 'decoration':
+                liveImageDecorations.forEach(el => el.classList.toggle('hidden', el.dataset.toggle !== value));
                 break;
             default:
                 liveImage.style.setProperty(`--${prop}`, value);
-        }        
+        }
     };
 };

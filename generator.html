@@ -35,10 +35,10 @@
                 <div class="hamburger">×</div>
             </div>
 
-            <form class="sub-menu hidden" id="settings">
+            <form class="sub-menu" id="settings">
                 <div class="sub-item dimension hidden" data-toggle="dimension">
                     <div class="inputs">
-                        <p>Dimension</p>
+                        <h2>Dimension</h2>
                         <label for="width" form="settings">Width</label>
                         <input id="width" type="number" name="width" form="settings" /><br />
                         <label for="height" form="settings">Height</label>
@@ -52,17 +52,17 @@
 
                 <div class="sub-item color hidden" data-toggle="color">
                     <div class="inputs tile-color">
-                        <p>Tile colors</p>
+                        <h2>Tile colors</h2>
                         <label for="color_kite" form="settings">Kite color</label>
-                        <input id="color_kite" type="color" name="color_kite" form="settings" value="#07707D" /><br />
+                        <input id="color_kite" type="color" name="colorKite" form="settings" value="#07707D" /><br />
                         <label for="color_dart" form="settings">Dart color</label>
-                        <input id="color_dart" type="color" name="color_dart" form="settings" value="#002F38" /><br />
+                        <input id="color_dart" type="color" name="colorDart" form="settings" value="#002F38" /><br />
                         <div class="special-settings">
-                            <p>Special coloring</p>
+                            <h2>Special coloring</h2>
                             <input
                                 id="random_tile_color"
                                 type="checkbox"
-                                name="color_random"
+                                name="random"
                                 form="settings"
                                 value="random"
                             />
@@ -70,32 +70,32 @@
                             <input
                                 id="gradient_tile_color"
                                 type="checkbox"
-                                name="color_gradient"
+                                name="gradient"
                                 form="settings"
                                 value="gradient"
                             />
                             <label for="gradient_tile_color" form="settings">Gradient</label>
 
                             <div class="special-coloring-opt special-settings-panel hidden" data-toggle="random">
-                                <label for="color_from" form="settings">From color</label>
-                                <input id="color_from" type="color" name="color_from" form="settings" value="#52BC24" />
-                                <label for="color_to" form="settings">To color</label>
-                                <input id="color_to" type="color" name="color_to" form="settings" value="#29920C" />
+                                <label for="color_thres_one" form="settings">Threshold one</label>
+                                <input id="color_thres_one" type="color" name="colorThresholdOne" form="settings" value="#52BC24" />
+                                <label for="color_thres_two" form="settings">Threshold two</label>
+                                <input id="color_thres_two" type="color" name="colorThresholdTwo" form="settings" value="#29920C" />
                             </div>
 
                             <div class="special-coloring-opt special-settings-panel hidden" data-toggle="gradient">
                                 <label for="grad_distance">Distance (px)</label>
-                                <input id="grad_distance" type="number" name="grad_distance" form="settings" />
+                                <input id="grad_distance" type="number" name="gradDistance" form="settings" />
                                 <label for="grad_rotation">Rotation (deg)</label>
-                                <input id="grad_rotation" type="number" name="grad_rotation" form="settings" />
+                                <input id="grad_rotation" type="number" name="gradRotation" form="settings" />
                                 <label for="grad_spread">Color spread</label>
-                                <input id="grad_spread" type="number" name="grad_spread" form="settings" />
+                                <input id="grad_spread" type="number" name="gradSpread" form="settings" />
                             </div>
                         </div>
                     </div>
 
                     <div class="inputs decoration-color">
-                        <p>Decoration colors</p>
+                        <h2>Decoration colors</h2>
                         <p class="decoration-type-color notes" data-toggle="none">
                             No decoraton selected. Please select decoration first from the menu.
                         </p>
@@ -104,27 +104,27 @@
                             <input
                                 id="color_amman"
                                 type="color"
-                                name="color_amman"
+                                name="colorAmman"
                                 form="settings"
                                 value="#ffffff"
                                 data-name="amman"
                             />
                         </div>
                         <div class="decoration-type-color hidden" data-toggle="arcs">
-                            <label for="color_arc_large" form="settings">Arc large-radius color</label>
+                            <label for="color_large_arc" form="settings">Large-radius color</label>
                             <input
-                                id="color_arc_large"
+                                id="color_large_arc"
                                 type="color"
-                                name="color_arc_large"
+                                name="colorLargeArc"
                                 form="settings"
                                 value="#bdbdbd"
                                 data-name="large"
                             />
-                            <label for="color_arc_small" form="settings">Arc small-radius color</label>
+                            <label for="color_small_arc" form="settings">Small-radius color</label>
                             <input
-                                id="color_arc_small"
+                                id="color_small_arc"
                                 type="color"
-                                name="color_arc_small"
+                                name="colorSmallArc"
                                 form="settings"
                                 value="#545454"
                                 data-name="small"
@@ -137,7 +137,7 @@
 
                 <div class="sub-item density hidden" data-toggle="density">
                     <div class="inputs">
-                        <p>Density</p>
+                        <h2>Density</h2>
                         <label for="density" form="settings" class="hidden">Density</label>
                         <input id="density" type="range" name="density" min="10" max="100" value="50" form="settings" />
                         <div class="range-display">50</div>
@@ -151,7 +151,7 @@
 
                 <div class="sub-item rotation hidden" data-toggle="rotation">
                     <div class="inputs">
-                        <p>Rotation</p>
+                        <h2>Rotation</h2>
                         <label for="rotation" form="settings" class="hidden">Rotation</label>
                         <input id="rotation" type="range" name="rotation" min="0" max="72" value="25" form="settings" />
                         <div class="range-display">25 deg</div>
@@ -164,35 +164,63 @@
                     <div class="image-holder"></div>
                 </div>
 
-                <div class="sub-item decoration hidden" data-toggle="decoration">
+                <div class="sub-item decoration" data-toggle="decoration">
                     <div class="inputs">
-                        <p>Decoration type</p>
-                        <input id="decor_amman" type="radio" name="decoration" value="amman" form="settings" />
-                        <label class="radio-label" for="decor_amman" form="settings">Amman-lines</label>
-                        <br />
-                        <input id="decor_arcs" type="radio" name="decoration" value="arcs" form="settings" />
-                        <label class="radio-label" for="decor_arcs" form="settings">Arcs</label>
-                        <br />
-                        <input id="decor_none" type="radio" name="decoration" value="none" form="settings" checked />
-                        <label class="radio-label" for="decor_none" form="settings">None</label>
+                        <div class="decoration-types">
+                            <h2>Decoration type</h2>
+                            <input id="decor_amman" type="radio" name="decoration" value="amman" form="settings" />
+                            <label class="radio-label" for="decor_amman" form="settings">Amman-lines</label>
+                            <br />
+                            <input id="decor_arcs" type="radio" name="decoration" value="arcs" form="settings" />
+                            <label class="radio-label" for="decor_arcs" form="settings">Arcs</label>
+                            <br />
+                            <input
+                                id="decor_none"
+                                type="radio"
+                                name="decoration"
+                                value="none"
+                                form="settings"
+                                checked
+                            />
+                            <label class="radio-label" for="decor_none" form="settings">None</label>
+                        </div>
 
                         <div class="special-settings">
-                            <p>Advanced SVG settings</p>
+                            <h2>Advanced SVG settings</h2>
 
-                            <p class="advanced-arc-opt notes" data-toggle="none">Available for arcs</p>
-                            <div class="advanced-arc-opt special-settings-panel hidden" data-toggle="arcs">
+                            <p class="advanced-arc-opt notes hidden" data-toggle="none">Available for arcs</p>
+                            <div class="advanced-arc-opt special-settings-panel" data-toggle="arcs">
                                 <label for="arc_radius_scale">Radius scale</label>
                                 <input
                                     id="arc_radius_scale"
                                     type="number"
-                                    name="arc_radius_scale"
+                                    name="arcRadiusScale"
                                     form="settings"
+                                    step="0.1"
                                     value="1"
                                 />
-                                <label for="large_arc_flag">Swap large arc flag</label>
-                                <input id="large_arc_flag" type="checkbox" name="large_arc_flag" form="settings" />
-                                <label for="sweep_flag">Swap sweep flag</label>
-                                <input id="sweep_flag" type="checkbox" name="sweep_flag" form="settings" />
+
+                                <h3>Large-radius</h3>
+                                <label for="lrad_large_arc_flag">Swap large arc flag</label>
+                                <input
+                                    id="lrad_large_arc_flag"
+                                    type="checkbox"
+                                    name="lradLargeArcFlag"
+                                    form="settings"
+                                />
+                                <label for="lrad_sweep_flag">Swap sweep flag</label>
+                                <input id="lrad_sweep_flag" type="checkbox" name="lradSweepFlag" form="settings" />
+
+                                <h3>Small-radius</h3>
+                                <label for="srad_large_arc_flag">Swap large arc flag</label>
+                                <input
+                                    id="srad_large_arc_flag"
+                                    type="checkbox"
+                                    name="sradLargeArcFlag"
+                                    form="settings"
+                                />
+                                <label for="srad_sweep_flag">Swap sweep flag</label>
+                                <input id="srad_sweep_flag" type="checkbox" name="sradSweepFlag" form="settings" />
                                 <p class="notes">This settings changes the svg values relative to default values.</p>
                             </div>
                         </div>
