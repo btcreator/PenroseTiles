@@ -60,14 +60,14 @@ export const stylesheetText = `
     display: none;
 }
 
-.disabled {
+/*.disabled {
     transform: scale(1) rotate(0deg);
-}
+}*/
 .disabled .kite,
 .disabled .dart {
     fill: #e7e7e7;
 }
-.disabled .decor {
+/*.disabled .decor {
     display: none;
-}
+}*/
 `;

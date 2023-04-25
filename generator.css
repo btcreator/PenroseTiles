@@ -7,7 +7,6 @@
 
 body {
     margin: 0;
-    overflow: hidden;
 }
 
 h2,
@@ -19,9 +18,9 @@ h3 {
 input:focus {
     outline: 0;
 }
-/*********************************************************************** Floating Menu Bar*/
+/********************************************************************* Floating Menu Bar*/
 .floating-menu {
-    position: fixed;
+    position: absolute;
     top: -130px;
     left: 0;
     right: 0;
@@ -263,6 +262,14 @@ input::-webkit-inner-spin-button {
     grid-column: 1 / 3;
     justify-self: stretch;
     max-width: 100%;
+}
+
+/********************************************************************* Pattern container*/
+.penrose-pattern-container {
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    overflow: hidden;
 }
 
 /******************************************************************************** Loader*/

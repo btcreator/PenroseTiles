@@ -190,37 +190,49 @@
 
                             <p class="advanced-arc-opt notes hidden" data-toggle="none">Available for arcs</p>
                             <div class="advanced-arc-opt special-settings-panel" data-toggle="arcs">
-                                <label for="arc_radius_scale">Radius scale</label>
+
+                                <h3>Large-radius</h3>
+                                <label for="large_radius_scale">Scale</label>
                                 <input
-                                    id="arc_radius_scale"
+                                    id="large_radius_scale"
                                     type="number"
-                                    name="arcRadiusScale"
+                                    name="largeRadiusScale"
                                     form="settings"
                                     step="0.1"
                                     value="1"
                                 />
-
-                                <h3>Large-radius</h3>
-                                <label for="lrad_large_arc_flag">Swap large arc flag</label>
+                                <label for="large_l_arc_flag">Swap large arc flag</label>
                                 <input
-                                    id="lrad_large_arc_flag"
+                                    id="large_l_arc_flag"
+                                    class="flag-opt"
                                     type="checkbox"
-                                    name="lradLargeArcFlag"
+                                    name="largeLArcFlag"
                                     form="settings"
                                 />
-                                <label for="lrad_sweep_flag">Swap sweep flag</label>
-                                <input id="lrad_sweep_flag" type="checkbox" name="lradSweepFlag" form="settings" />
+                                <label for="large_sweep_flag">Swap sweep flag</label>
+                                <input id="large_sweep_flag" class="flag-opt" type="checkbox" name="largeSweepFlag" form="settings" />
 
                                 <h3>Small-radius</h3>
-                                <label for="srad_large_arc_flag">Swap large arc flag</label>
+                                <label for="small_radius_scale">Scale</label>
                                 <input
-                                    id="srad_large_arc_flag"
+                                    id="small_radius_scale"
+                                    type="number"
+                                    name="smallRadiusScale"
+                                    form="settings"
+                                    step="0.1"
+                                    value="1"
+                                />
+                                <label for="small_l_arc_flag">Swap large arc flag</label>
+                                <input
+                                    id="small_l_arc_flag"
+                                    class="flag-opt"
                                     type="checkbox"
-                                    name="sradLargeArcFlag"
+                                    name="smallLArcFlag"
                                     form="settings"
                                 />
-                                <label for="srad_sweep_flag">Swap sweep flag</label>
-                                <input id="srad_sweep_flag" type="checkbox" name="sradSweepFlag" form="settings" />
+                                <label for="small_sweep_flag">Swap sweep flag</label>
+                                <input id="small_sweep_flag" class="flag-opt" type="checkbox" name="smallSweepFlag" form="settings" />
+
                                 <p class="notes">This settings changes the svg values relative to default values.</p>
                             </div>
                         </div>

@@ -22,10 +22,19 @@ const formInputRotation = document.querySelector('#rotation');
 const formInputsDecorationColor = document.querySelectorAll('.decoration-color input');
 const formInputDecoration = document.querySelector('.decoration-types');
 // Special settings control inputs/elements
-const formInputSpecRandom = document.querySelector('#random_tile_color');
-const formInputSpedGradient = document.querySelector('#gradient_tile_color');
 const wrapSpecialColorings = [...document.querySelectorAll('.special-coloring-opt')];
-const wrapAdvancedArcs = [...document.querySelectorAll('.advanced-arc-opt')];
+const formInputSpecRandom = document.querySelector('#random_tile_color');
+const formInputSpecGradient = document.querySelector('#gradient_tile_color');
+const wrapAdvancedArc = [...document.querySelectorAll('.advanced-arc-opt')];
+const advancedArcSettings = document.querySelector('.advanced-arc-opt.special-settings-panel');
+const advancedArcFlagOpts = [...document.querySelectorAll('.flag-opt')].reduce((acc, opt) => {
+    acc[opt.name] = opt;
+    return acc;
+}, {});
+const advancedArcRadiusScale = {
+    large: document.querySelector('#large_radius_scale'),
+    small: document.querySelector('#small_radius_scale'),
+};
 // Elements for interaction btw. decoration and decoration color
 const wrapDecorationColors = [...document.querySelectorAll('.decoration-type-color')];
 // Loader
@@ -127,29 +136,60 @@ const addOnInputChangeHandlers = function (updateLiveView) {
         if (!(ev.target.type === 'radio')) return;
         // special arc decoration settings reveal or hide
         const pseudoTarget = ev.target.value === 'arcs' ? 'arcs' : 'none';
-        wrapAdvancedArcs.forEach(el => el.classList.toggle('hidden', pseudoTarget !== el.dataset.toggle));
+        wrapAdvancedArc.forEach(el => el.classList.toggle('hidden', pseudoTarget !== el.dataset.toggle));
 
+        // decoration color reveal on color menu
         wrapDecorationColors.forEach(el => el.classList.toggle('hidden', ev.target.value !== el.dataset.toggle));
         updateLiveView('decoration', ev.target.value);
     });
 
     // special coloring settings (random & gradient -coloring)
-    [formInputSpecRandom, formInputSpedGradient].forEach(checkbox =>
-        checkbox.addEventListener('click', () => specialSettingsHandler(updateLiveView))
+    [formInputSpecRandom, formInputSpecGradient].forEach(checkbox =>
+        checkbox.addEventListener('click', () => specialColorSettingsHandler(updateLiveView))
     );
+
+    // special arc flags settings
+    advancedArcSettings.addEventListener('click', ev => {
+        if (ev.target.type !== 'checkbox') return;
+        advancedArcSettingsHandler(updateLiveView, ev.target.name);
+    });
+
+    // special arc radius scale change
+    for (let input of Object.values(advancedArcRadiusScale))
+        input.addEventListener('input', ev => {
+            advancedArcSettingsHandler(updateLiveView, ev.target.name);
+        });
+};
+
+// Gather all the states of the checkboxes (flags), scales and update the specific arcs (large or small)
+const advancedArcSettingsHandler = function (updateLiveView, targetName) {
+    const changingGroup = targetName.includes('large') ? 'large' : 'small';
+    const scale = advancedArcRadiusScale[changingGroup].valueAsNumber || 1;
+    const obj = {
+        name: changingGroup,
+        data: {
+            radiusScale: scale >= 0 ? (scale <= 3 ? scale : 3) : 0,
+            state: [
+                +advancedArcFlagOpts[`${changingGroup}LArcFlag`].checked,
+                +advancedArcFlagOpts[`${changingGroup}SweepFlag`].checked,
+            ],
+        },
+    };
+
+    updateLiveView('advancedArc', obj);
 };
 
 // Disable tile coloring, live view, and reveal the corresponding special settings tab
-const specialSettingsHandler = function (updateLiveView) {
+const specialColorSettingsHandler = function (updateLiveView) {
     wrapSpecialColorings.forEach(panel => {
-        // panel.classList.toggle('hidden', panel.dataset.toggle === 'random' ? !formInputSpecRandom.checked && !formInputSpedGradient.checked : !formInputSpedGradient.checked);
+        // panel.classList.toggle('hidden', panel.dataset.toggle === 'random' ? !(formInputSpecRandom.checked || formInputSpecGradient.checked) : !formInputSpecGradient.checked);
 
         if (panel.dataset.toggle === 'random')
-            panel.classList.toggle('hidden', !(formInputSpecRandom.checked || formInputSpedGradient.checked));
-        else panel.classList.toggle('hidden', !formInputSpedGradient.checked);
+            panel.classList.toggle('hidden', !(formInputSpecRandom.checked || formInputSpecGradient.checked));
+        else panel.classList.toggle('hidden', !formInputSpecGradient.checked);
     });
 
-    const disableElements = formInputSpecRandom.checked || formInputSpedGradient.checked;
+    const disableElements = formInputSpecRandom.checked || formInputSpecGradient.checked;
     formInputColorKite.disabled = formInputColorDart.disabled = disableElements;
     formInputColorKite.classList.toggle('disabled', disableElements);
     formInputColorDart.classList.toggle('disabled', disableElements);
@@ -169,3 +209,8 @@ export const toggleLoader = function (msg = message.innerText) {
     message.innerText = msg;
     loader.classList.toggle('hidden');
 };
+
+/** TODO
+ * - Questionmarks/infos to the spec colorings and to the spec decor when the liveView is hidden
+ * - draw the pictures for the infos
+ * */

@@ -23,5 +23,4 @@ init();
  *   - view.estimateGeneratingTime
  *   - implement it to interaction?
  * - cancel button when it takes too long to generate
- * - different coloring (todos in colorMaker)
  */

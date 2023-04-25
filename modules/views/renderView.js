@@ -8,11 +8,22 @@ import * as colors from '../colorMaker.js';
 let kiteSvgGroup, dartSvgGroup;
 let ammanSvgGroup, largeSvgGroup, smallSvgGroup;
 let width, height, scale, decoration;
-let arcRadiusScale, lArcFlags, sArcFlags, specialColoring;
+let isSpecialColoring;
+const specArc = {
+    large: {
+        flags: null,
+        radiusScale: null,
+    },
+    small: {
+        flags: null,
+        radiusScale: null,
+    },
+};
 const svgContainer = document.querySelector('.penrose-pattern-container');
 
 // Save the needed settings, clear the viewport (there can be a previous generated pattern), invoke the rendering process
 export const init = function (penroseSettings, visibleTiles) {
+    // set colors and special colors settings
     const palette = {
         tileColor: { kite: penroseSettings.colorKite, dart: penroseSettings.colorDart },
         decorColor: {
@@ -24,23 +35,26 @@ export const init = function (penroseSettings, visibleTiles) {
         },
         specialColor: { threshOne: penroseSettings.colorThresholdOne, threshTwo: penroseSettings.colorThresholdTwo },
     };
-    const specSettings = {
+    const specColorSettings = {
         random: Boolean(penroseSettings.random),
         gradient: Boolean(penroseSettings.gradient),
         gradDistance: penroseSettings.gradDistance,
         gradRotation: penroseSettings.gradRotation,
         gradSpread: penroseSettings.gradSpread,
     };
+    colors.setPalette(palette, specColorSettings);
 
+    // set special arc settings
     // sweep Falg default is 1
-    lArcFlags = [Number(Boolean(penroseSettings.lradLargeArcFlag)), Number(!penroseSettings.lradSweepFlag)];
-    sArcFlags = [Number(Boolean(penroseSettings.sradLargeArcFlag)), Number(!penroseSettings.sradSweepFlag)];
+    specArc.large.flags = [Number(Boolean(penroseSettings.largeLArcFlag)), Number(!penroseSettings.largeSweepFlag)];
+    specArc.small.flags = [Number(Boolean(penroseSettings.smallLArcFlag)), Number(!penroseSettings.smallSweepFlag)];
+    specArc.large.radiusScale = penroseSettings.largeRadiusScale;
+    specArc.small.radiusScale = penroseSettings.smallRadiusScale;
 
-    arcRadiusScale = penroseSettings.arcRadiusScale;
+    // set general rendering settings
     ({ width, height, scale, decoration } = penroseSettings);
-    specialColoring = specSettings.random || specSettings.gradient;
+    isSpecialColoring = specColorSettings.random || specColorSettings.gradient;
 
-    colors.setPalette(palette, specSettings);
     clearView();
     renderSVG(visibleTiles);
 };
@@ -80,15 +94,17 @@ const generateSVGdecorAmman = function (tile) {
 };
 
 const generateSVGdecorArcs = function (tile) {
-    const multipl = arcRadiusScale * scale;
+    const multiplLarge = specArc.large.radiusScale * scale;
+    const multiplSmall = specArc.small.radiusScale * scale;
+
     const largeA = `<path d="M ${tile.decoord.A1[0]} ${tile.decoord.A1[1]} 
-    A ${tile.arcRadiusL * multipl} ${tile.arcRadiusL * multipl} 0 ${lArcFlags.join(' ')} 
+    A ${tile.arcRadiusL * multiplLarge} ${tile.arcRadiusL * multiplLarge} 0 ${specArc.large.flags.join(' ')} 
     ${tile.decoord.A2[0]} ${tile.decoord.A2[1]}" />`;
 
     const smallA = `<path d="M ${tile.decoord.A3[0]} ${tile.decoord.A3[1]} 
-    A ${tile.arcRadiusS * multipl} ${tile.arcRadiusS * multipl} 0 ${Number(tile.name === 'dart') ^ sArcFlags[0]} ${
-        sArcFlags[1]
-    } 
+    A ${tile.arcRadiusS * multiplSmall} ${tile.arcRadiusS * multiplSmall} 0 ${
+        Number(tile.name === 'dart') ^ specArc.small.flags[0]
+    } ${specArc.small.flags[1]} 
     ${tile.decoord.A4[0]} ${tile.decoord.A4[1]}" />`;
 
     largeSvgGroup.insertAdjacentHTML('afterbegin', largeA);
@@ -96,7 +112,7 @@ const generateSVGdecorArcs = function (tile) {
 };
 
 const renderSVG = function (visibleTiles) {
-    const tileGeneratorFunc = specialColoring ? generateSVGcoloredPolygon : generateSVGpolygon;
+    const tileGeneratorFunc = isSpecialColoring ? generateSVGcoloredPolygon : generateSVGpolygon;
 
     if (decoration === 'amman') {
         visibleTiles.forEach(tile => {
@@ -115,8 +131,8 @@ const clearView = function () {
     svgContainer.innerHTML = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0"
     width="${width}" height="${height}">
         <g id="tiles">
-            <g id="kite" fill="${specialColoring ? '' : colors.getTileColor('kite')}"></g>
-            <g id="dart" fill="${specialColoring ? '' : colors.getTileColor('dart')}"></g>
+            <g id="kite" fill="${isSpecialColoring ? '' : colors.getTileColor('kite')}"></g>
+            <g id="dart" fill="${isSpecialColoring ? '' : colors.getTileColor('dart')}"></g>
         </g>
         <g id="decor" stroke-width="${scale * 0.01 + 0.6}">
             <g id="amman" fill="none" stroke="${colors.getDecorColor('amman')}"></g>
