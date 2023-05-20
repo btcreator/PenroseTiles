@@ -4,248 +4,511 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href="img/logo.png" type="image/png icon" />
+        <link rel="stylesheet" type="text/css" href="generator-modal.css" />
         <link rel="stylesheet" type="text/css" href="generator.css" />
         <script type="module" src="./modules/controller.js"></script>
         <title>Random Penrose Pattern Generator</title>
     </head>
     <body>
-        <div class="floating-menu slide">
-            <div class="main-menu">
-                <div class="settings-buttons">
-                    <input class="button" type="button" value="Dimension" data-type="dimension" />
+        <div class="main-container">
+            <div class="floating-menu slide">
+                <!--MAINMENU-->
+                <div class="main-menu">
+                    <div class="settings-buttons">
+                        <input class="button" type="button" value="Dimension" data-type="dimension" />
 
-                    <input class="button" type="button" value="Colors" data-type="color" />
+                        <input class="button" type="button" value="Colors" data-type="color" />
 
-                    <input class="button" type="button" value="Density" data-type="density" />
+                        <input class="button" type="button" value="Density" data-type="density" />
 
-                    <input class="button" type="button" value="Rotation" data-type="rotation" />
+                        <input class="button" type="button" value="Rotation" data-type="rotation" />
 
-                    <input class="button" type="button" value="Decoration" data-type="decoration" />
+                        <input class="button" type="button" value="Decoration" data-type="decoration" />
 
-                    <button class="generate-pattern button" type="submit" form="settings">Generate</button>
-                </div>
-                <div class="link-console">
-                    <div class="home-link">
-                        <a href="index.html" alt="Home"><img src="img/logo.png" alt="logo" width="25" /></a>
+                        <button class="generate-pattern button" type="submit" form="settings">Generate</button>
                     </div>
-                    <div class="download-link">
-                        <p>Download link would be available after generating a pattern.</p>
+                    <div class="link-console">
+                        <div class="home-link">
+                            <a href="index.html" alt="Home"><img src="img/logo.png" alt="logo" width="25" /></a>
+                        </div>
+                        <div class="download-link">
+                            <p>Download link would be available after generating a pattern.</p>
+                        </div>
                     </div>
+                    <div class="hamburger">×</div>
                 </div>
-                <div class="hamburger">×</div>
+                <!--SUBMENU-->
+                <form class="sub-menu hidden" id="settings">
+                    <!--DIMENSION-->
+                    <div class="sub-item dimension hidden" data-toggle="dimension">
+                        <div class="inputs">
+                            <h2>Dimension</h2>
+                            <label for="width" form="settings">Width</label>
+                            <input id="width" type="number" name="width" form="settings" /><br />
+                            <label for="height" form="settings">Height</label>
+                            <input id="height" type="number" name="height" form="settings" />
+
+                            <p class="notes">Default: <br />Window size (viewport)</p>
+                        </div>
+
+                        <div class="image-holder"></div>
+                    </div>
+                    <!--COLOR-->
+                    <div class="sub-item color hidden" data-toggle="color">
+                        <!--color tile-->
+                        <div class="inputs tile-color">
+                            <h2>Tile colors</h2>
+                            <label for="color_kite" form="settings">Kite color</label>
+                            <input
+                                id="color_kite"
+                                type="color"
+                                name="colorKite"
+                                form="settings"
+                                value="#07707D"
+                            /><br />
+                            <label for="color_dart" form="settings">Dart color</label>
+                            <input
+                                id="color_dart"
+                                type="color"
+                                name="colorDart"
+                                form="settings"
+                                value="#002F38"
+                            /><br />
+                            <div class="special-settings">
+                                <div class="header">
+                                    <h2>Special coloring</h2>
+                                    <img src="img/info.png" alt="info pictogram" data-name="color" />
+                                </div>
+
+                                <input
+                                    id="random_tile_color"
+                                    type="checkbox"
+                                    name="random"
+                                    form="settings"
+                                    value="random"
+                                />
+                                <label for="random_tile_color" form="settings">Random</label>
+                                <input
+                                    id="gradient_tile_color"
+                                    type="checkbox"
+                                    name="gradient"
+                                    form="settings"
+                                    value="gradient"
+                                />
+                                <label for="gradient_tile_color" form="settings">Gradient</label>
+
+                                <div class="special-coloring-opt special-settings-panel hidden" data-toggle="random">
+                                    <label for="color_thres_one" form="settings">Threshold one</label>
+                                    <input
+                                        id="color_thres_one"
+                                        type="color"
+                                        name="colorThresholdOne"
+                                        form="settings"
+                                        value="#ff5900"
+                                    />
+                                    <label for="color_thres_two" form="settings">Threshold two</label>
+                                    <input
+                                        id="color_thres_two"
+                                        type="color"
+                                        name="colorThresholdTwo"
+                                        form="settings"
+                                        value="#454739"
+                                    />
+                                </div>
+
+                                <div class="special-coloring-opt special-settings-panel hidden" data-toggle="gradient">
+                                    <label for="grad_distance">Distance (px)</label>
+                                    <input
+                                        id="grad_distance"
+                                        type="number"
+                                        name="gradDistance"
+                                        form="settings"
+                                        value="200"
+                                    />
+                                    <label for="grad_rotation">Rotation (deg)</label>
+                                    <input
+                                        id="grad_rotation"
+                                        type="number"
+                                        name="gradRotation"
+                                        form="settings"
+                                        value="0"
+                                    />
+                                    <label for="grad_spread">Color spread (%)</label>
+                                    <input
+                                        id="grad_spread"
+                                        type="number"
+                                        name="gradSpread"
+                                        form="settings"
+                                        value="15"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <!--color decoration-->
+                        <div class="inputs decoration-color">
+                            <h2>Decoration colors</h2>
+                            <p class="decoration-type-color notes" data-toggle="none">
+                                No decoraton selected. Please select decoration first from the menu.
+                            </p>
+                            <div class="decoration-type-color hidden" data-toggle="amman">
+                                <label for="color_amman" form="settings">Amman line color</label>
+                                <input
+                                    id="color_amman"
+                                    type="color"
+                                    name="colorAmman"
+                                    form="settings"
+                                    value="#ffffff"
+                                    data-name="amman"
+                                />
+                            </div>
+                            <div class="decoration-type-color hidden" data-toggle="arcs">
+                                <label for="color_large_arc" form="settings">Large-radius color</label>
+                                <input
+                                    id="color_large_arc"
+                                    type="color"
+                                    name="colorLargeArc"
+                                    form="settings"
+                                    value="#bdbdbd"
+                                    data-name="large"
+                                />
+                                <label for="color_small_arc" form="settings">Small-radius color</label>
+                                <input
+                                    id="color_small_arc"
+                                    type="color"
+                                    name="colorSmallArc"
+                                    form="settings"
+                                    value="#545454"
+                                    data-name="small"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="image-holder"></div>
+                    </div>
+                    <!--DENSITY-->
+                    <div class="sub-item density hidden" data-toggle="density">
+                        <div class="inputs">
+                            <h2>Density</h2>
+                            <label for="density" form="settings" class="hidden">Density</label>
+                            <input
+                                id="density"
+                                type="range"
+                                name="density"
+                                min="10"
+                                max="100"
+                                value="50"
+                                form="settings"
+                            />
+                            <div class="range-display">50</div>
+                            <p class="notes">
+                                Please note that the larger and denser the image, the longer it takes to generate.
+                            </p>
+                        </div>
+
+                        <div class="image-holder"></div>
+                    </div>
+                    <!--ROTATION-->
+                    <div class="sub-item rotation hidden" data-toggle="rotation">
+                        <div class="inputs">
+                            <h2>Rotation</h2>
+                            <label for="rotation" form="settings" class="hidden">Rotation</label>
+                            <input
+                                id="rotation"
+                                type="range"
+                                name="rotation"
+                                min="0"
+                                max="72"
+                                value="25"
+                                form="settings"
+                            />
+                            <div class="range-display">25 deg</div>
+                            <p class="notes">
+                                Please consider that the pattern has some kind of 5 fold symmetry and that's why it
+                                makes no sens more than 72 degree rotation, which is actually interesting by Amman line
+                                decoration.
+                            </p>
+                        </div>
+
+                        <div class="image-holder"></div>
+                    </div>
+                    <!--DECORATION-->
+                    <div class="sub-item decoration hidden" data-toggle="decoration">
+                        <div class="inputs">
+                            <div class="decoration-types">
+                                <h2>Decoration type</h2>
+                                <input id="decor_amman" type="radio" name="decoration" value="amman" form="settings" />
+                                <label class="radio-label" for="decor_amman" form="settings">Amman-lines</label>
+                                <br />
+                                <input id="decor_arcs" type="radio" name="decoration" value="arcs" form="settings" />
+                                <label class="radio-label" for="decor_arcs" form="settings">Arcs</label>
+                                <br />
+                                <input
+                                    id="decor_none"
+                                    type="radio"
+                                    name="decoration"
+                                    value="none"
+                                    form="settings"
+                                    checked
+                                />
+                                <label class="radio-label" for="decor_none" form="settings">None</label>
+                            </div>
+
+                            <div class="special-settings">
+                                <div class="header">
+                                    <h2>Advanced SVG settings</h2>
+                                    <img src="img/info.png" alt="info pictogram" data-name="arc" />
+                                </div>
+
+                                <p class="advanced-arc-opt notes" data-toggle="none">Available for arcs</p>
+                                <div class="advanced-arc-opt special-settings-panel hidden" data-toggle="arcs">
+                                    <h3>Large-radius</h3>
+                                    <label for="large_radius_scale">Scale</label>
+                                    <input
+                                        id="large_radius_scale"
+                                        type="number"
+                                        name="largeRadiusScale"
+                                        form="settings"
+                                        step="0.1"
+                                        value="1"
+                                    />
+                                    <label for="large_l_arc_flag">Swap large arc flag</label>
+                                    <input
+                                        id="large_l_arc_flag"
+                                        class="flag-opt"
+                                        type="checkbox"
+                                        name="largeLArcFlag"
+                                        form="settings"
+                                    />
+                                    <label for="large_sweep_flag">Swap sweep flag</label>
+                                    <input
+                                        id="large_sweep_flag"
+                                        class="flag-opt"
+                                        type="checkbox"
+                                        name="largeSweepFlag"
+                                        form="settings"
+                                    />
+
+                                    <h3>Small-radius</h3>
+                                    <label for="small_radius_scale">Scale</label>
+                                    <input
+                                        id="small_radius_scale"
+                                        type="number"
+                                        name="smallRadiusScale"
+                                        form="settings"
+                                        step="0.1"
+                                        value="1"
+                                    />
+                                    <label for="small_l_arc_flag">Swap large arc flag</label>
+                                    <input
+                                        id="small_l_arc_flag"
+                                        class="flag-opt"
+                                        type="checkbox"
+                                        name="smallLArcFlag"
+                                        form="settings"
+                                    />
+                                    <label for="small_sweep_flag">Swap sweep flag</label>
+                                    <input
+                                        id="small_sweep_flag"
+                                        class="flag-opt"
+                                        type="checkbox"
+                                        name="smallSweepFlag"
+                                        form="settings"
+                                    />
+
+                                    <p class="notes">
+                                        This settings changes the svg values relative to default values.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="image-holder"></div>
+                    </div>
+                </form>
             </div>
-
-            <form class="sub-menu" id="settings">
-                <div class="sub-item dimension hidden" data-toggle="dimension">
-                    <div class="inputs">
-                        <h2>Dimension</h2>
-                        <label for="width" form="settings">Width</label>
-                        <input id="width" type="number" name="width" form="settings" /><br />
-                        <label for="height" form="settings">Height</label>
-                        <input id="height" type="number" name="height" form="settings" />
-
-                        <p class="notes">Default: <br />Window size (viewport)</p>
-                    </div>
-
-                    <div class="image-holder"></div>
-                </div>
-
-                <div class="sub-item color hidden" data-toggle="color">
-                    <div class="inputs tile-color">
-                        <h2>Tile colors</h2>
-                        <label for="color_kite" form="settings">Kite color</label>
-                        <input id="color_kite" type="color" name="colorKite" form="settings" value="#07707D" /><br />
-                        <label for="color_dart" form="settings">Dart color</label>
-                        <input id="color_dart" type="color" name="colorDart" form="settings" value="#002F38" /><br />
-                        <div class="special-settings">
-                            <h2>Special coloring</h2>
-                            <input
-                                id="random_tile_color"
-                                type="checkbox"
-                                name="random"
-                                form="settings"
-                                value="random"
-                            />
-                            <label for="random_tile_color" form="settings">Random</label>
-                            <input
-                                id="gradient_tile_color"
-                                type="checkbox"
-                                name="gradient"
-                                form="settings"
-                                value="gradient"
-                            />
-                            <label for="gradient_tile_color" form="settings">Gradient</label>
-
-                            <div class="special-coloring-opt special-settings-panel hidden" data-toggle="random">
-                                <label for="color_thres_one" form="settings">Threshold one</label>
-                                <input id="color_thres_one" type="color" name="colorThresholdOne" form="settings" value="#52BC24" />
-                                <label for="color_thres_two" form="settings">Threshold two</label>
-                                <input id="color_thres_two" type="color" name="colorThresholdTwo" form="settings" value="#29920C" />
-                            </div>
-
-                            <div class="special-coloring-opt special-settings-panel hidden" data-toggle="gradient">
-                                <label for="grad_distance">Distance (px)</label>
-                                <input id="grad_distance" type="number" name="gradDistance" form="settings" />
-                                <label for="grad_rotation">Rotation (deg)</label>
-                                <input id="grad_rotation" type="number" name="gradRotation" form="settings" />
-                                <label for="grad_spread">Color spread</label>
-                                <input id="grad_spread" type="number" name="gradSpread" form="settings" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="inputs decoration-color">
-                        <h2>Decoration colors</h2>
-                        <p class="decoration-type-color notes" data-toggle="none">
-                            No decoraton selected. Please select decoration first from the menu.
-                        </p>
-                        <div class="decoration-type-color hidden" data-toggle="amman">
-                            <label for="color_amman" form="settings">Amman line color</label>
-                            <input
-                                id="color_amman"
-                                type="color"
-                                name="colorAmman"
-                                form="settings"
-                                value="#ffffff"
-                                data-name="amman"
-                            />
-                        </div>
-                        <div class="decoration-type-color hidden" data-toggle="arcs">
-                            <label for="color_large_arc" form="settings">Large-radius color</label>
-                            <input
-                                id="color_large_arc"
-                                type="color"
-                                name="colorLargeArc"
-                                form="settings"
-                                value="#bdbdbd"
-                                data-name="large"
-                            />
-                            <label for="color_small_arc" form="settings">Small-radius color</label>
-                            <input
-                                id="color_small_arc"
-                                type="color"
-                                name="colorSmallArc"
-                                form="settings"
-                                value="#545454"
-                                data-name="small"
-                            />
-                        </div>
-                    </div>
-
-                    <div class="image-holder"></div>
-                </div>
-
-                <div class="sub-item density hidden" data-toggle="density">
-                    <div class="inputs">
-                        <h2>Density</h2>
-                        <label for="density" form="settings" class="hidden">Density</label>
-                        <input id="density" type="range" name="density" min="10" max="100" value="50" form="settings" />
-                        <div class="range-display">50</div>
-                        <p class="notes">
-                            Please note that the larger and denser the image, the longer it takes to generate.
-                        </p>
-                    </div>
-
-                    <div class="image-holder"></div>
-                </div>
-
-                <div class="sub-item rotation hidden" data-toggle="rotation">
-                    <div class="inputs">
-                        <h2>Rotation</h2>
-                        <label for="rotation" form="settings" class="hidden">Rotation</label>
-                        <input id="rotation" type="range" name="rotation" min="0" max="72" value="25" form="settings" />
-                        <div class="range-display">25 deg</div>
-                        <p class="notes">
-                            Please consider that the pattern has some kind of 5 fold symmetry and that's why it makes no
-                            sens more than 72 degree rotation, which is actually interesting by Amman line decoration.
-                        </p>
-                    </div>
-
-                    <div class="image-holder"></div>
-                </div>
-
-                <div class="sub-item decoration" data-toggle="decoration">
-                    <div class="inputs">
-                        <div class="decoration-types">
-                            <h2>Decoration type</h2>
-                            <input id="decor_amman" type="radio" name="decoration" value="amman" form="settings" />
-                            <label class="radio-label" for="decor_amman" form="settings">Amman-lines</label>
-                            <br />
-                            <input id="decor_arcs" type="radio" name="decoration" value="arcs" form="settings" />
-                            <label class="radio-label" for="decor_arcs" form="settings">Arcs</label>
-                            <br />
-                            <input
-                                id="decor_none"
-                                type="radio"
-                                name="decoration"
-                                value="none"
-                                form="settings"
-                                checked
-                            />
-                            <label class="radio-label" for="decor_none" form="settings">None</label>
-                        </div>
-
-                        <div class="special-settings">
-                            <h2>Advanced SVG settings</h2>
-
-                            <p class="advanced-arc-opt notes hidden" data-toggle="none">Available for arcs</p>
-                            <div class="advanced-arc-opt special-settings-panel" data-toggle="arcs">
-
-                                <h3>Large-radius</h3>
-                                <label for="large_radius_scale">Scale</label>
-                                <input
-                                    id="large_radius_scale"
-                                    type="number"
-                                    name="largeRadiusScale"
-                                    form="settings"
-                                    step="0.1"
-                                    value="1"
-                                />
-                                <label for="large_l_arc_flag">Swap large arc flag</label>
-                                <input
-                                    id="large_l_arc_flag"
-                                    class="flag-opt"
-                                    type="checkbox"
-                                    name="largeLArcFlag"
-                                    form="settings"
-                                />
-                                <label for="large_sweep_flag">Swap sweep flag</label>
-                                <input id="large_sweep_flag" class="flag-opt" type="checkbox" name="largeSweepFlag" form="settings" />
-
-                                <h3>Small-radius</h3>
-                                <label for="small_radius_scale">Scale</label>
-                                <input
-                                    id="small_radius_scale"
-                                    type="number"
-                                    name="smallRadiusScale"
-                                    form="settings"
-                                    step="0.1"
-                                    value="1"
-                                />
-                                <label for="small_l_arc_flag">Swap large arc flag</label>
-                                <input
-                                    id="small_l_arc_flag"
-                                    class="flag-opt"
-                                    type="checkbox"
-                                    name="smallLArcFlag"
-                                    form="settings"
-                                />
-                                <label for="small_sweep_flag">Swap sweep flag</label>
-                                <input id="small_sweep_flag" class="flag-opt" type="checkbox" name="smallSweepFlag" form="settings" />
-
-                                <p class="notes">This settings changes the svg values relative to default values.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="image-holder"></div>
-                </div>
-            </form>
+            <!--PATTERN CONTAINER-->
+            <div class="penrose-pattern-container"></div>
         </div>
-        <div class="penrose-pattern-container"></div>
+
+        <!----------------------------------------------------->
+        <!--MODAL-->
+        <div class="veil hidden"></div>
         <div class="loader hidden">
             <img class="loader-img" src="img/loader.png" alt="Generating..." /><br />
             <p class="loader-message">Generating...</p>
+        </div>
+        <div class="modal hidden">
+            <div class="close-modal">×</div>
+
+            <div class="sliders-wrapper">
+                <div class="image-slider modal-color hidden">
+                    <div class="card show-slide">
+                        <figure>
+                            <figcaption>Gradient</figcaption>
+                            <img src="./img/modal-info/gradient.png" alt="" />
+                        </figure>
+                        <figure>
+                            <figcaption>Random</figcaption>
+                            <img src="./img/modal-info/random.png" alt="" />
+                        </figure>
+                        <figure>
+                            <figcaption>Random-Gradient</figcaption>
+                            <img src="./img/modal-info/random-gradient.png" alt="" />
+                        </figure>
+                    </div>
+
+                    <div class="card">
+                        <figure>
+                            <figcaption>Distance Low</figcaption>
+                            <img src="./img/modal-info/distance_from.png" alt="" />
+                        </figure>
+
+                        <figure>
+                            <figcaption>Distance High</figcaption>
+                            <img src="./img/modal-info/gradient.png" alt="" />
+                        </figure>
+                        <div class="info">
+                            <p>
+                                The distance from the first treshold color to the fully transitioned second treshold
+                                color. <br />
+                            </p>
+                            <hr />
+                            <p>
+                                Min value: 0 px <br />
+                                Max value: -
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <figure>
+                            <figcaption>Rotation 0 deg</figcaption>
+                            <img src="./img/modal-info/gradient.png" alt="" />
+                        </figure>
+
+                        <figure>
+                            <figcaption>Rotation 50 deg</figcaption>
+                            <img src="./img/modal-info/rotation_50deg.png" alt="" />
+                        </figure>
+                        <div class="info">
+                            <p>The pivot point of the rotation is always the upper left corner. <br /></p>
+                            <hr />
+                            <p>
+                                Min value: 0 deg <br />
+                                Max value: 360 deg
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <figure>
+                            <figcaption>Spread 0 %</figcaption>
+                            <img src="./img/modal-info/gradient.png" alt="" />
+                        </figure>
+
+                        <figure>
+                            <figcaption>Spread 20 %</figcaption>
+                            <img src="./img/modal-info/spread_20pr.png" alt="" />
+                        </figure>
+                        <div class="info">
+                            <p>
+                                The spread is the randomnes treshold of each tile. (Set to 100 % is the same as the
+                                Gradient/Random combination) <br />
+                            </p>
+                            <hr />
+                            <p>
+                                Min value: 0 % <br />
+                                Max value: 100 %
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="image-slider modal-arc hidden">
+                    <div class="card show-slide">
+                        <figure>
+                            <figcaption>Small-radius</figcaption>
+                            <img src="./img/modal-info/01_1.png" alt="" />
+                        </figure>
+
+                        <figure>
+                            <figcaption>Large-radius</figcaption>
+                            <img src="./img/modal-info/01_2.png" alt="" />
+                        </figure>
+                        <div class="info">
+                            <p>
+                                Each tile has two types of arc. One has a small radius and one has a large radius.<br />
+                                These are the representations of the tiles with default values.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <figure>
+                            <figcaption>Scale < 1</figcaption>
+                            <img src="./img/modal-info/02_1.png" alt="" />
+                        </figure>
+
+                        <figure>
+                            <figcaption>Scale > 1</figcaption>
+                            <img src="./img/modal-info/02_2.png" alt="" />
+                        </figure>
+                        <div class="info">
+                            <p>
+                                This value scales the radius of the arc relative to the default value (1.2 represents a
+                                120% scale). The arc starts and ends always in the same 2 points.
+                            </p>
+                            <hr />
+                            <p>
+                                Min value: 0.5 <br />
+                                <!--change min value in interaction-->
+                                Max value: 3 <br />
+                                <i>Value 0: mean infinity i.e. straight line</i>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <figure>
+                            <figcaption>Two inner arcs</figcaption>
+                            <img src="./img/modal-info/03_1.png" alt="" />
+                        </figure>
+
+                        <figure>
+                            <figcaption>Two outer arcs</figcaption>
+                            <img src="./img/modal-info/03_2.png" alt="" />
+                        </figure>
+                        <div class="info">
+                            <p>
+                                Between two points can be drawn 4 different arcs. Which one gets drawn depends on the
+                                settings of the arc flags. The "Large arc" flag and the "Sweep" flag.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <figure>
+                            <figcaption>Large Arc flag swapped</figcaption>
+                            <img src="./img/modal-info/04_1.png" alt="" />
+                        </figure>
+
+                        <figure>
+                            <figcaption>Both flags swapped</figcaption>
+                            <img src="./img/modal-info/04_2.png" alt="" />
+                        </figure>
+                        <div class="info">
+                            <p>
+                                The Sweep flag swaps between the "inner" and "outer" arcs.<br />
+                                The Large arc flag swaps between the larger and smaller arc in the "inner" or "outer"
+                                group.<br />
+                                You can take some examples from above.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dots"></div>
         </div>
     </body>
 </html>

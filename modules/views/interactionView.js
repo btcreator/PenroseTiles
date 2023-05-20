@@ -7,6 +7,7 @@
  * - set the download link
  */
 import { toggleSwitchOrHide } from '../helpers';
+import * as modal from './interactionModal/modalView';
 
 // Interaction elements (buttons, menus)
 const floatingMenu = document.querySelector('.floating-menu');
@@ -37,6 +38,8 @@ const advancedArcRadiusScale = {
 };
 // Elements for interaction btw. decoration and decoration color
 const wrapDecorationColors = [...document.querySelectorAll('.decoration-type-color')];
+// Special settings info buttons
+const infoBtns = document.querySelectorAll('.header img');
 // Loader
 const loader = document.querySelector('.loader');
 const message = document.querySelector('.loader-message');
@@ -45,6 +48,7 @@ const message = document.querySelector('.loader-message');
 export const interactionHandler = function (penrosePatternGenerator, liveImgContainer, updateLiveView) {
     addHandlersToMenuItems(liveImgContainer);
     addOnInputChangeHandlers(updateLiveView);
+    modal.init();
 
     // add listener for the generate / submit button
     subMenu.addEventListener('submit', ev => {
@@ -89,7 +93,15 @@ const adjustSettings = function (settingsData) {
     settingsData.set('scale', scale);
     settingsData.set('width', settingsData.get('width') || window.innerWidth);
     settingsData.set('height', settingsData.get('height') || window.innerHeight);
+    // special settings adjustments
+    settingsData.set('gradDistance', adjNumberBtwGeLe(settingsData.get('gradDistance'), 0, Infinity));
+    settingsData.set('gradRotation', adjNumberBtwGeLe(settingsData.get('gradRotation'), 0, 360));
+    settingsData.set('gradSpread', adjNumberBtwGeLe(settingsData.get('gradSpread'), 0, 100));
+    settingsData.set('largeRadiusScale', adjNumberBtwGeLe(settingsData.get('largeRadiusScale'), 0, 3));
+    settingsData.set('smallRadiusScale', adjNumberBtwGeLe(settingsData.get('smallRadiusScale'), 0, 3));
+
     const rawSettings = Array.from(settingsData.entries());
+
     return rawSettings.reduce((adjObj, [key, val]) => {
         const adjVal = isNaN(+val) ? val : +val;
         adjObj[key] = adjVal;
@@ -108,6 +120,8 @@ const addHandlersToMenuItems = function (liveImgContainer) {
     settingsButtons.addEventListener('click', ev => {
         subMenuWindowHandler(ev.target.dataset.type, liveImgContainer);
     });
+
+    infoBtns.forEach(infoBtn => infoBtn.addEventListener('click', modal.showModal));
 };
 
 // Add onchange listeners to inputs. When triggered, update the live view.
@@ -155,20 +169,21 @@ const addOnInputChangeHandlers = function (updateLiveView) {
     });
 
     // special arc radius scale change
-    for (let input of Object.values(advancedArcRadiusScale))
+    Object.values(advancedArcRadiusScale).forEach(input =>
         input.addEventListener('input', ev => {
             advancedArcSettingsHandler(updateLiveView, ev.target.name);
-        });
+        })
+    );
 };
 
 // Gather all the states of the checkboxes (flags), scales and update the specific arcs (large or small)
 const advancedArcSettingsHandler = function (updateLiveView, targetName) {
     const changingGroup = targetName.includes('large') ? 'large' : 'small';
-    const scale = advancedArcRadiusScale[changingGroup].valueAsNumber || 1;
+    const scale = advancedArcRadiusScale[changingGroup].valueAsNumber || 0;
     const obj = {
         name: changingGroup,
         data: {
-            radiusScale: scale >= 0 ? (scale <= 3 ? scale : 3) : 0,
+            radiusScale: adjNumberBtwGeLe(scale, 0, 3),
             state: [
                 +advancedArcFlagOpts[`${changingGroup}LArcFlag`].checked,
                 +advancedArcFlagOpts[`${changingGroup}SweepFlag`].checked,
@@ -193,6 +208,10 @@ const specialColorSettingsHandler = function (updateLiveView) {
     formInputColorKite.disabled = formInputColorDart.disabled = disableElements;
     formInputColorKite.classList.toggle('disabled', disableElements);
     formInputColorDart.classList.toggle('disabled', disableElements);
+
+    // disable the gradient spread input element when random is checkd
+    document.querySelector('#grad_spread').disabled = formInputSpecRandom.checked;
+
     updateLiveView('disabled', disableElements);
 };
 
@@ -210,7 +229,7 @@ export const toggleLoader = function (msg = message.innerText) {
     loader.classList.toggle('hidden');
 };
 
-/** TODO
- * - Questionmarks/infos to the spec colorings and to the spec decor when the liveView is hidden
- * - draw the pictures for the infos
- * */
+// Check if the munber is between (greater / lower) or equal with the tresholds (ge / le), when yes, return the treshold limit
+const adjNumberBtwGeLe = function (check, ge, le) {
+    return check >= ge ? (check <= le ? check : le) : ge;
+};

@@ -12,13 +12,11 @@ let specColorFunc;
 
 // The initial function which sets the initital settings and
 export const setPalette = function (colorPalette, specSettings) {
-    const fromHSL = hexToHSLArray(colorPalette.specialColor.threshOne);
-    const toHSL = hexToHSLArray(colorPalette.specialColor.threshTwo);
+    const fromColor = hexToRGBArray(colorPalette.specialColor.threshOne);
+    const toColor = hexToRGBArray(colorPalette.specialColor.threshTwo);
+    const offsets = toColor.map((color, i) => color - fromColor[i]);
 
-    const hslOffsets = hslOffsetMinData(fromHSL, toHSL, 'offset');
-    const minHSLvalues = hslOffsetMinData(fromHSL, toHSL, 'min');
-
-    specColorFunc = chargeSpecFunc(hslOffsets, minHSLvalues, specSettings);
+    specColorFunc = chargeSpecFunc(offsets, fromColor, specSettings);
 
     Object.assign(colors, colorPalette);
 };
@@ -32,85 +30,48 @@ export const getDecorColor = function (decor) {
 };
 
 export const getSpecialColor = function (coord) {
-    const hsl = specColorFunc(coord);
-    return `hsl(${hsl[0]}, ${hsl[1]}%, ${hsl[2]}%)`;
+    const rgb = specColorFunc(coord);
+    return `rgb(${rgb.join()})`;
 };
 
 // Generates a random color
-const randomColorData = function (hslOffsets, minHSLvalues) {
-    return hslOffsets.map((offset, i) => randomRange(offset) + minHSLvalues[i]);
+const randomColorData = function (offsets, fromColor) {
+    const randomRatio = Math.random();
+    return offsets.map((offset, i) => Math.round(offset * randomRatio + fromColor[i]));
 };
 
 // Generate a rotated linear gradient coloring
-const gradientColor = function (hslOffsets, minHSLvalues, distance, gradRotation, colorSpread, random, coord) {
+const gradientColor = function (offsets, fromColor, distance, gradRotation, colorSpread, random, coord) {
     const a = coord.A[0];
     const b = coord.A[1];
     const c = Math.sqrt(a ** 2 + b ** 2);
 
     // ratio between the distance and the line from point(coord) perpendicular to the gradients beginning "border"
-    // ratio is between 0 and 1
-    let ratio = (Math.cos((gradRotation * Math.PI) / 180 - Math.asin(b / c)) * c) / distance;
-    ratio = ratio > 1 ? 1 : ratio;
+    const ratio = (Math.cos((gradRotation * Math.PI) / 180 - Math.asin(b / c)) * c) / distance;
+    let ratioSpread = random ? Math.random() : randomRange(colorSpread) / 100;
+    ratioSpread += ratio;
+    ratioSpread = ratioSpread > 1 ? 1 : ratioSpread;
 
-    return random
-        ? hslOffsets.map((offset, i) => {
-              const channelMax = minHSLvalues[i] + offset;
-              const channelMin = minHSLvalues[i] + ratio * offset;
-              return randomRange(channelMax, channelMin);
-          })
-        : hslOffsets.map((offset, i) => {
-              const channelMax = minHSLvalues[i] + offset;
-              const channelMin = minHSLvalues[i] + ratio * (offset + colorSpread);
-              const channelValue = randomRange(channelMin + colorSpread, channelMin);
-              return channelValue > channelMax ? channelMax : channelValue;
-          });
+    return offsets.map((offset, i) => Math.round(fromColor[i] + offset * ratioSpread));
 };
 
 ////////////////////////
 // Functions for set the inital settings - evoked just on the beginning (for the faster data access and so faster generating of the colors)
 
 // Convert hex color to HSL
-const hexToHSLArray = function (colorHex) {
-    let r = parseInt(colorHex[1] + colorHex[2], 16) / 255;
-    let g = parseInt(colorHex[3] + colorHex[4], 16) / 255;
-    let b = parseInt(colorHex[5] + colorHex[6], 16) / 255;
+const hexToRGBArray = function (colorHex) {
+    let r = parseInt(colorHex[1] + colorHex[2], 16);
+    let g = parseInt(colorHex[3] + colorHex[4], 16);
+    let b = parseInt(colorHex[5] + colorHex[6], 16);
 
-    let cmin = Math.min(r, g, b),
-        cmax = Math.max(r, g, b),
-        delta = cmax - cmin,
-        h = 0,
-        s = 0,
-        l = 0;
-
-    if (delta === 0) h = 0;
-    else if (cmax === r) h = ((g - b) / delta) % 6;
-    else if (cmax === g) h = (b - r) / delta + 2;
-    else h = (r - g) / delta + 4;
-
-    h = Math.round(h * 60);
-
-    if (h < 0) h += 360;
-
-    l = (cmax + cmin) / 2;
-    s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
-    s = +(s * 100).toFixed(1);
-    l = +(l * 100).toFixed(1);
-
-    return [h, s, l];
-};
-
-// Return the HSL channels offsets (the value between min and max) and the minimum values of each channel
-const hslOffsetMinData = function (threshOne, threshTwo, offsetOrMin) {
-    return offsetOrMin === 'min'
-        ? threshOne.map((value, i) => Math.min(threshTwo[i], value))
-        : threshOne.map((value, i) => Math.abs(threshTwo[i] - value));
+    return [r, g, b];
 };
 
 // Set the needed function for generating the colors for faster call (can be rid of if statements for each call)
-const chargeSpecFunc = function (hslOffsets, minHSLvalues, specSettings) {
+const chargeSpecFunc = function (offsets, fromColor, specSettings) {
     //{ random: boolean, gradient: boolean, gradDistance: number, gradRotation: number(degree), gradSpread: number }
     const { random, gradient, gradDistance, gradRotation, gradSpread } = specSettings;
     return random && !gradient
-        ? randomColorData.bind(null, hslOffsets, minHSLvalues)
-        : gradientColor.bind(null, hslOffsets, minHSLvalues, gradDistance, gradRotation, gradSpread, random);
+        ? randomColorData.bind(null, offsets, fromColor)
+        : gradientColor.bind(null, offsets, fromColor, gradDistance, gradRotation, gradSpread, random);
 };

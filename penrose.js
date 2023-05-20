@@ -301,9 +301,7 @@ class Dot {
     // When a new tile is added, the dir gives where the tile is attached. It would be the new last or first element.
     // dir 1 is attached cw, 0 ccw from the gaps point of view.
     addTile(tile, tilePoint, dir) {
-        dir
-            ? this.occupy.unshift({ tile, point: tilePoint })
-            : this.occupy.push({ tile, point: tilePoint });
+        dir ? this.occupy.unshift({ tile, point: tilePoint }) : this.occupy.push({ tile, point: tilePoint });
         this.#totalDegree += tile.pointAngles[tilePoint];
     }
 
@@ -400,9 +398,7 @@ class DotManager {
 
     #calcSquare(dotA, dotB) {
         return Math.round(
-            Math.round(
-                ((dotB.coord[0] - dotA.coord[0]) ** 2 + (dotB.coord[1] - dotA.coord[1]) ** 2) * 100
-            ) / 100
+            Math.round(((dotB.coord[0] - dotA.coord[0]) ** 2 + (dotB.coord[1] - dotA.coord[1]) ** 2) * 100) / 100
         );
     }
 
@@ -437,9 +433,7 @@ class DotManager {
                 dot.occupy.every((occupationObj, i) => {
                     return (
                         occupationObj.tile.name === 'kite' &&
-                        (i
-                            ? occupationObj.point === 'D'
-                            : occupationObj.point === 'C' || occupationObj.point === 'B')
+                        (i ? occupationObj.point === 'D' : occupationObj.point === 'C' || occupationObj.point === 'B')
                     );
                 })
             );
@@ -457,8 +451,7 @@ class DotManager {
                     const y2 = corners.at(-1).coord[1];
 
                     return function (acc, corner, i) {
-                        const position =
-                            (corner.coord[0] - x1) * (y2 - y1) - (corner.coord[1] - y1) * (x2 - x1);
+                        const position = (corner.coord[0] - x1) * (y2 - y1) - (corner.coord[1] - y1) * (x2 - x1);
 
                         position > 0 && acc.unshift(i);
                         return acc;
@@ -477,14 +470,8 @@ class DotManager {
         if (acuteAnglesIndex.length === 2) {
             !acuteAnglesIndex[0] && acuteAnglesIndex[1] === 3 && acuteAnglesIndex.reverse(); //when the first and last elements are the acute corners, revers, because that would be arranged in opposite direction.
 
-            const sideA = this.#calcSquare(
-                corners.at(acuteAnglesIndex[0] - 1),
-                corners[acuteAnglesIndex[0]]
-            );
-            const sideB = this.#calcSquare(
-                corners.at(acuteAnglesIndex[0] - 2),
-                corners.at(acuteAnglesIndex[0] - 1)
-            );
+            const sideA = this.#calcSquare(corners.at(acuteAnglesIndex[0] - 1), corners[acuteAnglesIndex[0]]);
+            const sideB = this.#calcSquare(corners.at(acuteAnglesIndex[0] - 2), corners.at(acuteAnglesIndex[0] - 1));
 
             // if the length of the two sides of the romboid shape are the same, then its a rhombus,
             // when the sideB is greater (which by coffin shape is the short side), then its a trapezoid, when the sideA, then its an isosceles trapezoid (cup shape)
@@ -510,9 +497,7 @@ class DotManager {
         const cornersMap = corners.reduce((acc, val, i) => {
             const actSquare = this.#calcSquare(corners.at(i - 1), val);
             const dots = acc.get(actSquare);
-            dots
-                ? dots.push([corners.at(i - 1), val])
-                : acc.set(actSquare, [[corners.at(i - 1), val]]);
+            dots ? dots.push([corners.at(i - 1), val]) : acc.set(actSquare, [[corners.at(i - 1), val]]);
             return acc;
         }, new Map());
         // pentagon
@@ -531,18 +516,14 @@ class DotManager {
             smallestSideDots.push(...cornersMap.get(Math.min(...cornersMap.keys())));
         }
 
-        coffinSetup.shortSide = smallestSideDots.some(dots =>
-            this.#checkDotPresenceOnShortSides(openDot, ...dots)
-        );
+        coffinSetup.shortSide = smallestSideDots.some(dots => this.#checkDotPresenceOnShortSides(openDot, ...dots));
         coffinSetup.worm = smallestSideDots[0][0].occupy[0].point != 'C';
 
         return coffinSetup;
     }
 
     #getOpenPosition() {
-        const randomOpenDot = this.#inviewOpenDots.at(
-            this.help.randomRange(this.#inviewOpenDots.length - 1)
-        );
+        const randomOpenDot = this.#inviewOpenDots.at(this.help.randomRange(this.#inviewOpenDots.length - 1));
         const verticeRule = this.#verticeRuleReferee(randomOpenDot);
         const randomPossTileIndex = this.help.randomRange(1);
 
@@ -580,9 +561,7 @@ class DotManager {
     }
 
     #dotToString(dot) {
-        return dot.occupy
-            .map(dotOccupiedTile => `${dotOccupiedTile.tile.name} ${dotOccupiedTile.point}`)
-            .join('');
+        return dot.occupy.map(dotOccupiedTile => `${dotOccupiedTile.tile.name} ${dotOccupiedTile.point}`).join('');
     }
 
     #tileTxtToObject(uniqPossibleTxtTiles) {
@@ -616,9 +595,7 @@ class DotManager {
             [[], []]
         );
 
-        const uniqPossibleTxtTiles = possibleNextTiles.map(arrToSet =>
-            Array.from(new Set(arrToSet))
-        );
+        const uniqPossibleTxtTiles = possibleNextTiles.map(arrToSet => Array.from(new Set(arrToSet)));
 
         const uniqPossibleTiles = this.#tileTxtToObject(uniqPossibleTxtTiles);
         return {
@@ -660,16 +637,14 @@ class DotManager {
 
         if (dot.totalDegree === 360) {
             this.#openDots.splice(this.#openDots.indexOf(dot), 1);
-            dot.borderPermission % 2 &&
-                this.#inviewOpenDots.splice(this.#inviewOpenDots.indexOf(dot), 1);
+            dot.borderPermission % 2 && this.#inviewOpenDots.splice(this.#inviewOpenDots.indexOf(dot), 1);
 
             dot.nextPossTiles = { ccw: [], cw: [] };
             return;
         }
 
         const possTilesByRule = this.#lineupRuleReferee(dot);
-        (possTilesByRule.cw.length === 1 || possTilesByRule.ccw.length === 1) &&
-            this.#restrictedDots.push(dot);
+        (possTilesByRule.cw.length === 1 || possTilesByRule.ccw.length === 1) && this.#restrictedDots.push(dot);
 
         dot.nextPossTiles = possTilesByRule;
         return;
@@ -695,10 +670,7 @@ class DotManager {
             this.#organizeDot(dot);
 
             if (renderable < 0)
-                renderable =
-                    !(renderable % 2) && !(dot.borderPermission > -1)
-                        ? renderable
-                        : dot.borderPermission;
+                renderable = !(renderable % 2) && !(dot.borderPermission > -1) ? renderable : dot.borderPermission;
             /*  if (renderable > -1) {
                     renderable = renderable;
                 } else if (renderable === -2) {
@@ -722,8 +694,7 @@ class DotManager {
 
         delete this.#allDots[dot.id];
         this.#openDots.splice(this.#openDots.indexOf(dot), 1);
-        dot.borderPermission % 2 &&
-            this.#inviewOpenDots.splice(this.#inviewOpenDots.indexOf(dot), 1);
+        dot.borderPermission % 2 && this.#inviewOpenDots.splice(this.#inviewOpenDots.indexOf(dot), 1);
         indexOfRestrictedDot > -1 && this.#restrictedDots.splice(indexOfRestrictedDot, 1);
     }
 
@@ -772,9 +743,7 @@ class TileManager {
 
     // each point joins two sides together. This returns the corresponding side based on the attaching direction
     #convPointToSide(touchPoint, dir) {
-        return dir
-            ? touchPoint.toLowerCase()
-            : PenroseTile.getNeigPointN(touchPoint, -1).toLowerCase();
+        return dir ? touchPoint.toLowerCase() : PenroseTile.getNeigPointN(touchPoint, -1).toLowerCase();
     }
 
     // calculation: bring the two tile sides to the same angle level (angleTargetTile - angleNewTile => the new Tile side is now parallel with the target side - just on initial state).
@@ -788,10 +757,8 @@ class TileManager {
     // calculate the finally x,y position of a new Tile. The point "A" is the ref point.
     #calcXYcoords(newTileCoord, newTileTouchPoint, targetTileCoord, targetTouchPoint) {
         // shorter, but hurts for readability: return newTileCoord[newTileTouchPoint].map((touchPointCoord, i) => targetTileCoord[targetTouchPoint][i] - touchPointCoord);
-        const newTilePosX =
-            targetTileCoord[targetTouchPoint][0] - newTileCoord[newTileTouchPoint][0];
-        const newTilePosY =
-            targetTileCoord[targetTouchPoint][1] - newTileCoord[newTileTouchPoint][1];
+        const newTilePosX = targetTileCoord[targetTouchPoint][0] - newTileCoord[newTileTouchPoint][0];
+        const newTilePosY = targetTileCoord[targetTouchPoint][1] - newTileCoord[newTileTouchPoint][1];
         return [newTilePosX, newTilePosY];
     }
 
@@ -807,12 +774,7 @@ class TileManager {
 
         const newTileContactSide = this.#convPointToSide(newTileTouchPoint, attacheDirection);
 
-        const newTileRotation = this.#getRotation(
-            newTileName,
-            newTileContactSide,
-            targetTile,
-            targetContactSide
-        );
+        const newTileRotation = this.#getRotation(newTileName, newTileContactSide, targetTile, targetContactSide);
         const newPenroseTile = this.#createRawTile(newTileName, newTileRotation);
 
         const newTilePos = this.#calcXYcoords(
@@ -1016,13 +978,7 @@ class Controller {
 
     // This function gets an object, a blueprint of new Tile. Based on that, creates a new Tile, loaded with all necessary data like coordinates, Point occupation with dots.
     // (i.e. return a "redy to render" tile)
-    #createElement({
-        newTileName,
-        newTileTouchPoint,
-        targetTile,
-        targetTouchPoint,
-        attacheDirection,
-    }) {
+    #createElement({ newTileName, newTileTouchPoint, targetTile, targetTouchPoint, attacheDirection }) {
         const newTile = this.tileManager.setTile(
             newTileName,
             newTileTouchPoint,
