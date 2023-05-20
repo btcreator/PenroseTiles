@@ -1,4 +1,4 @@
-const containerMain = document.querySelector('.main-container');
+const containerMainChildren = [...document.querySelector('.main-container').children];
 const veil = document.querySelector('.veil');
 const closeModalBtn = document.querySelector('.close-modal');
 const modal = document.querySelector('.modal');
@@ -29,7 +29,7 @@ export const init = function () {
 };
 
 export const showModal = function (event) {
-    containerMain.classList.add('blur');
+    containerMainChildren.forEach(child => child.classList.add('blur'));
     veil.classList.remove('hidden');
     modal.classList.remove('hidden');
 
@@ -40,7 +40,7 @@ export const showModal = function (event) {
 
 const hideModal = function () {
     veil.classList.add('hidden');
-    containerMain.classList.remove('blur');
+    containerMainChildren.forEach(child => child.classList.remove('blur'));
     modal.classList.add('hidden');
     document.querySelector(`.modal-${actualSliderName}`).classList.add('hidden');
     dotsContainer.innerHTML = '';
