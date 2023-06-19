@@ -14,7 +14,7 @@ const floatingMenu = document.querySelector('.floating-menu');
 const menuButton = document.querySelector('.hamburger');
 const settingsButtons = document.querySelector('.settings-buttons');
 const subMenu = document.querySelector('.sub-menu');
-const submenuChildren = Array.from(subMenu.children);
+const submenuChildren = [...subMenu.children];
 // Input elements
 const formInputColorKite = document.querySelector('#color_kite');
 const formInputColorDart = document.querySelector('#color_dart');
@@ -44,10 +44,14 @@ const infoBtns = document.querySelectorAll('.header img');
 const loader = document.querySelector('.loader');
 const message = document.querySelector('.loader-message');
 
+// The function for update the liveView on changes
+let updateLiveView;
+
 // Add listeners for all interaction elements, gather the input information after submit and call the generator function
-export const interactionHandler = function (penrosePatternGenerator, liveImgContainer, updateLiveView) {
+export const interactionHandler = function (penrosePatternGenerator, liveImgContainer, updateLiveViewFunction) {
+    updateLiveView = updateLiveViewFunction;
     addHandlersToMenuItems(liveImgContainer);
-    addOnInputChangeHandlers(updateLiveView);
+    addOnInputChangeHandlers();
     modal.init();
 
     // add listener for the generate / submit button
@@ -66,12 +70,6 @@ export const interactionHandler = function (penrosePatternGenerator, liveImgCont
     });
 };
 
-// Gathering and return inputs
-export const getInitSettings = function () {
-    const settingsData = new FormData(subMenu);
-    return adjustSettings(settingsData);
-};
-
 // Create a downloadable file from the svg markup rendered on the viewport and set the link
 export const setDownloadLink = function (svgMarkup) {
     const svg = '<?xml version="1.0" encoding="utf-8"?>' + svgMarkup;
@@ -84,6 +82,12 @@ export const setDownloadLink = function (svgMarkup) {
     element.href = window.URL.createObjectURL(blob);
     container.innerText = '';
     container.insertAdjacentElement('afterbegin', element);
+};
+
+// Gathering and return inputs
+export const getInitSettings = function () {
+    const settingsData = new FormData(subMenu);
+    return adjustSettings(settingsData);
 };
 
 // Adjust the input values for further use and return an settings Object
@@ -125,7 +129,7 @@ const addHandlersToMenuItems = function (liveImgContainer) {
 };
 
 // Add onchange listeners to inputs. When triggered, update the live view.
-const addOnInputChangeHandlers = function (updateLiveView) {
+const addOnInputChangeHandlers = function () {
     // density(scale) range change
     formInputDensity.addEventListener('input', function () {
         this.parentElement.querySelector('.range-display').innerText = this.value;
@@ -145,39 +149,37 @@ const addOnInputChangeHandlers = function (updateLiveView) {
         inputEl.addEventListener('input', ev => updateLiveView(ev.target.dataset.name, ev.target.value));
     });
 
-    // decoration radio buttons change (and change of the decoration color in color sumbenu, and the special arc settings panel)
+    // decoration radio buttons change (and change of the decoration color in color sumbenu, and reveal the special arc settings panel when arc radio button is selected)
     formInputDecoration.addEventListener('click', ev => {
-        if (!(ev.target.type === 'radio')) return;
+        if (ev.target.type !== 'radio') return;
         // special arc decoration settings reveal or hide
-        const pseudoTarget = ev.target.value === 'arcs' ? 'arcs' : 'none';
-        wrapAdvancedArc.forEach(el => el.classList.toggle('hidden', pseudoTarget !== el.dataset.toggle));
-
-        // decoration color reveal on color menu
+        const pseudoTargetValue = ev.target.value === 'arcs' ? 'arcs' : 'none';
+        wrapAdvancedArc.forEach(el => el.classList.toggle('hidden', pseudoTargetValue !== el.dataset.toggle));
+        // decoration color reveal or hide on color menu
         wrapDecorationColors.forEach(el => el.classList.toggle('hidden', ev.target.value !== el.dataset.toggle));
         updateLiveView('decoration', ev.target.value);
     });
 
     // special coloring settings (random & gradient -coloring)
-    [formInputSpecRandom, formInputSpecGradient].forEach(checkbox =>
-        checkbox.addEventListener('click', () => specialColorSettingsHandler(updateLiveView))
-    );
+    formInputSpecRandom.addEventListener('click', specialColorSettingsHandler);
+    formInputSpecGradient.addEventListener('click', specialColorSettingsHandler);
 
     // special arc flags settings
     advancedArcSettings.addEventListener('click', ev => {
         if (ev.target.type !== 'checkbox') return;
-        advancedArcSettingsHandler(updateLiveView, ev.target.name);
+        advancedArcSettingsHandler(ev.target.name);
     });
 
     // special arc radius scale change
     Object.values(advancedArcRadiusScale).forEach(input =>
         input.addEventListener('input', ev => {
-            advancedArcSettingsHandler(updateLiveView, ev.target.name);
+            advancedArcSettingsHandler(ev.target.name);
         })
     );
 };
 
 // Gather all the states of the checkboxes (flags), scales and update the specific arcs (large or small)
-const advancedArcSettingsHandler = function (updateLiveView, targetName) {
+const advancedArcSettingsHandler = function (targetName) {
     const changingGroup = targetName.includes('large') ? 'large' : 'small';
     const scale = advancedArcRadiusScale[changingGroup].valueAsNumber || 0;
     const obj = {
@@ -195,7 +197,7 @@ const advancedArcSettingsHandler = function (updateLiveView, targetName) {
 };
 
 // Disable tile coloring, live view, and reveal the corresponding special settings tab
-const specialColorSettingsHandler = function (updateLiveView) {
+const specialColorSettingsHandler = function () {
     wrapSpecialColorings.forEach(panel => {
         // panel.classList.toggle('hidden', panel.dataset.toggle === 'random' ? !(formInputSpecRandom.checked || formInputSpecGradient.checked) : !formInputSpecGradient.checked);
 

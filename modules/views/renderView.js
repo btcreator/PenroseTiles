@@ -5,6 +5,7 @@
  */
 import * as colors from '../colorMaker.js';
 
+const svgContainer = document.querySelector('.penrose-pattern-container');
 let kiteSvgGroup, dartSvgGroup;
 let ammanSvgGroup, largeSvgGroup, smallSvgGroup;
 let width, height, scale, decoration;
@@ -19,29 +20,12 @@ const specArc = {
         radiusScale: null,
     },
 };
-const svgContainer = document.querySelector('.penrose-pattern-container');
 
 // Save the needed settings, clear the viewport (there can be a previous generated pattern), invoke the rendering process
 export const init = function (penroseSettings, visibleTiles) {
     // set colors and special colors settings
-    const palette = {
-        tileColor: { kite: penroseSettings.colorKite, dart: penroseSettings.colorDart },
-        decorColor: {
-            amman: penroseSettings.colorAmman,
-            arcs: {
-                large: penroseSettings.colorLargeArc,
-                small: penroseSettings.colorSmallArc,
-            },
-        },
-        specialColor: { threshOne: penroseSettings.colorThresholdOne, threshTwo: penroseSettings.colorThresholdTwo },
-    };
-    const specColorSettings = {
-        random: Boolean(penroseSettings.random),
-        gradient: Boolean(penroseSettings.gradient),
-        gradDistance: penroseSettings.gradDistance,
-        gradRotation: penroseSettings.gradRotation,
-        gradSpread: penroseSettings.gradSpread,
-    };
+    const palette = createPalette(penroseSettings);
+    const specColorSettings = createSpecialColorSettings(penroseSettings);
     colors.setPalette(palette, specColorSettings);
 
     // set special arc settings
@@ -59,29 +43,74 @@ export const init = function (penroseSettings, visibleTiles) {
     renderSVG(visibleTiles);
 };
 
+// Creates a ready to deploy palette for the colorMaker module
+const createPalette = function(settings) {
+    return {
+        tileColor: { kite: settings.colorKite, dart: settings.colorDart },
+        decorColor: {
+            amman: settings.colorAmman,
+            arcs: {
+                large: settings.colorLargeArc,
+                small: settings.colorSmallArc,
+            },
+        },
+        specialColor: { threshOne: settings.colorThresholdOne, threshTwo: settings.colorThresholdTwo },
+    };
+};
+
+// Creates a ready to deploy settings object for the colorMaker module. they will be needed for create the special colorings.
+const createSpecialColorSettings = function(settings) {
+    return {
+        random: Boolean(settings.random),
+        gradient: Boolean(settings.gradient),
+        gradDistance: settings.gradDistance,
+        gradRotation: settings.gradRotation,
+        gradSpread: settings.gradSpread,
+    };
+};
+
+// Returns the generated svg markup (for the downloading purpose)
 export const getMarkup = function () {
     return svgContainer.innerHTML;
 };
 
-const insertTile = function (name, markup) {
-    name === 'kite'
-        ? kiteSvgGroup.insertAdjacentHTML('afterbegin', markup)
-        : dartSvgGroup.insertAdjacentHTML('afterbegin', markup);
+// The rendering process 
+const renderSVG = function (visibleTiles) {
+    const tileGeneratorFunc = isSpecialColoring ? generateSVGcoloredPolygon : generateSVGpolygon;
+
+    if (decoration === 'amman') {
+        visibleTiles.forEach(tile => {
+            tileGeneratorFunc(tile);
+            generateSVGdecorAmman(tile);
+        });
+    } else if (decoration === 'arcs') {
+        visibleTiles.forEach(tile => {
+            tileGeneratorFunc(tile);
+            generateSVGdecorArcs(tile);
+        });
+    } else visibleTiles.forEach(tile => tileGeneratorFunc(tile));
 };
 
-// For each tile is a polygon generated
+// For each tile is a polygon generated. This is for constant color polygons (The color is set on the whole group)
 const generateSVGpolygon = function (tile) {
     const markup = `<polygon points="${Object.values(tile.coord).reduce((acc, val) => acc + ' ' + val)}" />`;
 
     insertTile(tile.name, markup);
 };
 
+// Polygons are generated for each tile with individual color (special colorings)
 const generateSVGcoloredPolygon = function (tile) {
     const markup = `<polygon points="${Object.values(tile.coord).reduce(
         (acc, val) => acc + ' ' + val
     )}" fill="${colors.getSpecialColor(tile.coord)}" />`;
 
     insertTile(tile.name, markup);
+};
+
+const insertTile = function (name, markup) {
+    name === 'kite'
+        ? kiteSvgGroup.insertAdjacentHTML('afterbegin', markup)
+        : dartSvgGroup.insertAdjacentHTML('afterbegin', markup);
 };
 
 // Decorations are added to the end of the svg, because of the darts amman line.
@@ -111,22 +140,7 @@ const generateSVGdecorArcs = function (tile) {
     smallSvgGroup.insertAdjacentHTML('afterbegin', smallA);
 };
 
-const renderSVG = function (visibleTiles) {
-    const tileGeneratorFunc = isSpecialColoring ? generateSVGcoloredPolygon : generateSVGpolygon;
-
-    if (decoration === 'amman') {
-        visibleTiles.forEach(tile => {
-            tileGeneratorFunc(tile);
-            generateSVGdecorAmman(tile);
-        });
-    } else if (decoration === 'arcs') {
-        visibleTiles.forEach(tile => {
-            tileGeneratorFunc(tile);
-            generateSVGdecorArcs(tile);
-        });
-    } else visibleTiles.forEach(tile => tileGeneratorFunc(tile));
-};
-
+// Clear the screen from the previously generated svg image and/or make it ready to accept svg data
 const clearView = function () {
     svgContainer.innerHTML = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0"
     width="${width}" height="${height}">

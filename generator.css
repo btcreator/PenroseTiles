@@ -22,6 +22,7 @@ h3 {
 input:focus {
     outline: 0;
 }
+
 /********************************************************************* Floating Menu Bar*/
 .floating-menu {
     position: absolute;
@@ -39,6 +40,7 @@ input:focus {
 .floating-menu.slide {
     top: 0;
 }
+
 /******************************************** Main Menu Control*/
 .main-menu {
     background-color: white;
@@ -360,8 +362,8 @@ label.hidden,
 .blur {
     filter: blur(2px);
 }
-/********************************************************************************* Media*/
 
+/********************************************************************************* Media*/
 @media (max-width: 800px) {
     .floating-menu {
         top: -175px;

@@ -1,8 +1,8 @@
 /** This module helps create the needed colors
- * generate random colors - todo
- * gradient coloring - todo
- * rotated gradient coloring - todo
- * ...and some others and combination of these...
+ * generate random colors
+ * gradient coloring
+ * rotated gradient coloring
+ * ...and combination of these...
  */
 
 import { randomRange } from './helpers.js';
@@ -10,13 +10,13 @@ import { randomRange } from './helpers.js';
 const colors = {}; // {tileColor: {kite: '#56DF8C', dart: '#FF12A3'}, decorColor: {amman: '#...', arcs: {large: '#...', small: '#...'}, specialColor: {threshOne: '#...', threshTwo: '#...'}}
 let specColorFunc;
 
-// The initial function which sets the initital settings and
+// The initial function which sets the initital settings
 export const setPalette = function (colorPalette, specSettings) {
     const fromColor = hexToRGBArray(colorPalette.specialColor.threshOne);
     const toColor = hexToRGBArray(colorPalette.specialColor.threshTwo);
-    const offsets = toColor.map((color, i) => color - fromColor[i]);
+    const rgbOffsets = toColor.map((color, i) => color - fromColor[i]);
 
-    specColorFunc = chargeSpecFunc(offsets, fromColor, specSettings);
+    specColorFunc = chargeSpecFunc(rgbOffsets, fromColor, specSettings);
 
     Object.assign(colors, colorPalette);
 };
@@ -35,13 +35,13 @@ export const getSpecialColor = function (coord) {
 };
 
 // Generates a random color
-const randomColorData = function (offsets, fromColor) {
+const randomColorData = function (rgbOffsets, fromColor) {
     const randomRatio = Math.random();
-    return offsets.map((offset, i) => Math.round(offset * randomRatio + fromColor[i]));
+    return rgbOffsets.map((offset, i) => Math.round(offset * randomRatio + fromColor[i]));
 };
 
 // Generate a rotated linear gradient coloring
-const gradientColor = function (offsets, fromColor, distance, gradRotation, colorSpread, random, coord) {
+const gradientColor = function (rgbOffsets, fromColor, distance, gradRotation, colorSpread, random, coord) {
     const a = coord.A[0];
     const b = coord.A[1];
     const c = Math.sqrt(a ** 2 + b ** 2);
@@ -52,7 +52,7 @@ const gradientColor = function (offsets, fromColor, distance, gradRotation, colo
     ratioSpread += ratio;
     ratioSpread = ratioSpread > 1 ? 1 : ratioSpread;
 
-    return offsets.map((offset, i) => Math.round(fromColor[i] + offset * ratioSpread));
+    return rgbOffsets.map((offset, i) => Math.round(fromColor[i] + offset * ratioSpread));
 };
 
 ////////////////////////
@@ -68,10 +68,10 @@ const hexToRGBArray = function (colorHex) {
 };
 
 // Set the needed function for generating the colors for faster call (can be rid of if statements for each call)
-const chargeSpecFunc = function (offsets, fromColor, specSettings) {
+const chargeSpecFunc = function (rgbOffsets, fromColor, specSettings) {
     //{ random: boolean, gradient: boolean, gradDistance: number, gradRotation: number(degree), gradSpread: number }
     const { random, gradient, gradDistance, gradRotation, gradSpread } = specSettings;
     return random && !gradient
-        ? randomColorData.bind(null, offsets, fromColor)
-        : gradientColor.bind(null, offsets, fromColor, gradDistance, gradRotation, gradSpread, random);
+        ? randomColorData.bind(null, rgbOffsets, fromColor)
+        : gradientColor.bind(null, rgbOffsets, fromColor, gradDistance, gradRotation, gradSpread, random);
 };
